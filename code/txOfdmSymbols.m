@@ -6,6 +6,7 @@ numDataCarriers = 48;
 fftSize = 64;
 numSymbols = 1000;
 modOrder = 4;
+winLen = 8;
 
 % Compute the number of pilot carriers
 numPilotCarriers = length(pilotCarriers);
@@ -46,6 +47,14 @@ ifftInput(pilotCarriers,:) = pilotSymbols;
 ifftOutput = ifft(ifftInput);
 
 % Add cyclic prefix
-ifftOutput = [ifftOutput((end-cpLen+1):end,:); ifftOutput];
+ifftOutput = [ifftOutput((end-cpLen-2*winLen+1):end,:); ifftOutput];
 
 % Apply windowing
+w = ones(cpLen+2*winLen+fftSize,1);
+w(1:winLen) = 1/2*(1-cos(pi*(1:winLen)/(winLen+1)));
+w((end-winLen+1):end) = flip(w(1:winLen));
+txSignal = ifftOutput.*w;
+txSignal(1:winLen,2:end) = txSignal(1:winLen,2:end) + ...
+    txSignal((end-winLen+1):end,(1:(end-1)));
+txSignal = [reshape(txSignal(1:(end-winLen),:),[],1);
+    txSignal((end-winLen+1):end,end)];
