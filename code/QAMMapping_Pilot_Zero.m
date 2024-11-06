@@ -20,12 +20,13 @@ modSymbols = qammod(bits, modOrder, 'UnitAveragePower', true);
 ofdmSymbols = zeros(numSubcarriers, numSymbols);
 
 % Insert modulated data into subcarriers excluding pilots and zeros
-dataCarrierIdx = setdiff(1:numSubcarriers, [1:numPilots:numSubcarriers, zeroCarrierIdx]);
+pilotCarrierIdx = (1:numPilots:numSubcarriers)+4;
+dataCarrierIdx = setdiff(1:numSubcarriers, [pilotCarrierIdx, zeroCarrierIdx]);
 ofdmSymbols(dataCarrierIdx, :) = reshape(modSymbols, length(dataCarrierIdx), numSymbols);
 
 % Insert pilot symbols (e.g., all ones or random QPSK symbols)
 pilotSymbols = ones(numPilots, numSymbols);  % Pilot symbol could also be randomized
-ofdmSymbols(1:numPilots:numSubcarriers, :) = pilotSymbols;
+ofdmSymbols(pilotCarrierIdx, :) = pilotSymbols;
 
 % IFFT operation to convert frequency domain symbols to time domain
 txSignal = ifft(ofdmSymbols, numSubcarriers);
@@ -56,8 +57,9 @@ for snrIdx = 1:length(snrRange)
     rxSymbols = fft(rxSignal, numSubcarriers);
     
     % Channel estimation using pilot symbols (simple example)
-    estimatedChannel = mean(rxSymbols(1:numPilots:numSubcarriers, :) ./ pilotSymbols, 2);
-    equalizedSymbols = rxSymbols ./ estimatedChannel;
+    estimatedChannel = mean(rxSymbols(pilotCarrierIdx, :) ./ pilotSymbols, 2);
+    estimatedChannelInterp = circshift(8*ifft(fft(estimatedChannel),64),4);
+    equalizedSymbols = rxSymbols ./ estimatedChannelInterp;
     
     % Extract the data subcarriers (excluding pilots and zeros)
     rxDataSymbols = equalizedSymbols(dataCarrierIdx, :);
