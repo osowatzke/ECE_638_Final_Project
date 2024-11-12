@@ -38,9 +38,20 @@ imanmiraki@arizona.edu}}
    \section {Radar}
 
      \section {OFDM}
-Random bits are generated and modulated using QPSK. These symbols are mapped onto sub-carriers, excluding pilots and zero carriers.
-Pilots are inserted at regular intervals and zero carriers are placed at the edges of the spectrum.The IFFT converts the frequency domain symbols to the time domain. A Hamming window is applied to each OFDM symbol to reduce spectral leakage. Acyclic prefix is added to teh windowed OFDM symbols to mitigate ISI. The AWGN channel is used to transmit the flattened signal to the receiver.\par
-The receiver removes the cyclic prefix. The data subcarriers are extracted and demodulated from FFT results in frequency domain. The received bits are compared to the transmitted bits to calculate the BER fo reach SNR value. 
+We use OFDM as a communication protocol. We utilize Matlab to create an OFDM simulation. Below are the steps to simulate a standard OFDM signal and calculate the Bit Error Rate.
+\begin{itemize}
+\item Random bits are generated and modulated using QPSK. 
+\item Symbols are mapped onto sub-carriers, excluding pilots and zero carriers.
+\item Pilots are inserted at regular intervals and zero carriers are placed at the edges of the spectrum.
+\item The IFFT converts the frequency domain symbols to the time domain. 
+\item A Hamming window is applied to each OFDM symbol to reduce spectral leakage. 
+\item A cyclic prefix is added to the windowed OFDM symbols to mitigate ISI. 
+\item An AWGN channel is used to transmit the flattened signal to the receiver.\par
+\item The receiver removes the cyclic prefix. 
+\item The data sub-carriers are extracted and demodulated from FFT, results in frequency domain. 
+\item The received bits are compared to the transmitted bits to calculate the BER vs SNR values. 
+\end{itemize}
+
 \begin{figure}
     \centering
     \includegraphics[width=0.5\linewidth]{OFDM_BER.jpg}
