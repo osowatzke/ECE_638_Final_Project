@@ -1,8 +1,11 @@
 \documentclass[onecolumn,conference]{IEEEtran}
- \usepackage{enumitem}
+\usepackage{enumitem}
 \usepackage[document]{ragged2e}
 \usepackage{blindtext}
 \usepackage{graphicx}
+\usepackage{float}
+
+\graphicspath{ {./}{./images/} }
 
 \title{Joint Radar Communication System using OFDM}
 
@@ -52,22 +55,19 @@ We use OFDM as a communication protocol. We utilize Matlab to create an OFDM sim
 \item The received bits are compared to the transmitted bits to calculate the BER vs SNR values. 
 \end{itemize}
 
-\begin{figure}
-    \centering
-    \includegraphics[width=0.5\linewidth]{OFDM_BER.jpg}
-    \caption{OFDM BER vs SNR}
+	\begin{figure}[H]
+    		\centering
+    		\fbox{\includegraphics[width=0.5\linewidth]{OFDM_BER.png}}
+    		\caption{OFDM BER vs SNR}
+	\end{figure}
+
+	\begin{figure}[H]
+		\centering
+    		\fbox{\includegraphics[width=0.5\linewidth]{OFDM_PowerSpectralDensity.png}}
+    		\caption{OFDM Power Spectral Density}
     \end{figure}
-\begin{figure}
-        \centering
-        \includegraphics[width=0.5\linewidth]{OFDM_PowerSpectralDensity.jpg}
-        \caption{OFDM Power Spectral Density}
-    \end{figure}
-        
 
-  
-
-
-     \section {JRC}
+    \section {JRC}
 
 	\end{enumerate}
 	
