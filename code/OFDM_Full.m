@@ -6,8 +6,8 @@ nSymbols = 100;           % Number of OFDM symbols
 cyclicPrefixLen = 16;     % Length of cyclic prefix
 windowLen = 4;            % Length of window
 snrRange = 0:2:20;        % SNR range in dB
-pilotIndices = 1:8:nSubcarriers;  % Pilot every 8 subcarriers
-zeroIndices = [1:5, (nSubcarriers-4):nSubcarriers];  % Zeroed subcarriers
+pilotIndices =  [11, 25, 39,53]  %1:8:nSubcarriers;  % Pilot every 8 subcarriers
+zeroIndices = [1:5, nSubcarriers/2, (nSubcarriers-4):nSubcarriers];%[1:5, (nSubcarriers-4):nSubcarriers];  % Zeroed subcarriers
 
 % QPSK Modulation
 modOrder = 4;
