@@ -2,25 +2,38 @@
 
 % Parameters
 nSubcarriers = 64;        % Number of OFDM subcarriers
+nDataSubCarriers = 48;    % Number of OFDM data subcarriers
 nSymbols = 100;           % Number of OFDM symbols
 cyclicPrefixLen = 16;     % Length of cyclic prefix
 windowLen = 4;            % Length of window
 snrRange = 0:2:20;        % SNR range in dB
-pilotIndices =  [11, 25, 39,53]  %1:8:nSubcarriers;  % Pilot every 8 subcarriers
-zeroIndices = [1:5, nSubcarriers/2, (nSubcarriers-4):nSubcarriers];%[1:5, (nSubcarriers-4):nSubcarriers];  % Zeroed subcarriers
+pilotIndices = [-21, -7, 7, 21]; % 802.11a pilots
 
 % QPSK Modulation
 modOrder = 4;
 bitsPerSymbol = log2(modOrder);
 
 % Get detailed carrier counts
-nZeroCarriers = length(zeroIndices);
-nPilots = length(setdiff(pilotIndices, zeroIndices));
-nDataSubCarriers = nSubcarriers - nPilots - nZeroCarriers;
-if nPilots ~= length(pilotIndices)
-    warning(['Pilots overlap with zero carriers. ', ...
-        'All overlapping carriers will default to zero subcarriers.']);
+nPilots = length(pilotIndices);
+nZeroCarriers = nSubcarriers - nDataSubCarriers - nPilots;
+
+% Compute indices of zero carriers. 1 zero carrier at center of FFT.
+% Other zero carriers distributed at edges of FFT.
+if (nDataSubCarriers < nSubcarriers)
+    nZeroCarriersLow = ceil((nZeroCarriers-1)/2);
+    nZeroCarriersHigh = nZeroCarriers - nZeroCarriersLow - 1;
+    zeroIndicesLow = -nSubcarriers/2 + (0:(nZeroCarriersLow-1));
+    zeroIndicesHigh = nSubcarriers/2 - (nZeroCarriersHigh:-1:1);
+    zeroIndices = [zeroIndicesLow, 0, zeroIndicesHigh];
+
+% Allow user to bypass zero subcarriers
+else
+    zeroIndices = [];
 end
+
+% Convert indices to values in range [1, N] instead of [-N/2, N/2)
+pilotIndices = sort(pilotIndices + (pilotIndices < 0) * nSubcarriers) + 1;
+zeroIndices  = sort(zeroIndices + (zeroIndices < 0) * nSubcarriers) + 1;
 
 % Determine data subcarriers indices
 dataIndices = setdiff(1:nSubcarriers,[pilotIndices, zeroIndices]); 
@@ -111,8 +124,6 @@ grid on;
 figure;
 pwelch(txSignal, [], [], [], 'centered');
 title('Power Spectral Density of Transmitted OFDM Signal');
-xlabel('Frequency (Hz)');
-ylabel('Power/Frequency (dB/Hz)');
 
 % Plot Constellation of received symbols at a high SNR (e.g., 30 dB)
 scatterplot(rxSymbols(:));
