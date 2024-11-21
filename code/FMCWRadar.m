@@ -31,7 +31,7 @@ classdef FMCWRadar < RadarBase
     % Protected class methods
     methods(Access=protected)
 
-        % Function generates parameters for the LFM
+        % Function generates parameters for the LFM waveform
         function getParameters(self)
             getParameters@RadarBase(self);
             self.sweepRate = self.sweepBandwidth/self.sampleRate/...

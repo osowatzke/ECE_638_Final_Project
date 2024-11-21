@@ -10,7 +10,7 @@ classdef RadarBase < handle
         targetRange     = 50;       % Target range (m)
         targetVelocity  = 0;        % Target velocity (m/s)
         SNR_dB          = 20;       % Target SNR (dB)
-        normalizedUnits = false;    % Normalized units
+        normalizedUnits = true;     % Normalized units
     end
 
     % Protected class properties
@@ -66,47 +66,9 @@ classdef RadarBase < handle
             % Override in subclass
         end
 
-        % Function generates received data from transmitted waveform
-        % TODO: Rehost this function within a CWRadar base class
-        function getRxData(self)
-
-            % Compute target delay in gates
-            targetDelay = 8*round(self.targetRange/self.rgSize) + 4;
-
-            % Compute normalized doppler frequency
-            dopplerFreqNorm = self.dopplerFreq/self.sampleRate;
-
-            % Generate transmit data for entire CPI
-            txData = repmat(self.txWaveform, self.numPulses, 1);
-
-            txData = filter(ones(8,1),1,upsample(txData,8));
-%             txData = upsample(txData,8);
-            [b, a] = butter(5, 0.125);
-            txData = filter(b,a,txData);
-
-            % Get time axis
-            n = (0:(length(txData)-1)).';
-
-            % Generate Receive Data
-            self.rxData = zeros(size(txData));
-
-            % Receive data is superposition of all target returns
-            for i = 1:length(targetDelay)
-                self.rxData = self.rxData + 10^(self.SNR_dB(i)/20)*...
-                    circshift(txData, targetDelay(i)).*...
-                    exp(1i*2*pi*dopplerFreqNorm*n);
-            end
-
-%             self.rxData = self.rxData.*repmat(exp(1i*0.5*pi*n(1:self.priSamples)/self.priSamples), self.numPulses, 1);
-            self.rxData = self.rxData(1:8:end);
-
-            % Reshape into a data cube
-            self.rxData = reshape(self.rxData, [], self.numPulses);
-
-            % Add noise
-            noise = complex(randn(size(self.rxData)),...
-                randn(size(self.rxData)));
-            self.rxData = self.rxData + noise;
+         % Function generates received waveform
+        function getRxData(~)
+            % Override in subclass
         end
 
         % Function generates RDMs from received data
