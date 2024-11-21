@@ -55,7 +55,8 @@ classdef radar < handle
             self.targetPosEst = (self.maxRangeGate - 1) * self.rgSize;
 
             % Estimate target velocity
-            targetDopplerFreq = (self.maxDopplerBin - 1) * self.PRF;
+            targetDopplerFreq = (self.maxDopplerBin - 1)/...
+                self.numPulses * self.PRF;
             self.targetVelEst = targetDopplerFreq * self.lambda / 2;
 
             % Print out estimates of target position
