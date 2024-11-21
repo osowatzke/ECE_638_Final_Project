@@ -3,7 +3,6 @@ classdef FMCWRadar < RadarBase
     % Public class properties
     properties
         sweepBandwidth = [];            % Sweep bandwidth (Hz)
-        normalizedUnits = false;        % Normalized units
         fastTimeWin = @(L)rectwin(L);   % Fast time window function
         slowTimeWin = @(L)rectwin(L);   % Slow time window function
     end
@@ -26,12 +25,6 @@ classdef FMCWRadar < RadarBase
             if isempty(self.sweepBandwidth)
                 self.sweepBandwidth = self.sampleRate;
             end
-        end
-
-        % Function extends the superclass run method
-        function run(self)
-            run@RadarBase(self);
-            self.generatePlots();
         end
     end
 
@@ -109,62 +102,6 @@ classdef FMCWRadar < RadarBase
             
             % Slow time FFT
             self.rdm = fft(self.rdm.*win, [], 2);
-        end
-        function generatePlots(self)
-
-            % FFT shift RDM
-            rdmCentered = fftshift(self.rdm,2);
-
-            % Doppler axis
-            doppAxis = (0:(self.numPulses-1)) - self.numPulses/2;
-            doppAxisLabel = 'Doppler Bin';
-
-            % Doppler bins correspond to velocity
-            if (~self.normalizedUnits)
-                doppAxis = doppAxis/self.numPulses;
-                doppAxis = doppAxis*self.PRF;
-                doppAxis = doppAxis*self.lambda/2;
-                doppAxisLabel = 'Velocity (m/s)';
-            end
-
-            % Range axis
-            rangeAxis = 0:(size(self.rdm,1)-1);
-            rangeAxisLabel = 'Range Gate';
-
-            % Range Gates correspond to range
-            if (~self.normalizedUnits)
-                rangeAxis = rangeAxis*self.rgSize;
-                rangeAxisLabel = 'Range (m)';
-            end
-
-            % Plot RDM
-            figure(1)
-            clf;
-            imagesc(doppAxis,rangeAxis,db(rdmCentered));
-            colorbar;
-            title('RDM')
-            xlabel(doppAxisLabel);
-            ylabel(rangeAxisLabel)
-
-            % Plot range response
-            figure(2)
-            clf;
-            plot(rangeAxis,db(self.rdm(:,self.maxDopplerBin)),'LineWidth',1.5);
-            xlim([rangeAxis(1) rangeAxis(end)]);
-            grid on;
-            title('Range Slice');
-            xlabel(rangeAxisLabel);
-            ylabel('Amplitude (dB)');
-
-            % Plot doppler spectrum
-            figure(3)
-            clf;
-            plot(doppAxis,db(rdmCentered(self.maxRangeGate,:)),'LineWidth',1.5);
-            xlim([doppAxis(1) doppAxis(end)]);
-            grid on;
-            title('Doppler Slice');
-            xlabel(doppAxisLabel);
-            ylabel('Amplitude (dB)');
         end
     end
 end
