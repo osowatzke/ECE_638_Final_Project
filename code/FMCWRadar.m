@@ -2,9 +2,9 @@ classdef FMCWRadar < RadarBase
 
     % Public class properties
     properties
-        sweepBandwidth = [];            % Sweep bandwidth (Hz)
-        fastTimeWin = @(L)rectwin(L);   % Fast time window function
-        slowTimeWin = @(L)rectwin(L);   % Slow time window function
+        sweepBandwidth = [];                % Sweep bandwidth (Hz)
+        fastTimeWindow = @(L)rectwin(L);    % Fast time window function
+        slowTimeWindow = @(L)rectwin(L);    % Slow time window function
     end
 
     % Protected class methods
@@ -88,7 +88,7 @@ classdef FMCWRadar < RadarBase
             adcData = self.rxData.*conj(self.txWaveform);
 
             % Generate fast time window
-            win = self.fastTimeWin(length(adcData));
+            win = self.fastTimeWindow(length(adcData));
 
             % Fast time FFT
             self.rdm = fft(adcData.*win);
@@ -98,7 +98,7 @@ classdef FMCWRadar < RadarBase
             self.rdm = flip(self.rdm,1);
 
             % Generate slow time window
-            win = self.slowTimeWin(size(self.rdm, 2)).';
+            win = self.slowTimeWindow(size(self.rdm, 2)).';
             
             % Slow time FFT
             self.rdm = fft(self.rdm.*win, [], 2);

@@ -10,7 +10,7 @@ classdef RadarBase < handle
         targetRange     = 50;       % Target range (m)
         targetVelocity  = 0;        % Target velocity (m/s)
         SNR_dB          = 20;       % Target SNR (dB)
-        normalizedUnits = true;     % Normalized units
+        normalizedUnits = false;    % Normalized units
     end
 
     % Protected class properties
