@@ -1,4 +1,4 @@
-classdef FMCWRadar < radar
+classdef FMCWRadar < RadarBase
 
     % Public class properties
     properties
@@ -20,7 +20,7 @@ classdef FMCWRadar < radar
         function self = FMCWRadar(varargin)
 
             % Call superclass constructor
-            self = self@radar(varargin{:});
+            self = self@RadarBase(varargin{:});
 
             % Set bandwidth to sample rate if unspecified
             if isempty(self.sweepBandwidth)
@@ -30,7 +30,7 @@ classdef FMCWRadar < radar
 
         % Function extends the superclass run method
         function run(self)
-            run@radar(self);
+            run@RadarBase(self);
             self.generatePlots();
         end
     end
@@ -40,7 +40,7 @@ classdef FMCWRadar < radar
 
         % Function generates parameters for the LFM
         function getParameters(self)
-            getParameters@radar(self);
+            getParameters@RadarBase(self);
             self.sweepRate = self.sweepBandwidth/self.sampleRate/...
                 self.priSamples;
         end

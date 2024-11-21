@@ -1,4 +1,6 @@
-classdef radar < handle
+classdef RadarBase < handle
+
+    % Public class properties
     properties 
         carrierFreq    = 77e9;      % Carrier frequency (Hz)
         sampleRate     = 200e6;     % Sample rate (Hz)
@@ -9,25 +11,34 @@ classdef radar < handle
         targetVelocity = 0;         % Target velocity (m/s)
         SNR_dB         = 20;        % Target SNR (dB)
     end
+
+    % Protected class properties
     properties(Access=protected)
-        maxRangeGate;
-        maxDopplerBin;
-        priSamples;
-        rgSize;
-        lambda;
-        dopplerFreq;
-        txWaveform;
-        rxData;
-        rdm;
-        targetPosEst;
-        targetVelEst;
+        priSamples;                 % PRI in samples
+        rgSize;                     % Range gate size (m)
+        lambda;                     % Wavelength (m)
+        dopplerFreq;                % Doppler frequency (Hz)
+        txWaveform;                 % Transmitted waveform
+        rxData;                     % Received data
+        rdm;                        % Range doppler matrix
+        maxRangeGate;               % RDM peak range gate
+        maxDopplerBin;              % RDM peak doppler bin
+        targetPosEst;               % Estimated target position (m)
+        targetVelEst;               % Estimated target velocity (m/s)
     end
+
+    % Public class methods
     methods
-        function self = radar(varargin)
+
+        % Class constructor. Takes key value pair of arguments to
+        % initialize class properties. Ex: RadarBase('SNR_dB', 10)
+        function self = RadarBase(varargin)
             for i = 1:2:nargin
                 self.(varargin{i}) = varargin{i+1};
             end
         end
+
+        % Function runs radar model
         function run(self)
             self.getParameters();
             self.getTxWaveform();
@@ -36,36 +47,25 @@ classdef radar < handle
             self.locateTarget();
         end
     end
+
+    % Protected class methods
     methods (Access = protected)
+
+        % Function computes dependent parameters from class properties
         function getParameters(self)
             self.priSamples = round(self.sampleRate/self.PRF);
             self.rgSize = physconst('LightSpeed')/(2*self.sampleRate);
             self.lambda = physconst('LightSpeed')/self.carrierFreq;
             self.dopplerFreq = 2*self.targetVelocity/self.lambda;
         end
-        function locateTarget(self)
 
-            % Find the range gate and doppler bin corresponding to
-            % the RDM peak
-            [maxVal,self.maxRangeGate] = max(abs(self.rdm));
-            [~,self.maxDopplerBin] = max(abs(maxVal));
-            self.maxRangeGate = self.maxRangeGate(self.maxDopplerBin);
-
-            % Estimate target position
-            self.targetPosEst = (self.maxRangeGate - 1) * self.rgSize;
-
-            % Estimate target velocity
-            targetDopplerFreq = (self.maxDopplerBin - 1)/...
-                self.numPulses * self.PRF;
-            self.targetVelEst = targetDopplerFreq * self.lambda / 2;
-
-            % Print out estimates of target position
-            fprintf('Estimated Target Position: %.2f m\n', self.targetPosEst);
-            fprintf('Estimated Target Velocity: %.2f m/s\n', self.targetVelEst);
-        end
+        % Function generates transmitted waveform
         function getTxWaveform(~)
             % Override in subclass
         end
+
+        % Function generates received data from transmitted waveform
+        % TODO: Rehost this function within a CWRadar base class
         function getRxData(self)
 
             % Compute target delay in gates
@@ -106,8 +106,33 @@ classdef radar < handle
                 randn(size(self.rxData)));
             self.rxData = self.rxData + noise;
         end
+
+        % Function generates RDMs from received data
         function generateRdm(~)
             % Override in subclass
         end
+
+        % Function locates target in RDM and estimates
+        %  its range and velocity
+        function locateTarget(self)
+
+            % Find the range gate and doppler bin corresponding to
+            % the RDM peak
+            [maxVal,self.maxRangeGate] = max(abs(self.rdm));
+            [~,self.maxDopplerBin] = max(abs(maxVal));
+            self.maxRangeGate = self.maxRangeGate(self.maxDopplerBin);
+
+            % Estimate target position
+            self.targetPosEst = (self.maxRangeGate - 1) * self.rgSize;
+
+            % Estimate target velocity
+            targetDopplerFreq = (self.maxDopplerBin - 1)/...
+                self.numPulses * self.PRF;
+            self.targetVelEst = targetDopplerFreq * self.lambda / 2;
+
+            % Print out estimates of target position
+            fprintf('Estimated Target Position: %.2f m\n', self.targetPosEst);
+            fprintf('Estimated Target Velocity: %.2f m/s\n', self.targetVelEst);
+        end        
     end
 end
