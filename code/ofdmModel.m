@@ -3,7 +3,7 @@ classdef ofdmModel < handle
     % Public properties
     properties
         nSubcarriers = 64;      % Number of OFDM subcarriers
-        nDataCarriers = 1;      % Number of OFDM data subcarriers
+        nDataCarriers = 48;     % Number of OFDM data subcarriers
         nSymbols = 1e4;         % Number of OFDM symbols
         cyclicPrefixLen = 16;   % Length of cyclic prefix
         windowLen = 4;          % Length of window
@@ -17,11 +17,15 @@ classdef ofdmModel < handle
 
     % Private properties
     properties(Access=protected)
+        modulate;
+        demodulate;
         dataIndicesWrap;
         pilotIndicesWrap;
         zeroIndicesWrap;
-        modulate;
-        demodulate;
+        symbolPadLen;
+        window;
+        bits;
+        txSignal;
     end
 
     % Public methods
@@ -30,6 +34,7 @@ classdef ofdmModel < handle
         % Function runs OFDM simulation
         function run(self)
             self.getParameters();
+            self.createTxSignal();
         end
     end
 
@@ -39,6 +44,8 @@ classdef ofdmModel < handle
         function getParameters(self)
             self.selectModulation();
             self.mapSubCarriers();
+            self.getPadLength(); 
+            self.computeWindow();
         end
 
         % Function maps zero and data subcarriers to set of subcarriers
@@ -73,6 +80,7 @@ classdef ofdmModel < handle
                 [self.pilotIndicesWrap, self.zeroIndicesWrap]);
         end
 
+        % Function selects modulation and demodulation routines
         function selectModulation(self)
             if strcmpi(self.modType, 'psk')
                 self.modulate = @(x) pskmod(x, self.modOrder,...
@@ -87,6 +95,76 @@ classdef ofdmModel < handle
             else
                 error('Unsupported modulation type. Select from {''QAM'',''PSK''}');
             end
+        end
+
+        % Function computes the window
+        function computeWindow(self)
+
+            % Window is fixed at '1' during symbol and cyclic prefix
+            self.window = hanning(2*self.windowLen + 1);
+            self.window = [self.window(1:self.windowLen);
+                ones(self.nSubcarriers+self.cyclicPrefixLen,1);
+                self.window((end-self.windowLen+1):end)];
+        end
+
+        % Function computes symbol padding length
+        % Padding is on either signal of transmitted symbols
+        % And includes contributes from cyclic prefix and windowing
+        function getPadLength(self)
+            self.symbolPadLen = self.cyclicPrefixLen/2 + self.windowLen;
+        end
+
+        % Function generates random bits
+        function genRandomBits(self)
+
+            % Determine the number of bits to generate
+            bitsPerSymbol = log2(self.modOrder);
+            numBits = self.nSymbols * self.nDataCarriers * bitsPerSymbol;
+
+            % Generate random bits
+            self.bits = randi([0 1], numBits, 1);
+        end
+
+        % Function creates transmitted signal
+        function createTxSignal(self)
+
+            % Generate random bits
+            self.genRandomBits();
+
+            % Modulate bits
+            dataSymbols = self.modulate(self.bits);
+            dataSymbols = reshape(dataSymbols, [], self.nSymbols);
+
+            % Create empty array of symbols
+            symbols = zeros(self.nSubcarriers, self.nSymbols);
+            
+            % Populate data subcarriers
+            symbols(self.dataIndicesWrap,:) = dataSymbols;
+            
+            % Insert pilots and zero carriers
+            % Default pilots to 1 (should be pseudo-random)
+            symbols(self.pilotIndicesWrap, :) = 1;
+            symbols(self.zeroIndicesWrap, :) = 0;
+
+            % OFDM modulation
+            % IFFT per OFDM symbol
+            self.txSignal = ifft(symbols, self.nSubcarriers, 1);
+
+            % Add cyclic prefix
+            self.addCylicPrefix();
+
+            % Serialize transmitted signal
+            self.txSignal = self.txSignal(:);
+        end
+        
+        % Function adds cyclic prefix
+        function addCylicPrefix(self)
+            
+            % Add cyclic prefix and transition region for window
+            % Distribute evenly at start and end of symbol
+            symbolPadStart = self.txSignal((end-self.symbolPadLen+1):end,:);
+            symbolPadEnd = self.txSignal(1:self.symbolPadLen,:);
+            self.txSignal = [symbolPadStart; self.txSignal; symbolPadEnd];
         end
     end
 end
