@@ -33,6 +33,7 @@ classdef ofdmModel < handle
         window;
         bits;
         dataSymbols;
+        txPilots;
         txSignal;
         fadedSignal;
         snr;
@@ -156,9 +157,12 @@ classdef ofdmModel < handle
             % Populate data subcarriers
             symbols(self.dataIndicesWrap,:) = self.dataSymbols;
             
+            % Create pseudo-random transmitted pilots
+            self.txPilots = cos(pi*randi([0 1], length(self.pilotIndices),...
+                self.nSymbols));
+
             % Insert pilots and zero carriers
-            % Default pilots to 1 (should be pseudo-random)
-            symbols(self.pilotIndicesWrap, :) = 1;
+            symbols(self.pilotIndicesWrap, :) = self.txPilots;
             symbols(self.zeroIndicesWrap, :) = 0;
 
             % OFDM modulation
@@ -270,8 +274,9 @@ classdef ofdmModel < handle
 
                 % Interpolate the response of the comb pilots
                 H = zeros(size(self.dataSymbols));
+                Hp = self.rxPilots./self.txPilots;
                 for i = 1:size(H,2)
-                    H(:,i) = interp1(self.pilotIndicesWrap, self.rxPilots(:,i),...
+                    H(:,i) = interp1(self.pilotIndicesWrap, Hp(:,i),...
                         self.dataIndicesWrap, self.interpMethod, 'extrap');
                 end
 
