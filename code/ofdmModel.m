@@ -2,15 +2,19 @@ classdef ofdmModel < handle
 
     % Public properties
     properties
-        nSubcarriers = 64;      % Number of OFDM subcarriers
-        nDataCarriers = 48;     % Number of OFDM data subcarriers
-        nSymbols = 1e4;         % Number of OFDM symbols
-        cyclicPrefixLen = 16;   % Length of cyclic prefix
-        windowLen = 4;          % Length of window
-        snrRange = 0:2:20;      % SNR range in dB
-        modOrder = 4;           % Modulation Order
-        modType = 'QAM';        % Modulation Type
-
+        nSubcarriers = 64;          % Number of OFDM subcarriers
+        nDataCarriers = 48;         % Number of OFDM data subcarriers
+        nSymbols = 1e4;             % Number of OFDM symbols
+        cyclicPrefixLen = 16;       % Length of cyclic prefix
+        windowLen = 4;              % Length of window
+        snrRange = 0:2:20;          % SNR range in dB
+        modOrder = 4;               % Modulation Order
+        modType = 'QAM';            % Modulation Type
+        enRayleighFading = false;   % Enable rayleigh fading
+        enPerfectChanEst = false;   % Enable perfect channel estimation
+        interpMethod = 'linear';    % Interpolation method
+        eqAlgorithm = 'mmse';       % Equalization algorithm
+        
         % Pilot indices (defaulted to 802.11a pilots)
         pilotIndices = [-21, -7, 7, 21];
     end
@@ -25,7 +29,13 @@ classdef ofdmModel < handle
         symbolPadLen;
         window;
         bits;
+        dataSymbols;
         txSignal;
+        fadedSignal;
+        snr;
+        rxSymbols;
+        rxPilots;
+        ber;
     end
 
     % Public methods
@@ -132,14 +142,14 @@ classdef ofdmModel < handle
             self.genRandomBits();
 
             % Modulate bits
-            dataSymbols = self.modulate(self.bits);
-            dataSymbols = reshape(dataSymbols, [], self.nSymbols);
+            self.dataSymbols = self.modulate(self.bits);
+            self.dataSymbols = reshape(self.dataSymbols, [], self.nSymbols);
 
             % Create empty array of symbols
             symbols = zeros(self.nSubcarriers, self.nSymbols);
             
             % Populate data subcarriers
-            symbols(self.dataIndicesWrap,:) = dataSymbols;
+            symbols(self.dataIndicesWrap,:) = self.dataSymbols;
             
             % Insert pilots and zero carriers
             % Default pilots to 1 (should be pseudo-random)
@@ -165,6 +175,108 @@ classdef ofdmModel < handle
             symbolPadStart = self.txSignal((end-self.symbolPadLen+1):end,:);
             symbolPadEnd = self.txSignal(1:self.symbolPadLen,:);
             self.txSignal = [symbolPadStart; self.txSignal; symbolPadEnd];
+        end
+
+        % Function runs OFDM receiver model
+        function runOfdmReceiver(self)
+
+            % Create rayleigh channel object
+            rayleighChan = comm.RayleighChannel(...
+                'PathDelays', 0,...
+                'AveragePathGains', 0,...
+                'SampleRate', 10e6,...
+                'MaximumDopplerShift', 1e3);
+
+            % Initialize BER array
+            self.ber = zeros(length(self.snrRange), 1);
+
+            % Loop over all the received SNRs
+            for i = 1:length(self.snrRange)
+
+                % Select SNR from array
+                self.snr = self.snrRange(i);
+
+                % Apply fading
+                if self.enRayleighFading
+                    self.fadedSignal = rayleighChan(self.txSignal);
+                else
+                    self.fadedSignal = self.txSignal;
+                end
+
+                % Create received signal
+                rxSignal = awgn(self.fadedSignal, self.snr, 'measured');
+                rxSignal = reshape(rxSignal, [], self.nSymbols);
+
+                % Extract symbols from received signal
+                self.rxSymbols = self.extractSymbols(rxSignal);
+
+                % Extract pilots from symbols
+                self.rxPilots = self.rxSymbols(self.pilotIndicesWrap,:);
+                
+                % Extract data subcarriers
+                self.rxSymbols = self.rxSymbols(self.dataIndicesWrap,:);
+
+                % Perform equalization
+                if self.enRayleighFading
+                    self.equalize();
+                end
+                
+                % Demodulate received symbols
+                rxBits = self.demodulate(self.rxSymbols);
+
+                % Calculate BER
+                self.ber(i) = mean(rxBits ~= self.bits);
+            end
+        end
+
+        % Function extracts symbols from received signal
+        function symbols = extractSymbols(self, rxSignal)
+
+            % Determine start and end of data payload
+            symbolStart = self.symbolPadLen+1;
+            symbolEnd = symbolStart + self.nSubcarriers - 1;
+
+            % remove window and cyclic prefix
+            rxSignal = rxSignal(symbolStart:symbolEnd,:);
+
+            % FFT to get estimate symbols
+            symbols = fft(rxSignal, self.nSubcarriers, 1);
+        end
+
+        % Function equalizes received symbols
+        function equalize(self)
+
+            % Perfect channel estimate
+            if self.enPerfectChanEst
+
+                % Extract symbols from noise-free fading channel
+                fadedSymbols = self.extractSymbols(self.fadedSignal);
+                
+                % Only include symbols on data subcarriers
+                fadedSymbols = fadedSymbols(self.dataIndicesWrap,:);
+
+                % Compute perfect channel response
+                H = fadedSymbols./self.dataSymbols;
+
+            % Non-ideal channel estimate
+            % Interpolate the response of the comb pilots
+            else
+
+                H = interp1(self.rxPilots, self.pilotIndicesWrap,...
+                    self.dataIndicesWrap, self.interpMethod, 'extrap');
+            end
+
+            % Compute EQ weights
+            if strcmpi(self.eqAlgorithm, 'mmse')
+                eqWeights = H./(H.*conj(H) + 10^(-self.snr/10));
+            elseif strcmpi(self.eqAlgorithm, 'zf')
+                eqWeights = 1./H;
+            else
+                error('Unsupported EQ Algorithm. Please select from {''mmse'',''zf''}');
+            end
+
+            % Equalize received data
+            self.rxSymbols = self.rxSymbols.*eqWeights;                
         end
     end
 end
