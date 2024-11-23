@@ -45,6 +45,8 @@ classdef ofdmModel < handle
         function run(self)
             self.getParameters();
             self.createTxSignal();
+            self.runReceiver();
+            self.plotResults();
         end
     end
 
@@ -178,14 +180,14 @@ classdef ofdmModel < handle
         end
 
         % Function runs OFDM receiver model
-        function runOfdmReceiver(self)
+        function runReceiver(self)
 
             % Create rayleigh channel object
             rayleighChan = comm.RayleighChannel(...
                 'PathDelays', 0,...
                 'AveragePathGains', 0,...
                 'SampleRate', 10e6,...
-                'MaximumDopplerShift', 1e3);
+                'MaximumDopplerShift', 1000);
 
             % Initialize BER array
             self.ber = zeros(length(self.snrRange), 1);
@@ -205,7 +207,6 @@ classdef ofdmModel < handle
 
                 % Create received signal
                 rxSignal = awgn(self.fadedSignal, self.snr, 'measured');
-                rxSignal = reshape(rxSignal, [], self.nSymbols);
 
                 % Extract symbols from received signal
                 self.rxSymbols = self.extractSymbols(rxSignal);
@@ -222,7 +223,7 @@ classdef ofdmModel < handle
                 end
                 
                 % Demodulate received symbols
-                rxBits = self.demodulate(self.rxSymbols);
+                rxBits = self.demodulate(self.rxSymbols(:));
 
                 % Calculate BER
                 self.ber(i) = mean(rxBits ~= self.bits);
@@ -231,6 +232,9 @@ classdef ofdmModel < handle
 
         % Function extracts symbols from received signal
         function symbols = extractSymbols(self, rxSignal)
+
+            % Reshape signal
+            rxSignal = reshape(rxSignal, [], self.nSymbols);
 
             % Determine start and end of data payload
             symbolStart = self.symbolPadLen+1;
@@ -262,13 +266,21 @@ classdef ofdmModel < handle
             % Interpolate the response of the comb pilots
             else
 
-                H = interp1(self.rxPilots, self.pilotIndicesWrap,...
-                    self.dataIndicesWrap, self.interpMethod, 'extrap');
+                H = zeros(size(self.dataSymbols));
+                for i = 1:size(H,2)
+                    Hr = interp1(real(self.rxPilots(:,i)), self.pilotIndicesWrap,...
+                        self.dataIndicesWrap, self.interpMethod, 'extrap');
+                    Hi = interp1(imag(self.rxPilots(:,i)), self.pilotIndicesWrap,...
+                        self.dataIndicesWrap, self.interpMethod, 'extrap');
+                    H(:,i) = complex(Hr,Hi);
+%                     H(:,i) = interp1(real(self.rxPilots(:,i)), self.pilotIndicesWrap,...
+%                         self.dataIndicesWrap, 'spline', 'extrap');
+                end
             end
 
             % Compute EQ weights
             if strcmpi(self.eqAlgorithm, 'mmse')
-                eqWeights = H./(H.*conj(H) + 10^(-self.snr/10));
+                eqWeights = conj(H)./(H.*conj(H) + 10^(-self.snr/10));
             elseif strcmpi(self.eqAlgorithm, 'zf')
                 eqWeights = 1./H;
             else
@@ -277,6 +289,39 @@ classdef ofdmModel < handle
 
             % Equalize received data
             self.rxSymbols = self.rxSymbols.*eqWeights;                
+        end
+
+        % Function plots results
+        function plotResults(self)
+            
+            % Plot BER vs SNR
+            figure(1);
+            clf;
+            semilogy(self.snrRange, self.ber, '-o', 'LineWidth', 1.5);
+
+            % Compare with reference results when rading fading is enabled
+            if self.enRayleighFading
+            
+                % Compute Eb_N0 for reference calculation. Will be lower
+                % than SNR by a factor of 2 for complex constellations
+                if ~strcmpi(self.modType,'psk') || self.modOrder ~= 2
+                    Eb_N0 = self.snrRange + 10*log10(64/52);
+                else
+                    Eb_N0 = self.snrRange;
+                end
+
+                % Plot reference BIT error rate
+                hold on;
+                ref = berfading(Eb_N0,self.modType,self.modOrder,1);
+                semilogy(self.snrRange, ref, 'LineWidth', 1.5)
+                legend('Measured', 'Reference')
+            end
+
+            % Label plot
+            xlabel('SNR (dB)');
+            ylabel('Bit Error Rate (BER)');
+            title('OFDM BER vs. SNR');
+            grid on;
         end
     end
 end
