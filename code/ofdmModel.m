@@ -19,7 +19,7 @@ classdef ofdmModel < handle
         boxcarFiltLen = 32;         % Equalization Boxcar filter length
         
         % Pilot indices (defaulted to 802.11a pilots)
-        pilotIndices = -21:2:21; %[-21, -15, -7, 7, 15, 21];
+        pilotIndices = [-21, -7, 7, 21];
     end
 
     % Private properties
@@ -332,6 +332,31 @@ classdef ofdmModel < handle
             ylabel('Bit Error Rate (BER)');
             title('OFDM BER vs. SNR');
             grid on;
+
+            % Plot spectrum of transmitted signal
+            figure(2)
+            clf;
+            pwelch(self.txSignal, [], [], [], 'centered')
+            [pxx, f] = pwelch(self.txSignal, [], [], [], 'centered');
+            plot(f/pi, db(pxx), 'LineWidth', 1.5);
+            grid on;
+            xlabel('Normalized  Frequency (\times \pi rad/sample)')
+            ylabel('Power/frequency (dB/(rad/sample))')
+            title('Power Spectral Density of Transmitted OFDM Signal');
+
+            % Plot spectrum of transmitted signal
+            figure(3)
+            clf;
+            scatter(real(self.rxSymbols(:)), imag(self.rxSymbols(:)));
+            maxXLim = max(abs(xlim));
+            maxYLim = max(abs(ylim));
+            maxLim = max([maxXLim, maxYLim]);
+            xlim([-maxLim maxLim]);
+            ylim([-maxLim maxLim]);
+            grid on;
+            title('Received Constellation Diagram at High SNR');
+            xlabel('In Phase');
+            ylabel('Quadrature');
         end
     end
 end
