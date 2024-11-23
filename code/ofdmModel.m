@@ -6,7 +6,7 @@ classdef ofdmModel < handle
         nDataCarriers = 48;         % Number of OFDM data subcarriers
         nSymbols = 1e4;             % Number of OFDM symbols
         cyclicPrefixLen = 16;       % Length of cyclic prefix
-        windowLen = 4;              % Length of window
+        windowLen = 0;              % Length of window
         snrRange = 0:2:20;          % SNR range in dB
         modOrder = 4;               % Modulation Order
         modType = 'QAM';            % Modulation Type
@@ -14,9 +14,12 @@ classdef ofdmModel < handle
         enPerfectChanEst = false;   % Enable perfect channel estimation
         interpMethod = 'linear';    % Interpolation method
         eqAlgorithm = 'mmse';       % Equalization algorithm
+        sampleRate = 10e6;          % Sample Rate (Hz)
+        maxDopplerShift = 100;      % Maximum Doppler Shift (Hz)
+        boxcarFiltLen = 32;         % Equalization Boxcar filter length
         
         % Pilot indices (defaulted to 802.11a pilots)
-        pilotIndices = [-21, -7, 7, 21];
+        pilotIndices = -21:2:21; %[-21, -15, -7, 7, 15, 21];
     end
 
     % Private properties
@@ -186,8 +189,8 @@ classdef ofdmModel < handle
             rayleighChan = comm.RayleighChannel(...
                 'PathDelays', 0,...
                 'AveragePathGains', 0,...
-                'SampleRate', 10e6,...
-                'MaximumDopplerShift', 1000);
+                'SampleRate', self.sampleRate,...
+                'MaximumDopplerShift', self.maxDopplerShift);
 
             % Initialize BER array
             self.ber = zeros(length(self.snrRange), 1);
@@ -263,19 +266,17 @@ classdef ofdmModel < handle
                 H = fadedSymbols./self.dataSymbols;
 
             % Non-ideal channel estimate
-            % Interpolate the response of the comb pilots
             else
 
+                % Interpolate the response of the comb pilots
                 H = zeros(size(self.dataSymbols));
                 for i = 1:size(H,2)
-                    Hr = interp1(real(self.rxPilots(:,i)), self.pilotIndicesWrap,...
+                    H(:,i) = interp1(self.pilotIndicesWrap, self.rxPilots(:,i),...
                         self.dataIndicesWrap, self.interpMethod, 'extrap');
-                    Hi = interp1(imag(self.rxPilots(:,i)), self.pilotIndicesWrap,...
-                        self.dataIndicesWrap, self.interpMethod, 'extrap');
-                    H(:,i) = complex(Hr,Hi);
-%                     H(:,i) = interp1(real(self.rxPilots(:,i)), self.pilotIndicesWrap,...
-%                         self.dataIndicesWrap, 'spline', 'extrap');
                 end
+
+                % Add moving average filter to lessen the effects of noise
+                H = filter(ones(1,self.boxcarFiltLen)/self.boxcarFiltLen, 1, H, [], 2);
             end
 
             % Compute EQ weights
@@ -301,14 +302,23 @@ classdef ofdmModel < handle
 
             % Compare with reference results when rading fading is enabled
             if self.enRayleighFading
-            
+
                 % Compute Eb_N0 for reference calculation. Will be lower
                 % than SNR by a factor of 2 for complex constellations
                 if ~strcmpi(self.modType,'psk') || self.modOrder ~= 2
-                    Eb_N0 = self.snrRange + 10*log10(64/52);
+                    Eb_N0 = self.snrRange - 10*log10(2);
                 else
                     Eb_N0 = self.snrRange;
                 end
+            
+                % Compute SNR offset for single carrier reference
+                % Account for inactive subcarriers and windowing
+                numActiveCarriers = self.nDataCarriers + length(self.pilotIndices);
+                snrOffset = numActiveCarriers/self.nSubcarriers;
+                snrOffset = snrOffset*mean(self.window.^2);
+                snrOffset_dB = 10*log10(snrOffset);
+
+                Eb_N0 = Eb_N0 - snrOffset_dB;
 
                 % Plot reference BIT error rate
                 hold on;
