@@ -1,4 +1,4 @@
-classdef RadarBase < handle
+classdef RadarBase < keyValueInitializer
 
     % Public class properties
     properties 
@@ -30,14 +30,6 @@ classdef RadarBase < handle
 
     % Public class methods
     methods
-
-        % Class constructor. Takes key value pair of arguments to
-        % initialize class properties. Ex: RadarBase('SNR_dB', 10)
-        function self = RadarBase(varargin)
-            for i = 1:2:nargin
-                self.(varargin{i}) = varargin{i+1};
-            end
-        end
 
         % Function runs radar model
         function run(self)

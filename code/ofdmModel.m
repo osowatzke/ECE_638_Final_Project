@@ -1,4 +1,4 @@
-classdef ofdmModel < handle
+classdef ofdmModel < keyValueInitializer
 
     % Public properties
     properties
