@@ -38,6 +38,7 @@ classdef RadarBase < keyValueInitializer
             self.getRxData();
             self.generateRdm();
             self.locateTarget();
+            self.computeMetrics();
             self.generatePlots();
         end
     end
@@ -69,7 +70,7 @@ classdef RadarBase < keyValueInitializer
         end
 
         % Function locates target in RDM and estimates
-        %  its range and velocity
+        % its range and velocity
         function locateTarget(self)
 
             % Find the range gate and doppler bin corresponding to
@@ -88,7 +89,32 @@ classdef RadarBase < keyValueInitializer
 
             % Print out estimates of target position
             fprintf('Estimated Target Position: %.2f m\n', self.targetPosEst);
-            fprintf('Estimated Target Velocity: %.2f m/s\n', self.targetVelEst);
+            fprintf('Estimated Target Velocity: %.2f m/s\n\n', self.targetVelEst);
+        end
+
+        % Function computes Radar metrics
+        function computeMetrics(self)
+
+            % Grab range slice containing peak
+            rangeSlice = self.rdm(:,self.maxDopplerBin);
+
+            % Get peak value
+            rdmPeak = max(abs(rangeSlice(self.maxRangeGate)));
+
+            % Grab peak sidelobe value
+            % Ignore range gates within +/- 3 of peak
+            ignoreGates = rdmPeak + (-3:3);
+            ignoreGates = mod(ignoreGates - 1, size(self.rdm,1)) + 1;
+            rangeGates = 1:size(self.rdm, 1);
+            sidelobes = self.rdm(all(rangeGates ~= ignoreGates.'));
+            maxSidelobe = max(abs(sidelobes));
+
+            % Compute peak sidelobe ratio
+            PSLR_dB = 20*log10(rdmPeak/maxSidelobe);
+
+            % Output peak sidelobe ratio
+            fprintf('Radar Metrics:\n')
+            fprintf('\tPSLR(dB) = %.2f\n\n', PSLR_dB)
         end
 
         % Function generates plot from computed RDMs
