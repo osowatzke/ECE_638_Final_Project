@@ -8,7 +8,7 @@ classdef RadarBase < handle
         numPulses       = 16;       % Number of Pulses in CPI
         codeLength      = 127;      % Code length
         targetRange     = 50;       % Target range (m)
-        targetVelocity  = 0;        % Target velocity (m/s)
+        targetVelocity  = 100;        % Target velocity (m/s)
         SNR_dB          = 20;       % Target SNR (dB)
         normalizedUnits = false;    % Normalized units
     end
