@@ -1,4 +1,4 @@
-classdef ofdmModel < handle
+classdef ofdmModel < keyValueInitializer
 
     % Public properties
     properties
@@ -305,32 +305,35 @@ classdef ofdmModel < handle
             clf;
             semilogy(self.snrRange, self.ber, '-o', 'LineWidth', 1.5);
 
-            % Compare with reference results when rading fading is enabled
-            if self.enRayleighFading
-
-                % Compute Eb_N0 for reference calculation. Will be lower
-                % than SNR by a factor of 2 for complex constellations
-                if ~strcmpi(self.modType,'psk') || self.modOrder ~= 2
-                    Eb_N0 = self.snrRange - 10*log10(2);
-                else
-                    Eb_N0 = self.snrRange;
-                end
-            
-                % Compute SNR offset for single carrier reference
-                % Account for inactive subcarriers and windowing
-                numActiveCarriers = self.nDataCarriers + length(self.pilotIndices);
-                snrOffset = numActiveCarriers/self.nSubcarriers;
-                snrOffset = snrOffset*mean(self.window.^2);
-                snrOffset_dB = 10*log10(snrOffset);
-
-                Eb_N0 = Eb_N0 - snrOffset_dB;
-
-                % Plot reference BIT error rate
-                hold on;
-                ref = berfading(Eb_N0,self.modType,self.modOrder,1);
-                semilogy(self.snrRange, ref, 'LineWidth', 1.5)
-                legend('Measured', 'Reference')
+            % Compute Eb_N0 for reference calculation. Will be lower
+            % than SNR by a factor of 2 for complex constellations
+            if ~strcmpi(self.modType,'psk') || self.modOrder ~= 2
+                Eb_N0 = self.snrRange - 10*log10(2);
+            else
+                Eb_N0 = self.snrRange;
             end
+        
+            % Compute SNR offset for single carrier reference
+            % Account for inactive subcarriers and windowing
+            numActiveCarriers = self.nDataCarriers + length(self.pilotIndices);
+            snrOffset = numActiveCarriers/self.nSubcarriers;
+            snrOffset = snrOffset*mean(self.window.^2);
+            snrOffset_dB = 10*log10(snrOffset);
+
+            % Get effective Eb_N0 for an individual subcarrier
+            Eb_N0 = Eb_N0 - snrOffset_dB;
+
+            % Get reference results reference results
+            if self.enRayleighFading
+                ref = berfading(Eb_N0,self.modType,self.modOrder,1);
+            else
+                ref = berawgn(Eb_N0,self.modType,self.modOrder,1); 
+            end
+
+            % Plot reference and measured data on the same axis
+            hold on;
+            semilogy(self.snrRange, ref, 'LineWidth', 1.5)
+            legend('Measured', 'Reference')
 
             % Label plot
             xlabel('SNR (dB)');
