@@ -72,13 +72,12 @@ The main purpos of the radar, estimating velocity and range of the target, is ac
     		\caption{Typical FMCW transmitted and Received signal, Time vs Frequency graph \cite{Long2019AssistingTV}}
 	\end{figure}
 	
-	Range (targer distance) can be calculated from simple formula below:
+	Range (targer distance) can be calculated from equation \ref{eq::range_calculation}. %simple formula below:
 	
-	\begin{figure}[H]
-    		\centering
-    		\fbox{\includegraphics[width=0.5\linewidth]{Range formula}}
-    		\caption{Range calculation}
-	\end{figure}
+	\begin{equation}
+		R = \frac{c_0|{\Delta}t|}{2} = \frac{c_0|{\Delta}f|}{2\left(\frac{df}{dt}\right)}
+		\label{eq::range_calculation}
+	\end{equation}
 	
 	\begin{itemize}
 	\item Co = speed of light = 3·108 m/s
@@ -252,6 +251,7 @@ The plot below represents the Bit Error Rate (BER) vs. Signal-to-Noise Ratio (SN
     
     \section {JRC}
 
+	Conflict
 
 	\end{enumerate}
 	
@@ -259,7 +259,7 @@ The plot below represents the Bit Error Rate (BER) vs. Signal-to-Noise Ratio (SN
 	\bibliographystyle {IEEEtran}
 	\bibliography {References}
 	
-		
+	\raggedbottom
 	
 	
 	%\nocite{yang_subcarrier_multiplexing}
