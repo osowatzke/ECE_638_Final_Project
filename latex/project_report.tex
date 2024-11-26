@@ -4,6 +4,8 @@
 \usepackage{blindtext}
 \usepackage{graphicx}
 \usepackage{float}
+%\usepackage{natbib}
+\usepackage{cite}
 
 \graphicspath{ {./}{./images/} }
 
@@ -59,13 +61,15 @@ Key features of FMCW are:
 	\begin{figure}[H]
     		\centering
     		\fbox{\includegraphics[width=0.9\linewidth]{FMCW Blockdiagram}}
-    		\caption{Typical FMCW blockdiagram}
+    		\caption{Typical FMCW blockdiagram \cite{9613183}}
 	\end{figure}
+	
 The main purpos of the radar, estimating velocity and range of the target, is acuratly achievable with FMCW signlas. The mathotalegy can be simply comprehented by the graph below. The range FFT provides the beat frequency to calculate the target distance and doppler FFT provides the frequncy delta between trnasmitted and received signal to calculate the target velocity. 
+	
 	\begin{figure}[H]
     		\centering
     		\fbox{\includegraphics[width=0.8\linewidth]{FMCW Freq-Time graph}}
-    		\caption{Typical FMCW transmitted and Received signal, Time vs Frequency graph}
+    		\caption{Typical FMCW transmitted and Received signal, Time vs Frequency graph \cite{Long2019AssistingTV}}
 	\end{figure}
 	
 	Range (targer distance) can be calculated from simple formula below:
@@ -131,9 +135,10 @@ Graph below is the result of mixing both Range and Doppler FFT. The Range-Dopple
 		
      \section {Communication (OFDM)}
      
-      \subsection {Background}
-      
-      In this section we skim through OFDM communicaiton protocol. Since the objective of this paper is V2V JRC our focus is on IEEE 802.11 P standard. In this section we familiarize ourself with the functionality, key features, some 802.11 P standard specificaitons and advantages of this communication topology.\par
+	 \subsection {Background}
+ 
+ 
+            In this section we skim through OFDM communicaiton protocol. Since the objective of this paper is V2V JRC our focus is on IEEE 802.11 P standard. In this section we familiarize ourself with the functionality, key features, some 802.11 P standard specificaitons and advantages of this communication topology.\par
     \textbf{  802.11 P} is specifically designed for wireless access in vehicular environments (WAVE) and is widely used for V2V applications within the automotive industry.
       
       \begin{itemize}
@@ -169,18 +174,26 @@ Block diagram below is a typical OFDM process from input bit steam, modulation, 
 	\begin{figure}[H]
 	    		\centering
 	    		\fbox{\includegraphics[width=0.9\linewidth]{OFDM subcarriers}}
-	    		\caption{OFDM block diagram}
+	    		\caption{OFDM subcarriers}
+		\end{figure}
+		
+One othere channels' property needs to be analysed and compared is the channel capacity. We use the simple fromula below to calculate the channel capacity. 
+Where H (m, n) , Hmn is the channel frequency response of the n symbol on the m sub carrier. 
+	
+	\begin{figure}[H]
+	    		\centering
+	    		\fbox{\includegraphics[width=0.9\linewidth]{Capacity Formula}}
+	    		\caption{OFDM Capacity calculation}
 		\end{figure}
 
-
-      \subsection {Simulation and Performance}
+\subsection {Simulation and Performance}
       
+      We have developed comprehensive MATLAB code to evaluate and plot the Bit Error Rate (BER) versus SNR across various channel conditions.. Evaluating diverse channel characteristics is key to achieving a comprehensive and unbiased analysis in our study. The summary implemntation of a complete OFDM simulation model parameters and results for AWGN, Rayleight Fading and perfect channel provided below. 
       
-. Below are the steps to simulate a standard OFDM signal and calculate the Bit Error Rate.
 \begin{itemize}
-\item Random bits are generated and modulated using QPSK. 
-\item Symbols are mapped onto sub-carriers, excluding pilots and zero carriers.
-\item Pilots are inserted at regular intervals and zero carriers are placed at the edges of the spectrum.
+\item 64 Subcarriers, 48 Data carriers, 10 K Symbols adn 16 Cyclic-prefix
+\item 4th order QAM modulation and 10 MHz Sample rate
+\item Pilots are inserted at standard intervals and zero carriers are placed at the edges of the spectrum.
 \item The IFFT converts the frequency domain symbols to the time domain. 
 \item A Hamming window is applied to each OFDM symbol to reduce spectral leakage. 
 \item A cyclic prefix is added to the windowed OFDM symbols to mitigate ISI. 
@@ -189,30 +202,73 @@ Block diagram below is a typical OFDM process from input bit steam, modulation, 
 \item The data sub-carriers are extracted and demodulated from FFT, results in frequency domain. 
 \item The received bits are compared to the transmitted bits to calculate the BER vs SNR values. 
 \end{itemize}
+The power spectral density of trasmitted OfDM signal shown in the graph below. The flat region conrresponds to the active subcarriers of the OFDM signal (each subcarrier carries equal power and spans the same bandwidth). There is a dip null in the center correspoinding to the DC (zero frequency) subcarrier which used to avoid interference. The dips at the edges are the guard bands to rduce spectral leakage and interference with adjacent channels.
 
 	\begin{figure}[H]
     		\centering
-    		\fbox{\includegraphics[width=0.8\linewidth]{OFDM_BER.png}}
-    		\caption{OFDM BER vs SNR}
+    		\fbox{\includegraphics[width=0.8\linewidth]{OFDM Power spectral density}}
+    		\caption{OFDM Power Spectral Density}
 	\end{figure}
+
+  The graph below is a constellation coresponding to 4th order QAM with AWGN channel propery.  The points are tightly packed around the ideal constellation locations, indicating that noise has minimal impact on the received signal (high SNR conditions).This diagram demonstrates that the system performs well under high SNR conditions, maintaining accurate symbol transmission and reception.
+    
+    
+     \begin{figure}[H]
+		\centering
+    		\fbox{\includegraphics[width=0.8\linewidth]{OFDM AWGN Constellation}}
+    		\caption{OFDM Constellation Diagram  (AWGN) }
+  	  \end{figure}
+    
+    The BER decreases exponentially as the SNR increases, which is typical for digital communication systems. The close alignment of the measured and reference curves validates the simulation accuracy and ensures the OFDM system is working as intended. The system shows robust performance at higher SNR values, achieving nearly error-free communication. This analysis is crucial for validating the system and ensuring its effectiveness in real-world applications.
+    
+    
+         \begin{figure}[H]
+		\centering
+    		\fbox{\includegraphics[width=0.8\linewidth]{OFDM AWGN BER vs SNR}}
+    		\caption{OFDM BER vs. SNR (AWGN) }
+  	  \end{figure}
+    
+
+  The results below are from the same signal charactristics transmitted through Rayleigh fading channel. The points are tightly clustered around the ideal constellation positions (caused by delay fading) that implying effective channel conditions and robust equalization process. The constellation diagram results indicates that the system operates in a highl SNR environment where noise has minimal impact. 
 
 	\begin{figure}[H]
 		\centering
-    		\fbox{\includegraphics[width=0.8\linewidth]{OFDM_PowerSpectralDensity.png}}
-    		\caption{OFDM Power Spectral Density}
-    \end{figure}
+    		\fbox{\includegraphics[width=0.8\linewidth]{OFDM Constellation Diagram}}
+    		\caption{OFDM Constellation Diagram  (Rayleigh)}
+  	  \end{figure}
 
+The plot below represents the Bit Error Rate (BER) vs. Signal-to-Noise Ratio (SNR) performance of an OFDM system. It compares the measured BER from the simulation against the theoretical (reference) BER for the given modulation scheme and channel model. Both curves show a monotonic decrease in BER with increasing SNR, which is expected as higher SNR improves the signal quality and reduces errors. Around 6-10 dB, the curve begins to drop sharply, indicating the SNR threshold beyond which the system transitions from error-prone to error-free performance. This plot confirms that the OFDM system performs reliably under high SNR and aligns closely with theoretical predictions.
+    
+    \begin{figure}[H]
+		\centering
+    		\fbox{\includegraphics[width=0.8\linewidth]{OFDM BER vs SNR}}
+    		\caption{OFDM BER vs. SNR}
+  	  \end{figure}
+    
+
+    
+    
+    
+    
     \section {JRC}
+
 
 	\end{enumerate}
 	
-	\nocite{yang_subcarrier_multiplexing}
-	\bibliography{sources}{}
-    \bibliographystyle{ieeetr}
+	
+	\bibliographystyle {IEEEtran}
+	\bibliography {References}
+	
+		
+	
+	
+	%\nocite{yang_subcarrier_multiplexing}
+	%\bibliography{sources}{}
+   % \bibliographystyle{ieeetr}
   
 \end{document}
 
-\begin{equation}
-y = x^2
-\end{equation}
-\Delta{R} = \frac{c}{2\Beta}
+%\begin{equation}
+%y = x^2
+%\end{equation}
+%\Delta{R} = \frac{c}{2\Beta}
