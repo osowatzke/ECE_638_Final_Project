@@ -4,6 +4,8 @@ classdef ofdmModel2 < keyValueInitializer
         modOrder         = OFDM_DEFAULT.MOD_ORDER;
         nSubcarriers     = OFDM_DEFAULT.NSUBCARRIERS;
         nDataCarriers    = OFDM_DEFAULT.NDATA_CARRIERS;
+        nPilotCarriers   = OFDM_DEFAULT.NPILOT_CARRIERS;
+        autoplacePilots  = OFDM_DEFAULT.AUTOPLACE_PILOTS;
         pilotCarriers    = OFDM_DEFAULT.PILOT_CARRIERS;
         nullDcSubcarrier = OFDM_DEFAULT.NULL_DC_SUBCARRIER;
         cyclicPrefixLen  = OFDM_DEFAULT.CYCLIC_PREFIX_LEN;
@@ -54,6 +56,8 @@ classdef ofdmModel2 < keyValueInitializer
                 'modOrder',         self.modOrder,...
                 'nSubcarriers',     self.nSubcarriers,...
                 'nDataCarriers',    self.nDataCarriers,...
+                'nPilotCarriers',   self.nPilotCarriers,...
+                'autoplacePilots',  self.autoplacePilots,...
                 'pilotCarriers',    self.pilotCarriers,...
                 'nullDcSubcarrier', self.nullDcSubcarrier,...
                 'cyclicPrefixLen',  self.cyclicPrefixLen,...
@@ -111,8 +115,8 @@ classdef ofdmModel2 < keyValueInitializer
             end
         
             % Determine the number of non-zero carriers
-            nPilotCarriers = length(self.pilotCarriers);
-            nonZeroCarriers = self.nDataCarriers + nPilotCarriers;
+            nPilots = length(self.transmitter.pilotIndices);
+            nonZeroCarriers = self.nDataCarriers + nPilots;
         
             % The SNR on each active subcarrier will be higher because the energy
             % is distributed over fewer subcarriers

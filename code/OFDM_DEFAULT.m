@@ -5,7 +5,9 @@ classdef OFDM_DEFAULT
         NSUBCARRIERS       = 64;
         NDATA_CARRIERS     = 48;
         PILOT_CARRIERS     = [-21, -7, 7, 21];
+        NPILOT_CARRIERS    = length(OFDM_DEFAULT.PILOT_CARRIERS);
         NULL_DC_SUBCARRIER = true;
+        AUTOPLACE_PILOTS   = false;
         CYCLIC_PREFIX_LEN  = 16;
         WINDOW_LEN         = 4;
         USE_IDEAL_CHAN_EST = true;
