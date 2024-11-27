@@ -1,3 +1,13 @@
+% Class defines an OFDM transmitter. It can be initialized as 
+% ofdmTransmitter('Name','Value') where 'Name' and 'Value' are
+% property names and property values.
+% 
+% Ex: ofdmTx = ofdmTransmitter('modType','qam')
+%
+% Once class has been instantiated, it can be run as follows:
+% 
+% txSignal = ofdmTx.run(bits)
+%
 classdef ofdmTransmitter < keyValueInitializer
     properties
         modType          = OFDM_DEFAULT.MOD_TYPE;
@@ -22,6 +32,7 @@ classdef ofdmTransmitter < keyValueInitializer
     methods
         function txSignal = run(self, bits)
 
+            % Determine indices of pilot and data carriers
             [self.dataIndices, self.pilotIndices] = getSubcarriers(...
                 'nSubcarriers',     self.nSubcarriers,...
                 'nDataCarriers',    self.nDataCarriers,...
@@ -30,31 +41,44 @@ classdef ofdmTransmitter < keyValueInitializer
                 'pilotCarriers',    self.pilotCarriers,...
                 'nullDcSubcarrier', self.nullDcSubcarrier);
 
+            % Modulate bits
             self.dataSymbols = modulateBits(bits,...
                 self.modType, self.modOrder);
 
+            % Reshape into an array of size
+            % nDataCarriers x nSymbols
             self.dataSymbols = reshape(self.dataSymbols,...
                 self.nDataCarriers, []);
 
+            % Determine the number of pilots
             numPilots = length(self.pilotIndices);
+
+            % Pilots are pseudo-random BPSK symbols
             s = RandStream('mt19937ar','Seed',0);
             self.pilotSymbols = randi(s, [0 1],...
                 numPilots, size(self.dataSymbols, 2));
             self.pilotSymbols = cos(pi*self.pilotSymbols);
 
+            % Allocate empty array of OFDM symbols
             self.symbols = zeros(self.nSubcarriers,...
                 size(self.dataSymbols, 2));
 
+            % Place data symbols on data carriers
             self.symbols(self.dataIndices, :) = self.dataSymbols;
 
+            % Place pilot symbols on pilot carriers
             self.symbols(self.pilotIndices, :) = self.pilotSymbols;
 
+            % Perform an IFFT to modulate carriers
             txSignal = ifft(self.symbols);
 
+            % Add cyclic prefix. Cyclic prefix is extended by
+            % 2*windowLen for ramp-up/down between symbols
             txSignalCP = addCylicPrefix(txSignal,...
                 'cyclicPrefixLen', self.cyclicPrefixLen,...
                 'windowLen', self.windowLen);
 
+            % Apply raised cosine window to symbols
             self.window = raisedCosineWindow(self.nSubcarriers,...
                 self.cyclicPrefixLen, self.windowLen);
 
