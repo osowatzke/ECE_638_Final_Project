@@ -4,7 +4,7 @@ classdef ofdmModulator < keyValueInitializer
         modOrder        = OFDM_DEFAULT.MOD_ORDER;
         nSubcarriers    = OFDM_DEFAULT.NSUBCARRIERS;
         nDataCarriers   = OFDM_DEFAULT.NDATA_CARRIERS;
-        pilotIndices    = OFDM_DEFAULT.PILOT_INDICES;
+        pilotCarriers   = OFDM_DEFAULT.PILOT_CARRIERS;
         useDcSubcarrier = OFDM_DEFAULT.USE_DC_SUBCARRIER;
         cyclicPrefixLen = OFDM_DEFAULT.CYCLIC_PREFIX_LEN;
         windowLen       = OFDM_DEFAULT.WINDOW_LEN;
@@ -12,6 +12,7 @@ classdef ofdmModulator < keyValueInitializer
     properties(SetAccess=protected)
         dataIndices;
         dataSymbols;
+        pilotIndices;
         pilotSymbols;
         symbols;
         window;
