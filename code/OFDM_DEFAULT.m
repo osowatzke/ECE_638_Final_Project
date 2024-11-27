@@ -11,7 +11,7 @@ classdef OFDM_DEFAULT
         USE_IDEAL_CHAN_EST = true;
         EQ_ALGORITHM       = 'mmse';
         INTERP_METHOD      = 'linear';
-        SMOOTHING_FILTER   = @(x)filter(ones(1,16), 1, x);
+        SMOOTHING_FILTER   = @(x)filter(ones(1,32), 1, x, [], 2);
         EN_RAYLEIGH_FADING = false;
         MAX_DOPPLER_SHIFT  = 100;
         SAMPLE_RATE        = 10e6;

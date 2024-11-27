@@ -44,7 +44,7 @@ classdef ofdmReceiver < keyValueInitializer
                 'pilotIndices',     self.pilotIndices,...
                 'dataIndices',      self.dataIndices);
 
-            self.eqSymbols = dataSymbols; %equalizer.run(dataSymbols, rxPilots);
+            self.eqSymbols = equalizer.run(dataSymbols, rxPilots);
 
             bits = demodulateSymbols(self.eqSymbols,...
                 self.modType, self.modOrder);

@@ -18,7 +18,8 @@ classdef ofdmChannel < keyValueInitializer
                 'MaximumDopplerShift', self.maxDopplerShift);
 
             if self.enRayleighFading
-                self.fadedSignal = rayleighChan(txSignal);
+                self.fadedSignal = rayleighChan(txSignal(:));
+                self.fadedSignal = reshape(self.fadedSignal, size(txSignal));
             else
                 self.fadedSignal = txSignal;
             end
