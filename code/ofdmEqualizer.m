@@ -4,7 +4,7 @@ classdef ofdmEqualizer < keyValueInitializer
         smoothingFilter = OFDM_DEFAULT.SMOOTHING_FILTER;
         useIdealChanEst = OFDM_DEFAULT.USE_IDEAL_CHAN_EST;
         eqAlgorithm     = OFDM_DEFAULT.EQ_ALGORITHM;
-        SNR_dB          = [];
+        SNR_dB          = OFDM_DEFAULT.SNR_DB(end);
         txPilots        = [];
         fadedSymbols    = [];
         txSymbols       = [];
@@ -12,9 +12,9 @@ classdef ofdmEqualizer < keyValueInitializer
         dataIndices     = [];
     end
     methods
-        function eqSymbols = run(dataSymbols, rxPilots)            
+        function eqSymbols = run(self, dataSymbols, rxPilots)            
             H = self.chanEst(rxPilots);    
-            eqWeights = computeEqWeights(H);
+            eqWeights = self.computeEqWeights(H);
             eqSymbols = dataSymbols.*eqWeights;
         end
     end
@@ -32,9 +32,9 @@ classdef ofdmEqualizer < keyValueInitializer
 
         function H = chanEst(self, rxPilots)
             if self.useIdealChanEst
-                H = self.idealChanEst(self);
+                H = self.idealChanEst();
             else
-                H = self.pilotChanEst(self, rxPilots);
+                H = self.pilotChanEst(rxPilots);
             end
         end
 
