@@ -103,7 +103,7 @@ classdef RadarBase < keyValueInitializer
 
             % Grab peak sidelobe value
             % Ignore range gates within +/- 3 of peak
-            ignoreGates = rdmPeak + (-3:3);
+            ignoreGates = self.maxRangeGate + (-3:3);
             ignoreGates = mod(ignoreGates - 1, size(self.rdm,1)) + 1;
             rangeGates = 1:size(self.rdm, 1);
             sidelobes = self.rdm(all(rangeGates ~= ignoreGates.'));
