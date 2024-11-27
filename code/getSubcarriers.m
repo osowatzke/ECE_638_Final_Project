@@ -4,7 +4,8 @@ function [dataIndices, pilotIndices, zeroIndices] = ...
     args = struct(...
         'nSubcarriers', 64,...
         'nDataCarriers', 48,...
-        'pilotIndices', [-21, -7, 7, 21]);
+        'pilotIndices', [-21, -7, 7, 21], ...
+        'useDcSubcarrier', false);
 
     for i = 1:2:length(varargin)
         args.(varargin{i}) = varargin{i+1};
@@ -17,11 +18,18 @@ function [dataIndices, pilotIndices, zeroIndices] = ...
     % Compute indices of zero carriers. 1 zero carrier at center of FFT.
     % Other zero carriers distributed at edges of FFT.
     if (nZeroCarriers > 0)
-        nZeroCarriersLow = ceil((nZeroCarriers-1)/2);
-        nZeroCarriersHigh = nZeroCarriers - nZeroCarriersLow - 1;
+        zeroIndices = [];
+        
+        if ~args.useDcSubcarrier
+            zeroIndices = 0;
+            nZeroCarriers = nZeroCarriers - 1; 
+        end
+        
+        nZeroCarriersLow = ceil(nZeroCarriers/2);
+        nZeroCarriersHigh = nZeroCarriers - nZeroCarriersLow;
         zeroIndicesLow = -args.nSubcarriers/2 + (0:(nZeroCarriersLow-1));
         zeroIndicesHigh = args.nSubcarriers/2 - (nZeroCarriersHigh:-1:1);
-        zeroIndices = [zeroIndicesLow, 0, zeroIndicesHigh];
+        zeroIndices = [zeroIndicesLow, zeroIndices, zeroIndicesHigh];
     
     % Allow user to bypass zero subcarriers
     else
