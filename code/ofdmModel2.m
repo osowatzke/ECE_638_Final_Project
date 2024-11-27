@@ -23,23 +23,32 @@ classdef ofdmModel2 < keyValueInitializer
         transmitter      = [];
         channel          = [];
         receiver         = [];
+        bits             = [];
         txSignal         = [];
     end
     methods
 
         % Function generates random bits
-        function bits = genRandomBits(self)
+        function genRandomBits(self)
 
             % Determine the number of bits to generate
             bitsPerSymbol = log2(self.modOrder);
             numBits = self.nSymbols * self.nDataCarriers * bitsPerSymbol;
 
             % Generate random bits
-            bits = randi([0 1], numBits, 1);
+            self.bits = randi([0 1], numBits, 1);
         end
 
         function run(self)
-            
+            self.createTxSignal();
+            self.runReceiver();
+            self.plotResults();
+        end
+
+        function createTxSignal(self)
+
+            self.genRandomBits();
+
             self.transmitter = ofdmTransmitter(...
                 'modType',          self.modType,...
                 'modOrder',         self.modOrder,...
@@ -50,9 +59,11 @@ classdef ofdmModel2 < keyValueInitializer
                 'cyclicPrefixLen',  self.cyclicPrefixLen,...
                 'windowLen',        self.windowLen);
 
-            bits = self.genRandomBits();
+            self.txSignal = self.transmitter.run(self.bits);
 
-            self.txSignal = self.transmitter.run(bits);
+        end
+
+        function runReceiver(self)
 
             self.ber = zeros(size(self.SNR_dB));
 
@@ -84,9 +95,9 @@ classdef ofdmModel2 < keyValueInitializer
     
                 rxBits = self.receiver.run(rxSignal);
 
-                self.ber(i) = mean(rxBits ~= bits);
+                self.ber(i) = mean(rxBits ~= self.bits);
+
             end
-            self.plotResults();
         end
 
         function refBer = computeRefBer(self)
