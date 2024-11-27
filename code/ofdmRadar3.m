@@ -23,6 +23,9 @@ classdef ofdmRadar3 < RadarBase
             if ~any(strcmp(keys,'sampleRate'))
                 self.sampleRate = OFDM_DEFAULT.SAMPLE_RATE;
             end
+            if ~any(strcmp(keys,'carrierFreq'))
+                self.carrierFreq = OFDM_DEFAULT.CARRIER_FREQ;
+            end
         end
     end
     methods(Access=protected)

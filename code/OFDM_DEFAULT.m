@@ -5,7 +5,7 @@ classdef OFDM_DEFAULT
         NSUBCARRIERS       = 64;
         NDATA_CARRIERS     = 48;
         PILOT_CARRIERS     = [-21, -7, 7, 21];
-        NULL_DC_SUBCARRIER = false;
+        NULL_DC_SUBCARRIER = true;
         CYCLIC_PREFIX_LEN  = 16;
         WINDOW_LEN         = 4;
         USE_IDEAL_CHAN_EST = true;
@@ -14,6 +14,7 @@ classdef OFDM_DEFAULT
         SMOOTHING_FILTER   = @(x)filter(ones(1,32)/32, 1, x, [], 2);
         EN_RAYLEIGH_FADING = false;
         MAX_DOPPLER_SHIFT  = 100;
+        CARRIER_FREQ       = 5.9e9;
         SAMPLE_RATE        = 10e6;
         NSYMBOLS           = 1000;
         SNR_DB             = 0:2:20;
