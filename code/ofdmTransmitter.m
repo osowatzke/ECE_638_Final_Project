@@ -9,6 +9,8 @@
 % txSignal = ofdmTx.run(bits)
 %
 classdef ofdmTransmitter < keyValueInitializer
+
+    % Public class properties
     properties
         modType          = OFDM_DEFAULT.MOD_TYPE;
         modOrder         = OFDM_DEFAULT.MOD_ORDER;
@@ -21,6 +23,8 @@ classdef ofdmTransmitter < keyValueInitializer
         cyclicPrefixLen  = OFDM_DEFAULT.CYCLIC_PREFIX_LEN;
         windowLen        = OFDM_DEFAULT.WINDOW_LEN;
     end
+
+    % Read-only properties
     properties(SetAccess=protected)
         dataIndices;
         dataSymbols;
@@ -29,7 +33,10 @@ classdef ofdmTransmitter < keyValueInitializer
         symbols;
         window;
     end
+
+    % Public class methods
     methods
+        
         function txSignal = run(self, bits)
 
             % Determine indices of pilot and data carriers
