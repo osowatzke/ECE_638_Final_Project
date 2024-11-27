@@ -72,6 +72,17 @@ The main purpos of the radar, estimating velocity and range of the target, is ac
     		\caption{Typical FMCW transmitted and Received signal, Time vs Frequency graph \cite{Long2019AssistingTV}}
 	\end{figure}
 	
+
+Some of Radar's perform metrics of interest that we are going to analize in this paper include but are not limited to:
+
+\begin{itemize}
+\item Received SNR
+\item Maximum Resolvable Range
+\item Range Resolution
+\item Doppler Tolerance
+\item Peak Sidelobe Level (PSL)
+\end{itemize}
+
 	Range (targer distance) can be calculated from equation \ref{eq::range_calculation}. %simple formula below:
 	
 	\begin{equation}
@@ -87,6 +98,23 @@ The main purpos of the radar, estimating velocity and range of the target, is ac
 	\item df/dt = frequency shift per unit of time
 	\end{itemize}
 
+Other critical parameters to consider for a radar performance are range resolution and Doppler/range ambiguity. 
+Maximum unambiguous range is calculated from formula below:
+
+	\begin{equation}
+		R_{max} = \frac{c_0}{2.PRF}
+		\label{eq:: range ambiguity_calculation}
+	\end{equation}
+
+Maximum unambiguous Doppler velocity is calculated from formula below:
+
+\begin{equation}
+		V_{max} = \frac{PRF.\lambda}{4}
+		\label{eq:: Doppler ambiguity_calculation}
+	\end{equation}
+  
+  Where PRF is Pulse Repetition Frequency (number of pulse per second).
+
 In the interest of comparing FMCW with JRC methode, we outline few advantages of FMCW in radar.
 	\begin{itemize}
 		\item High range resolution
@@ -96,7 +124,10 @@ In the interest of comparing FMCW with JRC methode, we outline few advantages of
 		\item Low power consumption
 	\end{itemize}
 	
-\subsection {Simulation and Performance}
+
+
+
+	\subsection {Simulation and Performance}
 
 In this section we provide the results of the FMCW radar simulation that coded with Matlab. The code written programaticaly to allow us easily change the parameters to match the JRC wave and channel properties. This is necessery to have the comprehensive and fair comparison between FMCW and JRC performance. 
 The results below are extracted from the FMCW  radar simulation with parameter below:
@@ -176,13 +207,27 @@ Block diagram below is a typical OFDM process from input bit steam, modulation, 
 	    		\caption{OFDM subcarriers}
 		\end{figure}
 		
-One othere channels' property needs to be analysed and compared is the channel capacity. We use the simple fromula below to calculate the channel capacity. 
-Where H (m, n) , Hmn is the channel frequency response of the n symbol on the m sub carrier. 
+Some of OFDM's perform metrics of interest that we are going to analize in this paper include but are not limited to:
+
+\begin{itemize}
+\item Received SNR
+\item Bit Error Rate (BER)
+\item Channel Capacity
+\end{itemize}
+
+One channel's property needs to be analysed and compared is the channel capacity. We use the simple fromula below (Shannon-Hartley theorem) to calculate the channel capacity. 
+Where Bk is the bandwidth of the k-th subcarrier, Pk, transmit power, Hk, frequency response magnitude and Nk is a noise power.   
+%Where H (m, n) , Hmn is the channel frequency response of the n symbol on the m sub carrier. 
 	
-		\begin{equation}
-	    		C_{m,n} = \text{log}_2\left(1 + \text{SNR}|H(m,n)|^2\right)
+		%\begin{equation}
+		%	    		C_{m,n} = \text{log}_2\left(1 + \text{SNR}|H(m,n)|^2\right)
+	    	%	\label{eq:ofdm_capacity}
+		%\end{equation}
+
+			\begin{equation}
+			C_{k} = B_{k}.\text{log}_2\left(1 +\frac{ \text P_{k}.|H_{k}|^2}{N_{k}}\right)
 	    		\label{eq:ofdm_capacity}
-		\end{equation}
+	    		\end{equation}
 
 \subsection {Simulation and Performance}
       
@@ -242,9 +287,27 @@ The plot below represents the Bit Error Rate (BER) vs. Signal-to-Noise Ratio (SN
     		\fbox{\includegraphics[width=0.8\linewidth]{OFDM BER vs SNR}}
     		\caption{OFDM BER vs. SNR}
   	  \end{figure}    
+  	  
+  	  For the given parameter, B total=10 MHz, N subcarriers=64, N data=48, P total =1 W (assumed for simplicity) and No=1 nW/Hz, the total channels capacity for given OFDM  with AWGN is around 99.74 Mbps. \par
+  	 It is important to highlight the cyclic prefix reduces the effective data rate, which slightly decreases the channel capacity. Adjust for this overhead if needed.
+ 
+  	  
     
     \section {JRC}
-	
+		 \subsection {Background}
+		 
+ The convergence of radar and communication systems, often referred to as joint radar-communication (JRC), has emerged due to several technological and practical motivations. Here are the primary reasons why radar and communication systems are being integrated:
+ 
+ \begin{itemize}
+ \item Spectrum Sharing adn Efficiency (coexisting within the same frequency band)
+\item Shared Hardware
+\item Autonomous Vehicles
+\item Energy Efficiency		 
+\end{itemize}		 
+		 
+		 
+		 
+		 
 	\bibliographystyle {IEEEtran}
 	\bibliography {References}
 	
@@ -254,7 +317,3 @@ The plot below represents the Bit Error Rate (BER) vs. Signal-to-Noise Ratio (SN
   
 \end{document}
 
-%\begin{equation}
-%y = x^2
-%\end{equation}
-%\Delta{R} = \frac{c}{2\Beta}
