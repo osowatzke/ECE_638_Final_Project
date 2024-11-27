@@ -8,8 +8,6 @@ classdef ofdmRadar3 < RadarBase
         nullDcSubcarrier = OFDM_DEFAULT.NULL_DC_SUBCARRIER;
         cyclicPrefixLen  = OFDM_DEFAULT.CYCLIC_PREFIX_LEN;
         windowLen        = OFDM_DEFAULT.WINDOW_LEN;
-        %sampleRate       = OFDM_DEFAULT.SAMPLE_RATE;
-        %SNR_dB           = OFDM_DEFAULT.SNR_DB;
         fastTimeWin      = @(x)chebwin(x,80);
         slowTimeWin      = @(x)chebwin(x,80);
     end
@@ -17,6 +15,15 @@ classdef ofdmRadar3 < RadarBase
         transmitter      = [];
         bits             = [];
         Fmf              = [];
+    end
+    methods
+        function self = ofdmRadar3(varargin)
+            self@RadarBase(varargin{:})
+            keys = varargin(1:2:end);
+            if ~any(strcmp(keys,'sampleRate'))
+                self.sampleRate = OFDM_DEFAULT.SAMPLE_RATE;
+            end
+        end
     end
     methods(Access=protected)
         % Function generates random bits
