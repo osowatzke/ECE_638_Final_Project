@@ -1,3 +1,21 @@
+% Function determines the indices of data carriers, pilot carriers,
+% and zero carriers
+%
+% Syntax:
+%   [dataIdx, pilotIdx, zeroIdx] = getSubcarriers(Name,Value)
+%   
+% 'Name' and 'Value' specify key value pairs. Valid keys are listed below:
+%
+%   'nSubcarriers'      Number of subcarriers
+%   'nDataCarriers',    Number of data carriers
+%   'nPilotCarriers'    Number of pilot carriers
+%   'autoPlacePilots'   Specifies whether to auto place pilots
+%   'pilotCarriers'     Pilot carriers
+%   'nullDcSubcarrier'  Specifies whether DC subcarrier is null
+%
+% Note that the nPilotCarriers is only used if autoPlacePilots==true.
+% Conversely, pilotCarriers is only used if autoPlacePilots==false.
+%
 function [dataIndices, pilotIndices, zeroIndices] = ...
     getSubcarriers(varargin)
     
