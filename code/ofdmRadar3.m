@@ -1,4 +1,6 @@
 classdef ofdmRadar3 < RadarBase
+    
+    % Public properties
     properties
         modType          = OFDM_DEFAULT.MOD_TYPE;
         modOrder         = OFDM_DEFAULT.MOD_ORDER;
@@ -13,24 +15,43 @@ classdef ofdmRadar3 < RadarBase
         fastTimeWin      = @(x)chebwin(x,80);
         slowTimeWin      = @(x)chebwin(x,80);
     end
+
+    % Read-only properties
     properties (SetAccess=protected)
         transmitter      = [];
         bits             = [];
         Fmf              = [];
     end
+
+    % Public methods
     methods
+
+        % Class constructor
         function self = ofdmRadar3(varargin)
+
+            % Call superclass constructor method
             self@RadarBase(varargin{:})
+
+            % Get the name of properties overwritten in the constructor
             keys = varargin(1:2:end);
+
+            % If sample rate was not overridden by user
+            % Default to OFDM sample rate
             if ~any(strcmp(keys,'sampleRate'))
                 self.sampleRate = OFDM_DEFAULT.SAMPLE_RATE;
             end
+
+            % If carrier frequency was not overriden by user
+            % Default to OFDM carrier frequency
             if ~any(strcmp(keys,'carrierFreq'))
                 self.carrierFreq = OFDM_DEFAULT.CARRIER_FREQ;
             end
         end
     end
+
+    % Protected class methods
     methods(Access=protected)
+
         % Function generates random bits
         function genRandomBits(self)
 
@@ -41,13 +62,31 @@ classdef ofdmRadar3 < RadarBase
             % Generate random bits
             self.bits = randi([0 1], numBits, 1);
         end
+
+        % Function computes the clas parameters
         function getParameters(self)
-            self.priSamples = self.nSubcarriers + self.cyclicPrefixLen + ...
-                2*self.windowLen;
+
+            % Determine the PRI length in samples
+            % Should be the same as OFDM symbol length
+            self.priSamples = self.nSubcarriers + ...
+                self.cyclicPrefixLen + 2*self.windowLen;
+
+            % Determine corresponding PRF length
+            % Overrides PRF defined in radar base class
             self.PRF = self.sampleRate/self.priSamples;
+
+            % Determine dependent parameters
+            % Uses updated PRF result
             getParameters@RadarBase(self);
         end
+
+        % Function computes the radar's transmitted waveform
         function getTxWaveform(self)
+
+            % Create random stream of bits
+            self.genRandomBits();
+
+            % Create an OFDM transmitter object
             self.transmitter = ofdmTransmitter(...
                 'modType',          self.modType,...       
                 'modOrder',         self.modOrder,... 
@@ -60,17 +99,23 @@ classdef ofdmRadar3 < RadarBase
                 'cyclicPrefixLen',  self.cyclicPrefixLen,...        
                 'windowLen',        self.windowLen);
 
-            self.genRandomBits();
+            % Create the transmitted waveform
             self.txWaveform = self.transmitter.run(self.bits);
 
-            % Save FFT of matched filter
+            % Determine FFT of matched filter
+            % Should invert the spectrum of all nonzero symbols
             self.Fmf = zeros(size(self.transmitter.symbols));
             self.Fmf(self.transmitter.dataIndices,:) = ...
                 1./self.transmitter.dataSymbols;
             self.Fmf(self.transmitter.pilotIndices,:) = ...
                 1./self.transmitter.pilotSymbols;
 
-            % Account for padded symbols in Cyclic Prefix
+            % Determine matched filter w.r.t. end of symbol. We sample
+            % at the end of the symbol to ensure the signal we receive
+            % is a circularly shifted copy of the transmission.
+
+            % Employ DFT property to determine FFT of matched filter
+            % at end of symbol. Delay by half of cyclic prefix length
             m = self.cyclicPrefixLen/2;
             k = (0:(size(self.Fmf,1)-1)).';
             self.Fmf = self.Fmf.*exp(-1i*2*pi*m*k/self.nSubcarriers);
