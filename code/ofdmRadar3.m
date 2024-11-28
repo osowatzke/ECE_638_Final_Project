@@ -120,49 +120,88 @@ classdef ofdmRadar3 < RadarBase
             k = (0:(size(self.Fmf,1)-1)).';
             self.Fmf = self.Fmf.*exp(-1i*2*pi*m*k/self.nSubcarriers);
         end
+
+        % Function computes the radar's received data
         function getRxData(self)
             
+            % Determine what gate the return will land in
             targetRangeGate = round(self.targetRange/self.rgSize);
 
+            % Normalize the doppler frequency
             doppFreqNorm = self.dopplerFreq/self.sampleRate;
 
+            % Allocate an empty array for the received data
             self.rxData = zeros(1, numel(self.txWaveform));
+
+            % Determine time axis for the CPI
             n = (0:(length(self.rxData)-1));
 
+            % Received signal is superposition of all target returns
+            % Each target return is a delay and doppler shifted
+            % copy of the transmitted waveform
             for i = 1:length(self.txWaveform)
                 self.rxData = self.rxData + [zeros(1,targetRangeGate),...
                     self.txWaveform(1:(end-targetRangeGate))].*...
                     exp(1i*2*pi*doppFreqNorm*n);
             end
 
-            self.rxData = reshape(self.rxData, size(self.txWaveform));
+            % Add complex gaussian noise to return
             self.rxData = awgn(self.rxData, self.SNR_dB, 'measured');
+
+            % Reshape into a symbolLen x pulses matrix
+            self.rxData = reshape(self.rxData, size(self.txWaveform));
         end
+
+        % Function generates an RDM from the received signal
         function generateRdm(self)
+
+            % Determine where to sample the received signal. Sample at
+            % the end of the symbol to ensure the signal we receive
+            % is a circularly shifted copy of the transmission.
             startIdx = self.transmitter.cyclicPrefixLen +...
                 self.transmitter.windowLen + 1;
             endIdx = startIdx + self.nSubcarriers - 1;
+
+            % Select relevant gates of the signal for FFT processing
+            % and perform the FFT
             Frx = fft(self.rxData(startIdx:endIdx,:));
 
+            % Perform a circular convolution with the matched filter
+            % via a frequency domain multiplication
             Fmfout = Frx.*self.Fmf;
 
+            % Determine the number of active carriers
             numActiveCarriers = self.nDataCarriers +...
                 length(self.transmitter.pilotIndices);
+
+            % Extend by 1 if the DC carrier is null
             if self.nullDcSubcarrier
                 numActiveCarriers = numActiveCarriers + 1;
             end
+
+            % Create a window for all the non-zero carriers
             window = self.fastTimeWin(numActiveCarriers);
 
-            numZeros = self.nSubcarriers-numActiveCarriers;
+            % Determine how many zeros have to be added to the window
+            numZeros = self.nSubcarriers - numActiveCarriers;
+
+            % Place an even number of zero at top and bottom of symbol
             numZerosLow = ceil(numZeros/2);
             numZerosHigh = numZeros - numZerosLow;
 
+            % Concantenate window with zeros for all null carriers
             window = [zeros(numZerosLow,1); window; zeros(numZerosHigh,1)];
+
+            % Inverse FFT shift window to match FFT ordering
             window = ifftshift(window);
 
+            % Muliply by the window and perform an inverse FFT
             mfOut = ifft(Fmfout.*window);
 
+            % Create a slow-time window
             window = self.slowTimeWin(self.numPulses).';
+
+            % Muliply by the window and perform a slow-time FFT
             self.rdm = fft(mfOut.*window,[],2);
         end
     end
