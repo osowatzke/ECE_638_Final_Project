@@ -171,8 +171,41 @@ In the interest of comparing FMCW with JRC methode, we outline few advantages of
 
 	\subsection {Simulation and Performance}
 
-In this section we provide the results of the FMCW radar simulation that coded with Matlab. The code written programaticaly to allow us easily change the parameters to match the JRC wave and channel properties. This is necessery to have the comprehensive and fair comparison between FMCW and JRC performance. 
+In this section, we evaluate the performance of an FMCW radar written in MATLAB, and configured with the following set of parameters:
+
+	\begin{center}
+	\begin{tabular}{|c|c|}
+		\hline
+		Parameter & Value \\
+		\hline
+		Carrier Frequency & 77 GHz \\
+		\hline
+		Sample Rate & 300 MHz \\
+		\hline
+		PRF & 200 kHz \\
+		\hline
+		Number of Pulses & 256 \\
+		\hline	
+	\end{tabular}
+	\end{center}
+	
+	Metrics of interest include the received SNR, unambiguous range, unambiguous velocity, range resolution, doppler tolerance, and peak sidelobe level (PSL).
+
+	\begin{itemize}
+		\item Received SNR
+		\item Unambiguous Range
+		\item Range Resolution
+		\item Doppler Tolerance
+		\item Peak Sidelobe Level (PSL)
+	\end{itemize}
+
+The radar has been configured with the following set of parameters:
+
+ as the results of the FMCW radar simulation that was coded with Matlab. The code written programaticaly to allow us easily change the parameters to match the JRC wave and channel properties. This is necessery to have the comprehensive and fair comparison between FMCW and JRC performance. 
 The results below are extracted from the FMCW  radar simulation with parameter below:
+
+	
+	
 	\begin{itemize}
 	\item Carrier Frequency:	77 GHz
 	\item Sampling Rate:		200 MHz
