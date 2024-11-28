@@ -1,4 +1,14 @@
-classdef ofdmRadar3 < RadarBase
+% Class defines an OFDM radar. It can be initialized as 
+% ofdmRadar('Name','Value') where 'Name' and 'Value' are
+% property names and property values.
+% 
+% Ex: radar = FMCWRadar('modType','qam')
+%
+% Once class has been instantiated, it can be run as follows:
+% 
+% radar.run()
+%
+classdef ofdmRadar < RadarBase
     
     % Public properties
     properties
@@ -27,7 +37,7 @@ classdef ofdmRadar3 < RadarBase
     methods
 
         % Class constructor
-        function self = ofdmRadar3(varargin)
+        function self = ofdmRadar(varargin)
 
             % Call superclass constructor method
             self@RadarBase(varargin{:})
