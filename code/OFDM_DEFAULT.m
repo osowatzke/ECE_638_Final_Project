@@ -18,7 +18,7 @@ classdef OFDM_DEFAULT
         MAX_DOPPLER_SHIFT  = 100;
         CARRIER_FREQ       = 5.9e9;
         SAMPLE_RATE        = 10e6;
-        NSYMBOLS           = 1000;
+        NSYMBOLS           = 1e4;
         SNR_DB             = 0:2:20;
     end
 end
