@@ -31,46 +31,88 @@ imanmiraki@arizona.edu}}
 	\raggedbottom
 	\maketitle
 \section {Introduction}
-     Vehicle-to-Vehicle networks seek to enhance road safety and reduce traffic congestion by sharing information between vehicles. Such networks possess enormous potential in improving driving safety and traffic conditions by sharing road and traffic information among vehicles in real-time.These systems need dedicated bandwidth to avoid delays associated with third party networks. Sharing bandwidth between existing vehicle radar and planned communication network would reduce total bandwidth usage and power consumption.\par
-     The Idea behind JRC is to integrate radar sensing and wireless communication systems into a single framework, allowing vehicles to perform both tasks using the same hardware, spectrum, and waveform resources. This integration is critical for improving situational awareness, safety, and efficient use of spectrum in V2V networks.\par
-     In this paper, we design a joint-radar communication (JRC) system, which uses OFDM for communication and zero-forcing to generate a range response from the OFDM returns. To evaluate the system performance, we provide the simulation results and compare Radar and Communication with JRC.
+     Vehicle-to-Vehicle (V2V) networks seek to enhance road safety and reduce traffic congestion by sharing road and traffic information between vehicles in real time. To avoid delays associated with third party networks, vehicle-to-vehicle communication systems need dedicated bandwidth. Instead of wasting additional spectrum resources, joint radar communication (JRC) systems attempt to integrate radar and communication systems. This results in reduced bandwidth usage and reduced power consumption while eliminating the need for additional hardware.
      
-\begin{enumerate}
-	\item Radar
-	\item OFDM
-	\item JRC
-\end{enumerate}
+     In this paper, we design a JRC system, which uses OFDM for communication and zero-forcing to generate a range response from the OFDM returns. Next, we examine the performance of this system and compare it to standalone radar and standalone OFDM implementations.
         
   \section {Radar}
    \subsection {Background}
    
-In this section we glance through FMCW radar (Frequency-modulated Continous Wave) to familiarize ourself with the functionality, key features, and advantages of this radar topology. FMCW continuously transmits a signal whose frequency varies over time. The core principle of FMCW radar is that it measures the time delay between the transmitted signal and the reflected signal (echo) to determine the distance to an object, and the frequency shift caused by the Doppler effect is used to measure relative velocity.
-
-
-Key features of FMCW are:
-	\begin{itemize}
-		\item Continous wave tramsmission
-		\item Frequency modulation
-		\item Range measurement
-		\item Doppler shift
-	\end {itemize}
-	
-
- The block diagram provided below represents the signal processing chain of a typical FMCW radar system. The transmitter portion generates a chirp signal (frequency-modulated) and transmit through the antenna toward the target. Receiver path receives the reflected signal from the target, amplifies the signal, mix the signal with the transmitted signal and pass it to ADC. The signal processing portion determin the range and doppler by performing a FFT.
+In this section, we provide background on frequency-modulated continuous wave (FMCW) radar, which is used in many automotive applications. FMCW radar continuously transmits a signal whose frequency varies linearly over time (chirp). It measures the time delay between the transmitted and the reflected signals (echoes) to determine the distance of reflecting objects. It can also determine the relative velocity of these objects, by measuring frequency shifts caused by the doppler effect.
 
 	\begin{figure}[H]
     		\centering
     		\fbox{\includegraphics[width=0.9\linewidth]{FMCW Blockdiagram}}
     		\caption{Typical FMCW blockdiagram \cite{9613183}}
+    		\label{fig::fmcw_radar}
 	\end{figure}
 	
-The main purpos of the radar, estimating velocity and range of the target, is acuratly achievable with FMCW signlas. The mathotalegy can be simply comprehented by the graph below. The range FFT provides the beat frequency to calculate the target distance and doppler FFT provides the frequncy delta between trnasmitted and received signal to calculate the target velocity. 
+ The block diagram shown in Figure \ref{fig::fmcw_radar} depicts the signal processing chain of a typical FMCW radar system. The transmitter generates a frequency-modulated chirp signal of the following form:
+ 
+ 	\begin{equation}
+ 		x(t) = e^{j\pi{\beta}t^2/\tau}
+ 		\label{eq::chirp}
+ 	\end{equation}
+ 	
+ 	where $\beta$ is the chirp bandwidth and $\tau$ is the chirp duration.
+ 	
+	It transmits this signal out of the antenna towards objects of interest. The receiver receives reflections from each of these objects, which are passed through a low noise amplifier. For each return, the received signal will be a chirp waveform with a frequency offset as illustrated below.
+	
+	\begin{equation}
+		r(t) = e^{j\pi{\beta}(t - t_0)^2/\tau} = e^{j\pi{\beta}t^2/\tau}e^{-j2\pi({\beta}t_0/\tau)t}e^{j\pi{\beta}t_0^2/\tau}
+		\label{eq::delayed_chirp}
+	\end{equation}
+	
+	We can mix the received signal with the transmitted signal to create a tone for each return. The frequency of this tone will be proportional to its delay.
+	
+	\begin{equation}
+		f = \frac{{\beta}t_0}{\tau} \Rightarrow t_0 = \frac{{\tau}f}{\beta}
+	\end{equation}
+	
+	The delay of this return is then related to the range of the reflecting object as follows:
+	
+	\begin{equation}
+		R = \frac{ct_0}{2}
+	\end{equation}
+	
+	The relationship between the transmitted and received chirps signals is illustrated below:
 	
 	\begin{figure}[H]
     		\centering
     		\fbox{\includegraphics[width=0.8\linewidth]{FMCW Freq-Time graph}}
     		\caption{Typical FMCW transmitted and Received signal, Time vs Frequency graph \cite{Long2019AssistingTV}}
+    		\label{fig::fmcw_spectrogram}
 	\end{figure}
+	
+	Note that the chirp bandwidth $\beta$ is inversely proportional to the range resolution ${\Delta}R$.
+	
+	\begin{equation}
+		{\Delta}R = \frac{c}{2\beta}
+	\end{equation}
+	
+	Because fine range resolution is desired, $\beta$ is typically very large (on the order of 150MHz-500MHz). This would typically require very high sample rates. However, one of the benefits of an FMCW radar is that the ADC input is tones instead of a full bandwidth signal. Thus, we only need to sample at a rate high enough to capture returns at the largest range of interest. For an automotive radar, this may only be on the order of 100-200 m, which can significantly reduce the sample rates and in turn reduce the radar's cost.
+	
+	After low-pass filtering and sampling the signal, Figure \ref{fig::fmcw_radar} illustrates the next step in the signal processing (a fast-time FFT). This FFT detects the frequency of each tone, which is proportional to the object's distance.
+	
+	The target's relative velocity results in a doppler shift:
+	
+	\begin{equation}
+		f_D = \frac{2v}{\lambda}
+	\end{equation}
+	
+	Note that this doppler shift is twice what is for a communication system, due to the reflection's two-way path. The phase change due to the doppler shift is small during a single chirp, so we instead measure it over multiple chirps (pulses). This is done by taking an FFT across pulses as shown in Figure \ref{fig::fmcw_radar}.
+	
+	The rate at which chirps (pulses) are repeated is denoted as the PRF. The PRF limits the radar's unambiguous velocity $v_{ua}$ and unambiguous range $R_{ua}$. If a return exceeds these limits, it will alias to another range or velocity.
+	
+	\begin{equation}
+		v_{ua} = \frac{\lambda\cdot\text{PRF}}{4}
+	\end{equation}
+	
+	\begin{equation}
+		R_{ua} = \frac{c}{2\cdot\text{PRF}}
+	\end{equation}
+	
+The main purpos of the radar, estimating velocity and range of the target, is acuratly achievable with FMCW signlas. The mathotalegy can be simply comprehented by the graph below. The range FFT provides the beat frequency to calculate the target distance and doppler FFT provides the frequncy delta between trnasmitted and received signal to calculate the target velocity. 
 	
 
 Some of Radar's perform metrics of interest that we are going to analize in this paper include but are not limited to:
@@ -129,8 +171,41 @@ In the interest of comparing FMCW with JRC methode, we outline few advantages of
 
 	\subsection {Simulation and Performance}
 
-In this section we provide the results of the FMCW radar simulation that coded with Matlab. The code written programaticaly to allow us easily change the parameters to match the JRC wave and channel properties. This is necessery to have the comprehensive and fair comparison between FMCW and JRC performance. 
+In this section, we evaluate the performance of an FMCW radar written in MATLAB, and configured with the following set of parameters:
+
+	\begin{center}
+	\begin{tabular}{|c|c|}
+		\hline
+		Parameter & Value \\
+		\hline
+		Carrier Frequency & 77 GHz \\
+		\hline
+		Sample Rate & 300 MHz \\
+		\hline
+		PRF & 200 kHz \\
+		\hline
+		Number of Pulses & 256 \\
+		\hline	
+	\end{tabular}
+	\end{center}
+	
+	Metrics of interest include the received SNR, unambiguous range, unambiguous velocity, range resolution, doppler tolerance, and peak sidelobe level (PSL).
+
+	\begin{itemize}
+		\item Received SNR
+		\item Unambiguous Range
+		\item Range Resolution
+		\item Doppler Tolerance
+		\item Peak Sidelobe Level (PSL)
+	\end{itemize}
+
+The radar has been configured with the following set of parameters:
+
+ as the results of the FMCW radar simulation that was coded with Matlab. The code written programaticaly to allow us easily change the parameters to match the JRC wave and channel properties. This is necessery to have the comprehensive and fair comparison between FMCW and JRC performance. 
 The results below are extracted from the FMCW  radar simulation with parameter below:
+
+	
+	
 	\begin{itemize}
 	\item Carrier Frequency:	77 GHz
 	\item Sampling Rate:		200 MHz
