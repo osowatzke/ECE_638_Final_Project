@@ -1,4 +1,16 @@
+% Class defines an OFDM model. It can be initialized as 
+% ofdmModel('Name','Value') where 'Name' and 'Value' are
+% property names and property values.
+% 
+% Ex: model = ofdmModel('modType','qam')
+%
+% Once class has been instantiated, it can be run as follows:
+% 
+% model.run()
+%
 classdef ofdmModel2 < keyValueInitializer
+
+    % Public properties
     properties
         modType          = OFDM_DEFAULT.MOD_TYPE;
         modOrder         = OFDM_DEFAULT.MOD_ORDER;
@@ -20,6 +32,8 @@ classdef ofdmModel2 < keyValueInitializer
         useIdealChanEst  = OFDM_DEFAULT.USE_IDEAL_CHAN_EST;
         eqAlgorithm      = OFDM_DEFAULT.EQ_ALGORITHM;
     end
+
+    % Read-only properties
     properties(SetAccess=protected)
         ber              = [];
         transmitter      = [];
@@ -28,7 +42,21 @@ classdef ofdmModel2 < keyValueInitializer
         bits             = [];
         txSignal         = [];
     end
+
+    % Public class methods
     methods
+
+        % Function runs the OFDM model
+        function run(self)
+            self.createTxSignal();
+            self.runReceiver();
+            self.plotResults();
+        end
+
+    end
+
+    % Protected class methods
+    methods(Access=protected)
 
         % Function generates random bits
         function genRandomBits(self)
@@ -41,16 +69,13 @@ classdef ofdmModel2 < keyValueInitializer
             self.bits = randi([0 1], numBits, 1);
         end
 
-        function run(self)
-            self.createTxSignal();
-            self.runReceiver();
-            self.plotResults();
-        end
-
+        % Functions creates the transmitted signal
         function createTxSignal(self)
 
+            % Generate random bits
             self.genRandomBits();
 
+            % Create an OFDM transmitter object
             self.transmitter = ofdmTransmitter(...
                 'modType',          self.modType,...
                 'modOrder',         self.modOrder,...
@@ -63,24 +88,30 @@ classdef ofdmModel2 < keyValueInitializer
                 'cyclicPrefixLen',  self.cyclicPrefixLen,...
                 'windowLen',        self.windowLen);
 
+            % Create transmitted signal from bit stream
             self.txSignal = self.transmitter.run(self.bits);
-
         end
 
+        % Function runs the OFDM receiver and channel models
         function runReceiver(self)
 
+            % Create an empty array of bit error rates
             self.ber = zeros(size(self.SNR_dB));
 
+            % Run the simulation for each SNR
             for i = 1:length(self.SNR_dB)
 
+                % Create an OFDM channel object
                 self.channel = ofdmChannel(...
                     'enRayleighFading', self.enRayleighFading,...
                     'maxDopplerShift',  self.maxDopplerShift,...
                     'sampleRate',       self.sampleRate,...
                     'SNR_dB',           self.SNR_dB(i));
 
+                % Determine the received signal
                 rxSignal = self.channel.run(self.txSignal);
 
+                % Create an OFDM receiver object
                 self.receiver = ofdmReceiver(...
                     'modType',          self.modType,...
                     'modOrder',         self.modOrder,...
@@ -97,13 +128,15 @@ classdef ofdmModel2 < keyValueInitializer
                     'pilotIndices',     self.transmitter.pilotIndices,...
                     'dataIndices',      self.transmitter.dataIndices);
     
+                % Determine the received bits
                 rxBits = self.receiver.run(rxSignal);
 
+                % Compute the bit error rate for that run
                 self.ber(i) = mean(rxBits ~= self.bits);
-
             end
         end
 
+        % Function computes a reference bit error rate
         function refBer = computeRefBer(self)
 
             % Eb_N0 will be lower than SNR by a factor of two for
@@ -139,50 +172,76 @@ classdef ofdmModel2 < keyValueInitializer
                 refBer = berawgn(Eb_N0,self.modType,self.modOrder,1); 
             end
         end
+
+        % Function plots results
         function plotResults(self)
             self.plotBer();
             self.plotTxSpectrum();
             self.plotRxConstellation();
         end
+
+        % Function plots the bit error rate
         function plotBer(self)
+
+            % Determine the bit error rate
+            ref = self.computeRefBer();
+
+            % Create a new figure
             figure(1)
             clf;
-            semilogy(self.SNR_dB, self.ber, '-o', 'LineWidth', 1.5);
 
             % Plot reference and measured data on the same axis
+            semilogy(self.SNR_dB, self.ber, '-o', 'LineWidth', 1.5);
             hold on;
-            ref = self.computeRefBer();
             semilogy(self.SNR_dB, ref, 'LineWidth', 1.5)
-            legend('Measured', 'Reference')
 
-            % Label plot
+            % Label the plot
             xlabel('SNR (dB)');
             ylabel('Bit Error Rate (BER)');
             title('OFDM BER vs. SNR');
+            legend('Measured', 'Reference')
             grid on;
         end
+
+        % Function plots the spectrum of the transmitted signal
         function plotTxSpectrum(self)
+
+            % Create a new figure
             figure(2)
             clf;
+
+            % Determine the spectrum of the transmitted signal
             pwelch(self.txSignal(:), [], [], [], 'centered')
             [pxx, f] = pwelch(self.txSignal(:), [], [], [], 'centered');
             plot(f/pi, db(pxx), 'LineWidth', 1.5);
             grid on;
+
+            % Label the plot
             xlabel('Normalized  Frequency (\times \pi rad/sample)')
             ylabel('Power/frequency (dB/(rad/sample))')
             title('Power Spectral Density of Transmitted OFDM Signal');
         end
+
+        % Function plots the received constellation
         function plotRxConstellation(self)
+
+            % Create a new figure
             figure(3)
             clf;
+
+            % Plot the real and imaginary parts of the signals
             rxSymbols = self.receiver.eqSymbols;
             scatter(real(rxSymbols(:)), imag(rxSymbols(:)));
+            grid on;
+
+            % Scale the plot axis
             maxXLim = max(abs(xlim));
             maxYLim = max(abs(ylim));
             maxLim = max([maxXLim, maxYLim]);
             xlim([-maxLim maxLim]);
             ylim([-maxLim maxLim]);
-            grid on;
+
+            % Label the plot
             title('Received Constellation Diagram at High SNR');
             xlabel('In Phase');
             ylabel('Quadrature');
