@@ -1,3 +1,6 @@
+% Class defines a Radar base class. It provides default properties
+% and common methods. It should not be called directly, but should
+% instead be used as a superclass.
 classdef RadarBase < keyValueInitializer
 
     % Public class properties
@@ -8,7 +11,7 @@ classdef RadarBase < keyValueInitializer
         numPulses       = 16;       % Number of Pulses in CPI
         codeLength      = 127;      % Code length
         targetRange     = 50;       % Target range (m)
-        targetVelocity  = 100;        % Target velocity (m/s)
+        targetVelocity  = 100;      % Target velocity (m/s)
         SNR_dB          = 20;       % Target SNR (dB)
         normalizedUnits = false;    % Normalized units
     end
@@ -83,7 +86,11 @@ classdef RadarBase < keyValueInitializer
             self.targetPosEst = (self.maxRangeGate - 1) * self.rgSize;
 
             % Estimate target velocity
-            targetDopplerFreq = (self.maxDopplerBin - 1)/...
+            targetDopplerBin = self.maxDopplerBin - 1;
+            if targetDopplerBin >= self.numPulses/2
+                targetDopplerBin = targetDopplerBin - self.numPulses;
+            end
+            targetDopplerFreq = targetDopplerBin / ...
                 self.numPulses * self.PRF;
             self.targetVelEst = targetDopplerFreq * self.lambda / 2;
 
@@ -99,14 +106,14 @@ classdef RadarBase < keyValueInitializer
             rangeSlice = self.rdm(:,self.maxDopplerBin);
 
             % Get peak value
-            rdmPeak = max(abs(rangeSlice(self.maxRangeGate)));
+            rdmPeak = abs(rangeSlice(self.maxRangeGate));
 
             % Grab peak sidelobe value
             % Ignore range gates within +/- 3 of peak
             ignoreGates = self.maxRangeGate + (-3:3);
             ignoreGates = mod(ignoreGates - 1, size(self.rdm,1)) + 1;
             rangeGates = 1:size(self.rdm, 1);
-            sidelobes = self.rdm(all(rangeGates ~= ignoreGates.'));
+            sidelobes = rangeSlice(all(rangeGates ~= ignoreGates.'));
             maxSidelobe = max(abs(sidelobes));
 
             % Compute peak sidelobe ratio

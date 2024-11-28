@@ -1,3 +1,13 @@
+% Class defines a FMCW radar. It can be initialized as 
+% FMCWRadar('Name','Value') where 'Name' and 'Value' are
+% property names and property values.
+% 
+% Ex: radar = FMCWRadar('sweepBandwidth',500e6)
+%
+% Once class has been instantiated, it can be run as follows:
+% 
+% radar.run()
+%
 classdef FMCWRadar < RadarBase
 
     % Public class properties
@@ -50,6 +60,12 @@ classdef FMCWRadar < RadarBase
         % implementation because the code is generated in continuous time.
         function getRxData(self)
 
+            % Compute power of each target return
+            targetPower_dB = self.SNR_dB - max(self.SNR_dB);
+
+            % Compute noise power
+            noisePower_dB = -max(self.SNR_dB);
+
             % Compute target delay in gates
             targetDelay = self.targetRange/self.rgSize;
 
@@ -67,7 +83,7 @@ classdef FMCWRadar < RadarBase
                 txSigDelay = exp(1i*pi*self.sweepRate*...
                     (n(1:self.priSamples) - targetDelay).^2);
                 txSigDelay = repmat(txSigDelay, self.numPulses, 1);
-                self.rxData = self.rxData + 10^(self.SNR_dB(i)/20)*...
+                self.rxData = self.rxData + 10^(targetPower_dB(i)/20)*...
                     txSigDelay.*exp(1i*2*pi*dopplerFreqNorm*n);
             end
 
@@ -75,8 +91,9 @@ classdef FMCWRadar < RadarBase
             self.rxData = reshape(self.rxData, [], self.numPulses);
 
             % Add noise
-            noise = complex(randn(size(self.rxData)),...
+            noise = 1/sqrt(2)*complex(randn(size(self.rxData)),...
                 randn(size(self.rxData)));
+            noise = noise*10^(noisePower_dB/20);
             self.rxData = self.rxData + noise;
         end
 

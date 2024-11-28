@@ -34,6 +34,12 @@ classdef GenericCWRadar < RadarBase
             % Compute analog rate
             analogRate = self.analogOSR*self.sampleRate;
 
+            % Compute power of each target return
+            targetPower_dB = self.SNR_dB - max(self.SNR_dB);
+
+            % Compute noise power
+            noisePower_dB = -max(self.SNR_dB);
+
             % Compute target delays at the analog rate
             targetDelay = round(self.analogOSR*self.targetRange/self.rgSize);
 
@@ -61,7 +67,7 @@ classdef GenericCWRadar < RadarBase
 
             % Receive data is superposition of all target returns
             for i = 1:length(targetDelay)
-                self.rxData = self.rxData + 10^(self.SNR_dB(i)/20)*...
+                self.rxData = self.rxData + 10^(targetPower_dB(i)/20)*...
                     circshift(txData, targetDelay(i)).*...
                     exp(1i*2*pi*dopplerFreqNorm*n);
             end
@@ -72,7 +78,7 @@ classdef GenericCWRadar < RadarBase
             % Add noise
             noise = 1/sqrt(2)*complex(randn(size(self.rxData)),...
                 randn(size(self.rxData)));
-            noise = 10^(-self.SNR_dB/20)*noise;
+            noise = 10^(noisePower_dB/20)*noise;
             self.rxData = self.rxData + noise;
         end
 
