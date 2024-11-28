@@ -40,31 +40,69 @@ imanmiraki@arizona.edu}}
    
 In this section, we provide background on frequency-modulated continuous wave (FMCW) radar, which is used in many automotive applications. FMCW radar continuously transmits a signal whose frequency varies linearly over time (chirp). It measures the time delay between the transmitted and the reflected signals (echoes) to determine the distance of reflecting objects. It can also determine the relative velocity of these objects, by measuring frequency shifts caused by the doppler effect.
 
-
-Key features of FMCW are:
-	\begin{itemize}
-		\item Continous wave tramsmission
-		\item Frequency modulation
-		\item Range measurement
-		\item Doppler shift
-	\end {itemize}
-	
-
- The block diagram provided below represents the signal processing chain of a typical FMCW radar system. The transmitter portion generates a chirp signal (frequency-modulated) and transmit through the antenna toward the target. Receiver path receives the reflected signal from the target, amplifies the signal, mix the signal with the transmitted signal and pass it to ADC. The signal processing portion determin the range and doppler by performing a FFT.
-
 	\begin{figure}[H]
     		\centering
     		\fbox{\includegraphics[width=0.9\linewidth]{FMCW Blockdiagram}}
     		\caption{Typical FMCW blockdiagram \cite{9613183}}
+    		\label{fig::fmcw_radar}
 	\end{figure}
 	
-The main purpos of the radar, estimating velocity and range of the target, is acuratly achievable with FMCW signlas. The mathotalegy can be simply comprehented by the graph below. The range FFT provides the beat frequency to calculate the target distance and doppler FFT provides the frequncy delta between trnasmitted and received signal to calculate the target velocity. 
+ The block diagram shown in Figure \ref{fig::fmcw_radar} depicts the signal processing chain of a typical FMCW radar system. The transmitter generates a frequency-modulation chirp signal of the following form:
+ 
+ 	\begin{equation}
+ 		x(t) = e^{j\pi{\beta}t^2/\tau}
+ 		\label{eq::chirp}
+ 	\end{equation}
+ 	
+ 	where $\beta$ is the chirp bandwidth and $\tau$ is the chirp duration.
+ 	
+	It transmits this signal out of the antenna towards objects of interest. The receiver receives reflections from each of these objects, which are passed through a low noise amplifier. For each return, the received signal will be a chirp waveform with a frequency offset as illustrated below.
+	
+	\begin{equation}
+		r(t) = e^{j\pi{\beta}(t - t_0)^2/\tau} = e^{j\pi{\beta}t^2/\tau}e^{-j2\pi({\beta}t_0/\tau)t}e^{j\pi{\beta}t_0^2/\tau}
+		\label{eq::delayed_chirp}
+	\end{equation}
+	
+	We can mix the received signal with the transmitted signal to create a tone for each return. The frequency of this tone will be proportional to its delay.
+	
+	\begin{equation}
+		f = \frac{{\beta}t_0}{\tau} \Rightarrow t_0 = \frac{{\tau}f}{\beta}
+	\end{equation}
+	
+	The delay of this return is then related to the range of the reflecting object as follows:
+	
+	\begin{equation}
+		R = \frac{ct_0}{2}
+	\end{equation}
+	
+	Figure \ref{fig::fmcw_spectrogram} illustrates the relationship between the transmitted and received signals:
 	
 	\begin{figure}[H]
     		\centering
     		\fbox{\includegraphics[width=0.8\linewidth]{FMCW Freq-Time graph}}
     		\caption{Typical FMCW transmitted and Received signal, Time vs Frequency graph \cite{Long2019AssistingTV}}
+    		\label{fig::fmcw_spectrogram}
 	\end{figure}
+	
+	Note that the chirp bandwidth $\beta$ is inversely proportional to the range resolution ${\Delta}R$.
+	
+	\begin{equation}
+		{\Delta}R = \frac{c}{2\beta}
+	\end{equation}
+	
+	Because fine range resolution is desired, $\beta$ is typically very large (on the order of 150MHz-500MHz). This would typically require very high sample rates. However, one of the primary benefits of an FMCW radar is that we are sampling tones instead of the full signal bandwidth. Thus, we only need to sample at a rate high enough to capture returns at the largest range of interest. For an automotive radar, this may only be on the order of 100-200 m, which can significantly reduce the sample rates and in turn reduce the radar's cost.
+	
+	After low-pass filtering and sampling the signal, Figure \ref{fig::fmcw_radar} illustrates the next step in the signal processing (a fast-time FFT). This FFT detects the frequency of each tone, which is proportional to the object's distance.
+	
+	The target's relative velocity also results in a doppler shift
+	
+	\begin{equation}
+		f_D = \frac{2v}{\lambda}
+	\end{equation}
+	
+	Note that this doppler shift is twice what is for a communication system, due to the reflection's two-way path. The phase change due to the doppler shift is small with respect to a single chirp, so we measure it over multiple chirps (pulses). This is done by taking an FFT across pulses as shown in Figure \ref{fig::fmcw_radar}.
+	
+The main purpos of the radar, estimating velocity and range of the target, is acuratly achievable with FMCW signlas. The mathotalegy can be simply comprehented by the graph below. The range FFT provides the beat frequency to calculate the target distance and doppler FFT provides the frequncy delta between trnasmitted and received signal to calculate the target velocity. 
 	
 
 Some of Radar's perform metrics of interest that we are going to analize in this paper include but are not limited to:
