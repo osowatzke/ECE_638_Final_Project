@@ -167,7 +167,7 @@ classdef RadarBase < keyValueInitializer
             plot(rangeAxis,db(self.rdm(:,self.maxDopplerBin)),'LineWidth',1.5);
             xlim([rangeAxis(1) rangeAxis(end)]);
             grid on;
-            title('Range Slice');
+            title('Range Response');
             xlabel(rangeAxisLabel);
             ylabel('Amplitude (dB)');
 

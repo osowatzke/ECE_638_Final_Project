@@ -43,7 +43,7 @@ In this section, we provide background on frequency-modulated continuous wave (F
 	\begin{figure}[H]
     		\centering
     		\fbox{\includegraphics[width=0.9\linewidth]{FMCW Blockdiagram}}
-    		\caption{Typical FMCW blockdiagram \cite{9613183}}
+    		\caption{Typical FMCW Block Diagram \cite{9613183}}
     		\label{fig::fmcw_radar}
 	\end{figure}
 	
@@ -80,29 +80,30 @@ In this section, we provide background on frequency-modulated continuous wave (F
 	\begin{figure}[H]
     		\centering
     		\fbox{\includegraphics[width=0.8\linewidth]{FMCW Freq-Time graph}}
-    		\caption{Typical FMCW transmitted and Received signal, Time vs Frequency graph \cite{Long2019AssistingTV}}
+    		\caption{Plot of Transmit and Receive Signal Frequency vs Time.\cite{Long2019AssistingTV}}
     		\label{fig::fmcw_spectrogram}
 	\end{figure}
 	
-	Note that the chirp bandwidth $\beta$ is inversely proportional to the range resolution ${\Delta}R$.
+	Note that the chirp bandwidth $\beta$ given in Equation (\ref{eq::chirp}) is inversely proportional to the range resolution ${\Delta}R$.
 	
 	\begin{equation}
 		{\Delta}R = \frac{c}{2\beta}
+		\label{eq::range_resolution}
 	\end{equation}
 	
-	Because fine range resolution is desired, $\beta$ is typically very large (on the order of 150MHz-500MHz). This would typically require very high sample rates. However, one of the benefits of an FMCW radar is that the ADC input is tones instead of a full bandwidth signal. Thus, we only need to sample at a rate high enough to capture returns at the largest range of interest. For an automotive radar, this may only be on the order of 100-200 m, which can significantly reduce the sample rates and in turn reduce the radar's cost.
+	Because fine range resolution is desired, $\beta$ is typically very large (on the order of 150MHz-500MHz). This would typically require very high sample rates. However, one of the benefits of an FMCW radar is that the ADC samples tones instead of a full bandwidth signal. Thus, we only need to sample at a rate high enough to capture returns at the largest range of interest. For an automotive radar, this may only be on the order of 100-200 m, which can significantly reduce the sample rates and in turn reduce the radar's cost.
 	
-	After low-pass filtering and sampling the signal, Figure \ref{fig::fmcw_radar} illustrates the next step in the signal processing (a fast-time FFT). This FFT detects the frequency of each tone, which is proportional to the object's distance.
+	After low-pass filtering and sampling the signal, Figure \ref{fig::fmcw_radar} illustrates the next step in the signal processing (a fast-time FFT). This FFT detects the frequency of each tone, which is proportional to the object's distance. Thus, the fast-time FFT allows the radar to detect the distance of reflecting objects.
 	
-	The target's relative velocity results in a doppler shift:
+	The object's relative velocity results in a doppler shift:
 	
 	\begin{equation}
 		f_D = \frac{2v}{\lambda}
 	\end{equation}
 	
-	Note that this doppler shift is twice what is for a communication system, due to the reflection's two-way path. The phase change due to the doppler shift is small during a single chirp, so we instead measure it over multiple chirps (pulses). This is done by taking an FFT across pulses as shown in Figure \ref{fig::fmcw_radar}.
+	Note that this doppler shift is twice what it is for a communication system, due to the reflection's two-way path. The phase change due to the doppler shift is small during a single chirp, so we instead measure it over multiple chirps (pulses). This is done by taking a slow-time FFT across pulses as shown in Figure \ref{fig::fmcw_radar}.
 	
-	The rate at which chirps (pulses) are repeated is denoted as the PRF. The PRF limits the radar's unambiguous velocity $v_{ua}$ and unambiguous range $R_{ua}$. If a return exceeds these limits, it will alias to another range or velocity.
+	The rate at which chirps (pulses) are repeated is denoted as the PRF. The PRF limits the radar's unambiguous velocity $v_{ua}$ and unambiguous range $R_{ua}$.
 	
 	\begin{equation}
 		v_{ua} = \frac{\lambda\cdot\text{PRF}}{4}
@@ -111,6 +112,8 @@ In this section, we provide background on frequency-modulated continuous wave (F
 	\begin{equation}
 		R_{ua} = \frac{c}{2\cdot\text{PRF}}
 	\end{equation}
+	
+	If a return exceeds these limits, it will alias and be detected at another range or velocity.
 	
 The main purpos of the radar, estimating velocity and range of the target, is acuratly achievable with FMCW signlas. The mathotalegy can be simply comprehented by the graph below. The range FFT provides the beat frequency to calculate the target distance and doppler FFT provides the frequncy delta between trnasmitted and received signal to calculate the target velocity. 
 	
@@ -171,7 +174,7 @@ In the interest of comparing FMCW with JRC methode, we outline few advantages of
 
 	\subsection {Simulation and Performance}
 
-In this section, we evaluate the performance of an FMCW radar written in MATLAB, and configured with the following set of parameters:
+In this section, we evaluate the performance of an FMCW radar written in MATLAB and configured with the following set of parameters:
 
 	\begin{center}
 	\begin{tabular}{|c|c|}
@@ -191,6 +194,44 @@ In this section, we evaluate the performance of an FMCW radar written in MATLAB,
 	
 	Metrics of interest include the received SNR, unambiguous range, unambiguous velocity, range resolution, doppler tolerance, and peak sidelobe level (PSL).
 
+	The range resolution is the minimum range separation required for the radar to distinguish two objects. We can compute it according to Equation (\ref{eq::range_resolution}) as:
+	
+	\begin{equation}
+		{\Delta}R = 0.5 m
+	\end{equation}
+	
+	We can measure the range resolution by placing two objects very close together and observing the range response. In Figure \ref{fig:range_resolution}, we show the range response of two objects separated by 1 m. 
+	 
+	\begin{figure}[H]
+	    	\centering
+	    	\fbox{\includegraphics[width=0.8\linewidth]{range_resolution.jpg}}
+	    	\caption{Range Response of Two Closely Placed Targets}
+	    	\label{fig:range_resolution}
+	\end{figure}
+		
+	Clearly, the minimum range separation at which the radar can distinguish two targets is when the targets are separated by a single range gate. This implies a range resolution of 0.5 m. This is consistent with the theoretical range resolution.
+	
+	range resolution is when both target are placed next to each other at 
+	The received SNR is given as follows:
+	
+	\begin{equation}
+		\text{SNR}_{\text{(dB)}} = 10\text{log}_{10}\left(\frac{P_r}{P_n}\right) = {P_r}_{\text{(dB)}} - {P_n}_{\text{(dB)}}
+	\end{equation}
+		
+	We assume that the noise is zero mean and Gaussian distributed. Therefore, the noise power can be expressed as follows:
+	
+	\begin{equation}
+		P_n = \sigma^2
+	\end{equation}
+	
+	 The received signal power is then given as follows:
+	 
+	 \begin{equation}
+	 	P_r = \frac{P_tG^2\lambda^2\sigma}{(4{\pi})^3R^4}
+	 \end{equation}
+	 
+	 The range resolution of the system is 
+	
 	\begin{itemize}
 		\item Received SNR
 		\item Unambiguous Range

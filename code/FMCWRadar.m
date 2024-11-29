@@ -81,10 +81,10 @@ classdef FMCWRadar < RadarBase
             % Receive data is superposition of all target returns
             for i = 1:length(targetDelay)
                 txSigDelay = exp(1i*pi*self.sweepRate*...
-                    (n(1:self.priSamples) - targetDelay).^2);
+                    (n(1:self.priSamples) - targetDelay(i)).^2);
                 txSigDelay = repmat(txSigDelay, self.numPulses, 1);
                 self.rxData = self.rxData + 10^(targetPower_dB(i)/20)*...
-                    txSigDelay.*exp(1i*2*pi*dopplerFreqNorm*n);
+                    txSigDelay.*exp(1i*2*pi*dopplerFreqNorm(i)*n);
             end
 
             % Reshape into a data cube
