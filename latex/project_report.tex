@@ -236,10 +236,28 @@ In this section, we evaluate the performance of an FMCW radar written in MATLAB 
 	    	\label{fig::pslr_zpad}
 	\end{figure}
 	
-	Examining the figure, we measure a PSLR of 13.27 dB, which is the expected result for the first sinc sidelobe.
+	Examining the figure, we measure a PSLR of 13.27 dB, which is the expected PSLR measurement for a sinc function.
+	
+	Note that we can improve the PSLR by applying a window. However, this will also degrade the range resolution by increasing the mainlobe width of the range response. We consider a Chebychev with an 80dB peak to sidelobe ratio.
+	
+	\begin{figure}[H]
+	    	\centering
+	    	\fbox{\includegraphics[width=0.8\linewidth]{pslr_with_window.jpg}}
+	    	\caption{PSLR Measurement with Chebyshev Window}
+	    	\label{fig::plsr_window} 
+	\end{figure}
+	
+	Examining Figure \ref{fig::plsr_window}, we achieve the expected PSLR of 80 dB. However, the mainlobe width is also increased by a factor of 3.2, which in term degrades the range resolution by a factor of 3.2. Other windows can be selected, which may off a better trade off between range resolution and PSLR. Consider for example a taylor window, which achieves a PSLR of 30.44 dB while only decreasing the range resolution by a factor of 1.5.
+	
+	\begin{figure}[H]
+	    	\centering
+	    	\fbox{\includegraphics[width=0.8\linewidth]{pslr_with_taylor_window.jpg}}
+	    	\caption{PSLR Measurement with Taylor Window}
+	    	\label{fig::plsr_taylor_window} 
+	\end{figure}
 	
 	range resolution is when both target are placed next to each other at 
-	The received SNR is given as follows:
+	The received SNR is given as follows
 	
 	\begin{equation}
 		\text{SNR}_{\text{(dB)}} = 10\text{log}_{10}\left(\frac{P_r}{P_n}\right) = {P_r}_{\text{(dB)}} - {P_n}_{\text{(dB)}}
