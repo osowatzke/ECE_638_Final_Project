@@ -200,16 +200,43 @@ In this section, we evaluate the performance of an FMCW radar written in MATLAB 
 		{\Delta}R = 0.5 m
 	\end{equation}
 	
-	We can measure the range resolution by placing two objects very close together and observing the range response. In Figure \ref{fig:range_resolution}, we show the range response of two objects separated by 1 m. 
+	We can measure the range resolution by placing two objects very close together and observing the range response. In Figure \ref{fig::range_resolution}, we show the range response of two objects separated by 1 m. 
 	 
 	\begin{figure}[H]
 	    	\centering
 	    	\fbox{\includegraphics[width=0.8\linewidth]{range_resolution.jpg}}
 	    	\caption{Range Response of Two Closely Placed Targets}
-	    	\label{fig:range_resolution}
+	    	\label{fig::range_resolution}
 	\end{figure}
 		
 	Clearly, the minimum range separation at which the radar can distinguish two targets is when the targets are separated by a single range gate. This implies a range resolution of 0.5 m. This is consistent with the theoretical range resolution.
+	
+	The peak sidelobe ratio (PSLR) is the ratio of the range response peak to its highest sidelobe. Without zero padding the FFT, we can get vastly different measurements for the PSLR depending on the object's position.
+	
+	\begin{figure}[H]
+	    	\centering
+	    	\fbox{\includegraphics[width=0.8\linewidth]{pslr_no_window_no_zpad_best_position.jpg}}
+	    	\caption{PSLR Measurement for Best Case Target Position}
+	    	\label{fig::pslr_best_position}
+	\end{figure}
+	
+	\begin{figure}[H]
+	    	\centering
+	    	\fbox{\includegraphics[width=0.8\linewidth]{pslr_no_window_no_zpad_worst_position.jpg}}
+	    	\caption{PSLR Measurement for Worst Case Target Position}
+	    	\label{fig::pslr_worst_position}
+	\end{figure}
+	
+	For the best case object position shown in Figure \ref{fig::pslr_best_position}, we measure a PSLR of 146.91 dB. For the worst case object position shown in Figure \ref{fig::pslr_worst_position}, we measure a PSLR of 9.54 dB. We can zero-pad the fast-time FFT to resolve discrepancies in these measurements. Doing so, results in the following range response:
+	
+	\begin{figure}[H]
+	    	\centering
+	    	\fbox{\includegraphics[width=0.8\linewidth]{pslr_no_window_zpad.jpg}}
+	    	\caption{PSLR Measurement with Zero Padding in Fast-Time FFT}
+	    	\label{fig::pslr_zpad}
+	\end{figure}
+	
+	Examining the figure, we measure a PSLR of 13.27 dB, which is the expected result for the first sinc sidelobe.
 	
 	range resolution is when both target are placed next to each other at 
 	The received SNR is given as follows:

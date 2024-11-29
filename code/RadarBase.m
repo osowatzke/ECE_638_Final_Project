@@ -4,7 +4,7 @@
 classdef RadarBase < keyValueInitializer
 
     % Public class properties
-    properties 
+    properties
         carrierFreq     = 77e9;     % Carrier frequency (Hz)
         sampleRate      = 200e6;    % Sample rate (Hz)
         PRF             = 500e3;    % PRF (Hz)
@@ -13,7 +13,11 @@ classdef RadarBase < keyValueInitializer
         targetRange     = 50;       % Target range (m)
         targetVelocity  = 100;      % Target velocity (m/s)
         SNR_dB          = 20;       % Target SNR (dB)
+        rangeOSR        = 1;        % Range Oversample Rate
+        dopplerOSR      = 1;        % Doppler Oversample Rate
         normalizedUnits = false;    % Normalized units
+        PSLRIgnoreGates = 3;        % How many gates to ignore on either
+                                    % side of peak for PSLR measurement
     end
 
     % Protected class properties
@@ -83,15 +87,17 @@ classdef RadarBase < keyValueInitializer
             self.maxRangeGate = self.maxRangeGate(self.maxDopplerBin);
 
             % Estimate target position
-            self.targetPosEst = (self.maxRangeGate - 1) * self.rgSize;
+            self.targetPosEst = (self.maxRangeGate - 1) * ...
+                self.rgSize / self.rangeOSR;
 
             % Estimate target velocity
             targetDopplerBin = self.maxDopplerBin - 1;
-            if targetDopplerBin >= self.numPulses/2
-                targetDopplerBin = targetDopplerBin - self.numPulses;
+            numDopplerBins = size(self.rdm,2);
+            if targetDopplerBin >= numDopplerBins/2
+                targetDopplerBin = targetDopplerBin - numDopplerBins;
             end
             targetDopplerFreq = targetDopplerBin / ...
-                self.numPulses * self.PRF;
+                numDopplerBins * self.PRF;
             self.targetVelEst = targetDopplerFreq * self.lambda / 2;
 
             % Print out estimates of target position
@@ -109,11 +115,13 @@ classdef RadarBase < keyValueInitializer
             rdmPeak = abs(rangeSlice(self.maxRangeGate));
 
             % Grab peak sidelobe value
-            % Ignore range gates within +/- 3 of peak
-            ignoreGates = self.maxRangeGate + (-3:3);
+            % Ignore a subset of values around peak
+            ignoreGates = self.PSLRIgnoreGates*self.rangeOSR;
+            ignoreGates = ignoreGates + self.rangeOSR - 1;
+            ignoreGates = self.maxRangeGate + (-ignoreGates:ignoreGates);
             ignoreGates = mod(ignoreGates - 1, size(self.rdm,1)) + 1;
             rangeGates = 1:size(self.rdm, 1);
-            sidelobes = rangeSlice(all(rangeGates ~= ignoreGates.'));
+            sidelobes = rangeSlice(all(rangeGates ~= ignoreGates.', 1));
             maxSidelobe = max(abs(sidelobes));
 
             % Compute peak sidelobe ratio
@@ -131,7 +139,9 @@ classdef RadarBase < keyValueInitializer
             rdmCentered = fftshift(self.rdm,2);
 
             % Doppler axis
-            doppAxis = (0:(self.numPulses-1)) - self.numPulses/2;
+            numDopplerBins = size(self.rdm,2);
+            doppAxis = (0:(numDopplerBins-1)) - numDopplerBins/2;
+            doppAxis = doppAxis/self.dopplerOSR;
             doppAxisLabel = 'Doppler Bin';
 
             % Doppler bins correspond to velocity
@@ -144,6 +154,7 @@ classdef RadarBase < keyValueInitializer
 
             % Range axis
             rangeAxis = 0:(size(self.rdm,1)-1);
+            rangeAxis = rangeAxis/self.rangeOSR;
             rangeAxisLabel = 'Range Gate';
 
             % Range Gates correspond to range

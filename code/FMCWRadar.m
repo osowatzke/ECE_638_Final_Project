@@ -108,7 +108,8 @@ classdef FMCWRadar < RadarBase
             win = self.fastTimeWindow(length(adcData));
 
             % Fast time FFT
-            self.rdm = fft(adcData.*win);
+            rangeFftSize = size(adcData,1)*self.rangeOSR;
+            self.rdm = fft(adcData.*win, rangeFftSize);
 
             % After mixing the target will be at a negative frequency
             % Flip the range axis so data is organized in "natural" order
@@ -118,7 +119,8 @@ classdef FMCWRadar < RadarBase
             win = self.slowTimeWindow(size(self.rdm, 2)).';
             
             % Slow time FFT
-            self.rdm = fft(self.rdm.*win, [], 2);
+            dopplerFftSize = size(self.rdm, 2) * self.dopplerOSR;
+            self.rdm = fft(self.rdm.*win, dopplerFftSize, 2);
         end
     end
 end
