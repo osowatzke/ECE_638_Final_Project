@@ -211,23 +211,7 @@ In this section, we evaluate the performance of an FMCW radar written in MATLAB 
 		
 	Clearly, the minimum range separation at which the radar can distinguish two targets is when the targets are separated by a single range gate. This implies a range resolution of 0.5 m. This is consistent with the theoretical range resolution.
 	
-	The peak sidelobe ratio (PSLR) is the ratio of the range response peak to its highest sidelobe. Without zero padding the FFT, we can get vastly different measurements for the PSLR depending on the object's position.
-	
-	\begin{figure}[H]
-	    	\centering
-	    	\fbox{\includegraphics[width=0.8\linewidth]{pslr_no_window_no_zpad_best_position.jpg}}
-	    	\caption{PSLR Measurement for Best Case Target Position}
-	    	\label{fig::pslr_best_position}
-	\end{figure}
-	
-	\begin{figure}[H]
-	    	\centering
-	    	\fbox{\includegraphics[width=0.8\linewidth]{pslr_no_window_no_zpad_worst_position.jpg}}
-	    	\caption{PSLR Measurement for Worst Case Target Position}
-	    	\label{fig::pslr_worst_position}
-	\end{figure}
-	
-	For the best case object position shown in Figure \ref{fig::pslr_best_position}, we measure a PSLR of 146.91 dB. For the worst case object position shown in Figure \ref{fig::pslr_worst_position}, we measure a PSLR of 9.54 dB. We can zero-pad the fast-time FFT to resolve discrepancies in these measurements. Doing so, results in the following range response:
+	The peak sidelobe ratio (PSLR) is the ratio of the range response peak to its highest sidelobe. The range response of an FMCW radar is the FFT of a tone (i.e. a sinc function). Therefore, the PSLR can vary drastically depending on the location of the FFT samples, which are dependent on the object's range and velocity. To get a more consistent PSLR measurement, we zero-pad the fast-time FFT. Doing so, results in the following range response:
 	
 	\begin{figure}[H]
 	    	\centering
@@ -238,7 +222,7 @@ In this section, we evaluate the performance of an FMCW radar written in MATLAB 
 	
 	Examining the figure, we measure a PSLR of 13.27 dB, which is the expected PSLR measurement for a sinc function.
 	
-	Note that we can improve the PSLR by applying a window. However, this will also degrade the range resolution by increasing the mainlobe width of the range response. We consider a Chebychev with an 80dB peak to sidelobe ratio.
+	Note that we can improve the PSLR by applying a window. However, this will also degrade the range resolution by increasing the range response's mainlobe width. First, we consider a Chebyshev window with an 80dB peak to sidelobe ratio.
 	
 	\begin{figure}[H]
 	    	\centering
@@ -247,7 +231,7 @@ In this section, we evaluate the performance of an FMCW radar written in MATLAB 
 	    	\label{fig::plsr_window} 
 	\end{figure}
 	
-	Examining Figure \ref{fig::plsr_window}, we achieve the expected PSLR of 80 dB. However, the mainlobe width is also increased by a factor of 3.2, which in term degrades the range resolution by a factor of 3.2. Other windows can be selected, which may off a better trade off between range resolution and PSLR. Consider for example a taylor window, which achieves a PSLR of 30.44 dB while only decreasing the range resolution by a factor of 1.5.
+	Examining Figure \ref{fig::plsr_window}, we achieve the expected PSLR of 80 dB. However, the mainlobe width is also increased by a factor of 3.2, which in term degrades the range resolution by a factor of 3.2. Other windows can be selected, which may off a better trade off between range resolution and PSLR. Consider for example a taylor window, which achieves a PSLR of 30.44 dB while only degrading the range resolution by a factor of 1.5.
 	
 	\begin{figure}[H]
 	    	\centering
