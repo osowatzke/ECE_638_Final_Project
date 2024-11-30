@@ -141,25 +141,30 @@ classdef ofdmRadar < RadarBase
             doppFreqNorm = self.dopplerFreq/self.sampleRate;
 
             % Allocate an empty array for the received data
-            self.rxData = zeros(1, numel(self.txWaveform));
+            self.rxData = zeros(length(self.txWaveform),1);
 
             % Determine time axis for the CPI
-            n = (0:(length(self.rxData)-1));
+            n = (0:(length(self.rxData)-1)).';
 
             % Received signal is superposition of all target returns
             % Each target return is a delay and doppler shifted
             % copy of the transmitted waveform
-            for i = 1:length(self.txWaveform)
-                self.rxData = self.rxData + [zeros(1,targetRangeGate),...
-                    self.txWaveform(1:(end-targetRangeGate))].*...
-                    exp(1i*2*pi*doppFreqNorm*n);
+            for i = 1:length(targetRangeGate)
+                self.rxData = self.rxData + [zeros(targetRangeGate(i),1);...
+                    self.txWaveform(1:(end-targetRangeGate(i)))].*...
+                    exp(1i*2*pi*doppFreqNorm(i)*n);
             end
 
             % Add complex gaussian noise to return
             self.rxData = awgn(self.rxData, self.SNR_dB, 'measured');
 
+            % Remove half window length from leading and trailing
+            % ends of received data. These overlap with last and next
+            % CPI's respectively
+            self.rxData = self.rxData((self.windowLen/2+1):(end-self.windowLen/2));
+
             % Reshape into a symbolLen x pulses matrix
-            self.rxData = reshape(self.rxData, size(self.txWaveform));
+            self.rxData = reshape(self.rxData, [], self.numPulses);
         end
 
         % Function generates an RDM from the received signal
@@ -169,7 +174,7 @@ classdef ofdmRadar < RadarBase
             % the end of the symbol to ensure the signal we receive
             % is a circularly shifted copy of the transmission.
             startIdx = self.transmitter.cyclicPrefixLen +...
-                self.transmitter.windowLen + 1;
+                self.transmitter.windowLen/2 + 1;
             endIdx = startIdx + self.nSubcarriers - 1;
 
             % Select relevant gates of the signal for FFT processing

@@ -1,0 +1,36 @@
+c = 3e8;
+f = 1e9;
+lambda = c/f;
+d = lambda/2;
+theta_x = -90:0.1:90;
+theta_y = theta_x;
+M = 8;
+% d = d*(-4:4);
+d = d*(0:(M-1)).';
+d = reshape(d,1,1,[]);
+kx = d;
+ky = d;
+theta = -180:0.1:180; %-180:180;
+phi = (0:0.1:90).'; %(0:90).';
+x = (-(M-1)/2):0.01:((M-1)/2);
+y = x.';
+theta = atan2d(y,x);
+r = sqrt(x.^2+y.^2);
+z = max(x);
+phi = atand(r./z);
+Gx = sum(exp(-1i*2*pi/lambda*sind(phi).*kx.*cosd(theta)),3);
+Gy = sum(exp(-1i*2*pi/lambda*sind(phi).*ky.*sind(theta)),3);
+G = Gx.*Gy;
+% G = sum(exp(-1i*2*pi/lambda*sind(phi).*(kx.*cosd(theta)+ky.*sind(theta))),3),4);
+% G = sum(exp(-1i*2*pi*d/lambda.*sind(theta_x)));
+% G = G.*sum(exp(-1i*2*pi*d/lambda.*sind(theta_y))).';
+% G = sum(exp(-1i*2*pi*d/lambda.*sqrt(sind(theta_x).^2+sind(theta_y).^2)),3);
+% G = x.*y;
+figure(1)
+clf;
+% plot(db(x));
+% G = db(G./max(abs(G)));
+% G = G - max(G);
+imagesc(db(G) - max(max(db(G))));
+colorbar;
+% clim([-50 0])

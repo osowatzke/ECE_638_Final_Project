@@ -39,8 +39,7 @@ classdef ofdmChannel < keyValueInitializer
 
             % Apply fading if rayleigh fading is active
             if self.enRayleighFading
-                self.fadedSignal = rayleighChan(txSignal(:));
-                self.fadedSignal = reshape(self.fadedSignal, size(txSignal));
+                self.fadedSignal = rayleighChan(txSignal);
 
             % Otherwise pass input signal
             else

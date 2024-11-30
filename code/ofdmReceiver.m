@@ -31,6 +31,7 @@ classdef ofdmReceiver < keyValueInitializer
     % Read only properties
     properties(SetAccess=protected)
         eqSymbols       = [];
+        nSymbols        = [];
     end
 
     % Public class methods
@@ -38,6 +39,9 @@ classdef ofdmReceiver < keyValueInitializer
 
         % Function determines received bit stream from recevied signal
         function bits = run(self, rxSignal)
+
+            % Extract the expected number of symbols
+            self.nSymbols = size(self.txSymbols, 2);
 
             % Determine received symbols with just fading (no noise)
             % Used in perfect (unattainable) channel estimate
@@ -77,9 +81,15 @@ classdef ofdmReceiver < keyValueInitializer
         % Function extracts received symbols from receive signal
         function symbols = extractSymbols(self, signal)
 
+            % Remove half of window length at start and end of symbol
+            signal = signal((self.windowLen/2+1):(end-self.windowLen/2));
+
+            % Reshape into 2D matrix
+            signal = reshape(signal,[],self.nSymbols);
+
             % Determine where to place FFT window
-            % Should start after half cylic prefix and window
-            symbolStart = self.cyclicPrefixLen/2 + self.windowLen + 1;
+            % Should start after half cylic prefix and half window
+            symbolStart = self.cyclicPrefixLen/2 + self.windowLen/2 + 1;
             symbolEnd = size(signal,1) - symbolStart + 1;
 
             % Take FFT over FFT window. FFT will demodulate

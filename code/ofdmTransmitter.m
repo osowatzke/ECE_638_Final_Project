@@ -90,6 +90,16 @@ classdef ofdmTransmitter < keyValueInitializer
                 self.cyclicPrefixLen, self.windowLen);
 
             txSignal = txSignalCP.*self.window;
+
+            % Overlapped windowed region of neighboring symbols
+            symbolEnd = txSignal((end-self.windowLen+1):end,:);
+            txSignal(1:self.windowLen,2:end) = ...
+                txSignal(1:self.windowLen,2:end) + ...
+                symbolEnd(:,1:(end-1));
+
+            % Flatten into vector
+            txSignal = reshape(txSignal(1:(end-self.windowLen),:),[],1);
+            txSignal = [txSignal; symbolEnd(:,end)];
         end
     end
 end

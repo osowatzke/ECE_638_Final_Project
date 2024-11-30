@@ -154,10 +154,25 @@ classdef ofdmModel < keyValueInitializer
             % The SNR on each active subcarrier will be higher because the energy
             % is distributed over fewer subcarriers
             snrOffset = (self.nSubcarriers/nonZeroCarriers);
-        
-            % The SNR will also be higher when the window is '1'. Happens for all
-            % samples input to the FFT
-            snrOffset = snrOffset/mean(abs(self.transmitter.window).^2);
+
+            % Determine the power of the window
+            windowPower = sum(abs(self.transmitter.window).^2);
+
+            % Determine the number of samples in the window
+            nSamplesWindow = length(self.transmitter.window);
+
+            % Determine the average number of samples in the window
+            % after accounting for overlap
+            nSamplesWindowOverlap = nSamplesWindow - self.windowLen;
+            avgSamplesWindow = (nSamplesWindowOverlap*(self.nSymbols - 1) + ...
+                nSamplesWindow)/self.nSymbols;
+
+            % Determine the average window power
+            avgWindowPower = windowPower/avgSamplesWindow;
+
+            % The SNR will also be higher when the window is 1.
+            % Increase the SNR to account for non-unit samples
+            snrOffset = snrOffset/avgWindowPower;
         
             % Convert SNR offset to dB
             snrOffset_dB = 10*log10(snrOffset);
@@ -211,8 +226,8 @@ classdef ofdmModel < keyValueInitializer
             clf;
 
             % Determine the spectrum of the transmitted signal
-            pwelch(self.txSignal(:), [], [], [], 'centered')
-            [pxx, f] = pwelch(self.txSignal(:), [], [], [], 'centered');
+            pwelch(self.txSignal, [], [], [], 'centered')
+            [pxx, f] = pwelch(self.txSignal, [], [], [], 'centered');
             plot(f/pi, db(pxx), 'LineWidth', 1.5);
             grid on;
 
