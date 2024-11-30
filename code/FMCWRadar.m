@@ -113,7 +113,7 @@ classdef FMCWRadar < RadarBase
 
             % After mixing the target will be at a negative frequency
             % Flip the range axis so data is organized in "natural" order
-            self.rdm = flip(self.rdm,1);
+            self.rdm = flip(circshift(self.rdm,-1),1);
 
             % Generate slow time window
             win = self.slowTimeWindow(size(self.rdm, 2)).';

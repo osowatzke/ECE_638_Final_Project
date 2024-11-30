@@ -129,7 +129,27 @@ classdef RadarBase < keyValueInitializer
 
             % Output peak sidelobe ratio
             fprintf('Radar Metrics:\n')
-            fprintf('\tPSLR(dB) = %.2f\n\n', PSLR_dB)
+            fprintf('\tPSLR(dB) = %.2f\n', PSLR_dB)
+
+            % Measure noise floor
+            ignoreGates = 3*self.rangeOSR + self.rangeOSR - 1;
+            ignoreGates = self.maxRangeGate + (-ignoreGates:ignoreGates);
+            ignoreGates = mod(ignoreGates - 1, size(self.rdm,1)) + 1;
+            rangeGates = 1:size(self.rdm,1);
+            rangeGates = all(rangeGates ~= ignoreGates.', 1);
+            ignoreBins = 3*self.dopplerOSR + self.dopplerOSR - 1;
+            ignoreBins = self.maxDopplerBin + (-ignoreBins:ignoreBins);
+            ignoreBins = mod(ignoreBins - 1, size(self.rdm,1)) + 1;
+            dopplerBins = 1:size(self.rdm,2);
+            dopplerBins = all(dopplerBins ~= ignoreBins.', 1);
+            noisePower = mean(abs(self.rdm(rangeGates, dopplerBins)).^2, 'all');
+
+            % Determine SNR
+            peakPower = abs(rdmPeak).^2;
+            measSNR_dB = 10*log10(peakPower/noisePower);
+
+            % Output SNR
+            fprintf('\tSNR(dB) = %.2f\n\n', measSNR_dB);
         end
 
         % Function generates plot from computed RDMs

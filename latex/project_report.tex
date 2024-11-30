@@ -290,7 +290,7 @@ In this section, we evaluate the performance of an FMCW radar written in MATLAB 
 	
 	Our measured velocity is consistent with this result.
 	
-	According to \cite{richards-2005}, the SNR at the receiver is given by the following equation:
+	According to \cite{richards-2005}, the SNR at the receiver input is given by the following equation:
 	
 	\begin{equation}
 		\chi = \frac{P_tG^2\lambda^2\sigma}{(4\pi)^3R^4kT_0\beta_nF_nL_sL_{\alpha}(R)}
@@ -303,7 +303,7 @@ In this section, we evaluate the performance of an FMCW radar written in MATLAB 
 		\hline
 		Variable & Definition \\
 		\hline
-		$P_t$ & Transmitter Power \\
+		$P_t$ & Transmit Power \\
 		\hline
 		$G$ & Antenna Gain \\
 		\hline
@@ -328,11 +328,62 @@ In this section, we evaluate the performance of an FMCW radar written in MATLAB 
 	\end{tabular}
 	\end{center}	
 	
-	According to \cite{richards-2005}, the SNR at the receiver is related to the transmit power ($P_t$), the wavelength ($\lambda$), and the noise equivalent bandwidth ($\beta_n$) as follows: 
+	If we fix consider only the contributions of the transmit power and noise equivalent bandwidth, we can derive the relationship among the remaining variables:
 	
 	\begin{equation}
-		\chi \propto \frac{P_t\lambda^2}{\beta_n}
+		\chi \propto \frac{P_t}{\beta_n}
 	\end{equation}
+	
+	The SNR in the RDM is greater than the input SNR by a factor of $G_{sp}$, where $G_{sp}$ is the SNR gain due to signal processing.
+	
+	The signal processing gain for the FMCW radar is given by:
+	
+	\begin{equation}
+		G_{sp} = G_{fast}G_{slow}
+	\end{equation}
+	
+	Here, $G_{fast}$ is the SNR gain due to fast-time processing, and $G_{slow}$ is the SNR gain due to slow-time processing.
+
+	%  = \frac{(\#PRI)(PRI)f_s}{L_{fast}L_{slow}}
+	
+	\begin{equation}
+		 G_{fast} = \frac{M_{fast}}{L_{fast}} = \frac{f_s/PRF}{L_{fast}}
+	\end{equation}
+		
+	where $f_s$ is the sample rate and $L_{fast}$ is the SNR loss due to the fast-time FFT window. Using an 80 dB Chebyshev window, we can get the following solution for $G_{fast}$:
+	
+	\begin{equation}
+		G_{fast} \approx 860.8422
+	\end{equation}
+	
+	Similarly, for the slow-time SNR gain, we have
+	
+	\begin{equation}
+		G_{slow} = \frac{M_{slow}}{L_{slow}} = \frac{\#PRI}{L_{slow}}
+	\end{equation}
+		
+	where $L_{slow}$ is the SNR loss due to the slow-time FFT window. Using an 80 dB Chebyshev window, we can get the following solution for $G_{slow}$
+	
+	\begin{equation}
+		G_{slow} \approx 146.4771
+	\end{equation}
+	
+	Therefore, the overall signal processing SNR gain is given as follows:
+	
+	\begin{equation}
+		G_{sp} \approx 126094
+	\end{equation}
+	
+	Or equivalently,
+	
+	\begin{equation}
+		 {G_{sp}}_{(dB)} \approx 51.0069\ \text{dB}
+	\end{equation}
+	
+	If we input a signal with an SNR of 20 dB and measure the SNR in the RDM, we obtain a value of 70.01 dB, which is consistent with the expected signal processing gain.
+	
+	
+	$PRI \times f_s$ is the size of the fast-time FFT window, $\#PRI$ is the size of the slow-time FFT window 
 	
 	The received SNR is given as follows
 	
