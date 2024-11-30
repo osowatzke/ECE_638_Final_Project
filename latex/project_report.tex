@@ -575,6 +575,86 @@ The orthogonality or low correlation of the frequency domain allows the two subs
 
 \subsection {Simulation and Performance}
       
+There are many variables and parameters that can influence the quality of the received data. To investigate the accuracy of the JRC received data, we have simulated and compared the results for many scenarios. The first OFDM-Radar simulation consists of DC subcarrier (Zero Frequency) which is used in OFDM signals to avoid issues with DC offset in the receiver, eliminate interference from low-frequency noise. 
+
+\begin{figure}[H]
+\centering
+\fbox{\includegraphics[width=0.8\linewidth]{OFDMRadar_with DCNull_200m}}
+\caption{OFDM/Radar with DC null range plot}
+\end{figure}
+
+The next plot displays the signal with the same parameter without the DC null. The pick received power is almost the same as the signal received with DC null. However, the sidelobes and noise floor shifted down significantly (average of 17 dB lower). Lower sidelobes and noise floor is crucial to some applications with high scattering noise. By including DC offset, the available bandwidth is fully utilized, leading to better spectral efficiency. Each subcarrier contributes to the total system data rate. Utilizing the DC subcarrier adds additional capacity, increasing the total throughput of the system.
+
+\begin{figure}[H]
+\centering
+\fbox{\includegraphics[width=0.8\linewidth]{OFDMRadar_No DCNull_200m}}
+\caption{OFDM/Radar without DC null range plot}
+\end{figure}
+
+The previous results were simulated for a target located at 200m. We have increased the target range to 500 and 1000m to see the received data quality and degradation in a long target range. As the plots indicate, in the 500m range which considers a long range for V2V radar applications, we still have a distinguishable target peak (delta of 23dB). At 900m range the dynamic range degrades significantly to around 9dB. \par
+\textbf{ Note: } To have an efficient report, we only display the analysis for signals without the DC Nulls.
+\begin{figure}[H]
+\centering
+\fbox{\includegraphics[width=1.0\linewidth]{Mix_500-900m}}
+\caption{OFDM/Radar No DC null range plot 500m (left) and 900m (right)}
+\end{figure} 
+Doppler is one other critical parameter to identify the reliable radar system. The Doppler simulation results provided for both 500 and 900m in the figure below. As we expected the higher range degrades the Doppler results dynamic range (22 to 14 dB). However, in this Doppler result the resolution is not adequate to provide an accurate result. The flat signal peak indicates a high ambiguity and unreliable target velocity estimation.
+\begin{figure}[H]
+\centering
+\fbox{\includegraphics[width=1.0\linewidth]{Mix_500-900m_Doppler}}
+\caption{OFDM/Radar Doppler plot for 500m (left) and 900m (right)}
+\end{figure} 
+
+A key advantage of the OFDM technique is its flexibility to adjust parameters, enabling optimal performance tailored to the application and channel characteristics in various environments. We have adjusted the OFDM parameters to optimize radar performance while preserving high communication efficiency and capacity.
+OFDM radar written in MATLAB and configured with the following set of parameters: 
+
+\begin{center}
+\begin{tabular}{|c|c|}
+\hline
+\textbf {Parameter} & \textbf {Value }\\
+\hline
+Carrier Frequency & 77 GHz \\
+\hline
+Sample Rate & 200 MHz \\
+\hline
+Number of Subcarriers & 16x64\\
+\hline
+Number of Data Carriers & 16x48 + 1 \\
+\hline 
+Number of Pilot Carriers & 16x4 \\
+\hline 
+Number of Pulses & 128 \\
+\hline 
+Target Range & 200 \\
+\hline 
+Target Velocity & 50 \\
+\hline 
+\end{tabular}
+\end{center}
+
+
+The graph below presents the simulation results using the parameters described above. While the noise floor has risen to 45 dB, the dynamic range remains around 38 dB, similar to the unimproved simulation at a 200m range. Another significant improvement is the enhanced resolution of the detected peak, leading to more accurate range measurements.
+
+\begin{figure}[H]
+\centering
+\fbox{\includegraphics[width=0.8\linewidth]{OFDMRadar_No DCNull_T200_Improve}}
+\caption{OFDM/Radar range plot for 200m target}
+\end{figure} 
+The Doppler results for the above parameters plotted in the graph below. 
+\begin{figure}[H]
+\centering
+\fbox{\includegraphics[width=0.8\linewidth]{OFDMRadar_No DCNull_Doppler_T200_Improve}}
+\caption{OFDM/Radar range plot for 200m target}
+\end{figure} 
+Finally, we present the maximum achievable range with sufficient resolution to facilitate easy target analysis and detection. The best results were achieved at 700m. The received signal degraded significantly after 700m range. 
+
+\begin{figure}[H]
+\centering
+\fbox{\includegraphics[width=0.8\linewidth]{Mix_Improved_700m}}
+\caption{OFDM/Radar range (left) and Doppler (right) plot for 700m target}
+\end{figure} 
+\section {Conclusion}
+While JRC may slightly compromise the standalone performance of either radar (resolution) or communication (capacity), it offers significant advantages in shared resource utilization, reduced hardware cost, and suitability for modern multi-functional systems like autonomous vehicles.
 
 
 	\bibliographystyle {IEEEtran}
