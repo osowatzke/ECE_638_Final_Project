@@ -79,7 +79,7 @@ classdef ofdmRadar < RadarBase
             % Determine the PRI length in samples
             % Should be the same as OFDM symbol length
             self.priSamples = self.nSubcarriers + ...
-                self.cyclicPrefixLen + 2*self.windowLen;
+                self.cyclicPrefixLen + self.windowLen;
 
             % Determine corresponding PRF length
             % Overrides PRF defined in radar base class

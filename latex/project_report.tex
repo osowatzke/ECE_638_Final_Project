@@ -369,7 +369,7 @@ In this section, we evaluate the performance of an FMCW radar written in MATLAB 
 		
 		Typically, null carriers are placed at the edges of the band to reduce interference between neighboring channels. A null carrier is also typically placed at DC to avoid problems with DC offsets in the D/A and A/D \cite{802_11a_standard}. An IFFT then modulates each of the symbols with its respective subcarrier.
 		
-		To deal with the effects of a multi-path, a cyclic prefix is added to each of the OFDM symbols. The cyclic prefix appends the last L samples of an OFDM symbol to the beginning of the OFDM symbol as illustrated in Figure \ref{fig::cylic_prefix}.
+		To deal with the effects of multi-path, a cyclic prefix is added to each of the OFDM symbols. The cyclic prefix appends the last L samples of an OFDM symbol to the beginning of the OFDM symbol as illustrated in Figure \ref{fig::cylic_prefix}.
 		
 		\begin{figure}[H]
 	    		\centering
@@ -378,7 +378,52 @@ In this section, we evaluate the performance of an FMCW radar written in MATLAB 
 	    		\label{fig::cylic_prefix}
 		\end{figure}
 		
-		With the cyclic prefix, the receiver receives a circularly-shifted copy of the symbol for each of the signal paths. If we take an FFT at the receiver, each sample of the FFT will be a copy of the transmitted FFT samples weighted by a complex number, which results from the sum of the multi-path components. We can remove this complex weighting by equalizing the received symbol. After equalization, we should be obtain to correctly reconstruct the transmitted symbol.
+		At this stage, we can also add a window to reduce the out-of band spectrum. In the case of windowing, the first \newline $L/2 + L_{win}$ samples are appended to the end of the symbol and the last $L/2 + L_{win}$ samples are appended to the beginning of the symbol. This is illustrated in Figure \ref{fig::ofdm_windowing}.
+		
+		\begin{figure}[H]
+	    		\centering
+	    		\fbox{\includegraphics[width=0.9\linewidth]{ofdm_windowing.png}}
+	    		\caption{OFDM Symbol with Windowing}
+	    		\label{fig::ofdm_windowing}
+		\end{figure}
+		
+		Then a window is multiplied element-wise with the symbol. A commonly applied window is
+		
+		\begin{equation}
+			w_1(t) = \frac{1}{2}[1 - \cos\pi(t + T_{win} + T_G/2)/T_{win}]
+		\end{equation}
+		
+		\begin{equation}
+			w_2(t) = \frac{1}{2}[1 - \cos\pi(t - T_{FFT})/T_{win}]
+		\end{equation}
+		
+		\begin{equation}
+			w(t) = \begin{cases}
+				w_1(t), & T_1 \leq t < T_2 \\
+				1.0, & T_2 \leq t < T_3 \\
+				w_2(t), & T_3 \leq t < T_4
+			\end{cases}
+		\end{equation}
+		
+		where $T_1$, $T_2$, $T_3$, and $T_4$ are defined as follows:
+		
+		\begin{equation}
+			T_1 = -T_{win} - T_G/2
+		\end{equation}
+		
+		\begin{equation}
+			T_2 = -T_G/2
+		\end{equation}
+		
+		\begin{equation}
+			T_3 = T_{FFT} + T_G/2
+		\end{equation}
+		
+		\begin{equation}
+			T_4 = T_{FFT} + T_G/2 + T_{win}
+		\end{equation}
+		
+		At the receiver, the window and or cyclic prefix are removed before the signal is demodulated with an FFT. Because of the cyclic prefix, each of the received multi-path components are a circularly-shifted copies of the transmitted signal. After the FFT, the multi-path components result in a complex weight for each of the FFT bins. We can remove this complex weighting by equalizing the received symbol. After equalization, we should be obtain to correctly reconstruct the transmitted symbol.
 		
 		First, a bit-stream is modulated using a desired modulation (PSK, QAM, etc...)
 	 	
