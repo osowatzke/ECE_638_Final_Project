@@ -423,7 +423,23 @@ In this section, we evaluate the performance of an FMCW radar written in MATLAB 
 			T_4 = T_{FFT} + T_G/2 + T_{win}
 		\end{equation}
 		
-		At the receiver, the window and or cyclic prefix are removed before the signal is demodulated with an FFT. Because of the cyclic prefix, each of the received multi-path components are a circularly-shifted copies of the transmitted signal. After the FFT, the multi-path components result in a complex weight for each of the FFT bins. We can remove this complex weighting by equalizing the received symbol. After equalization, we should be obtain to correctly reconstruct the transmitted symbol.
+		At the receiver, the window and or cyclic prefix are removed before the signal is demodulated with an FFT. Because of the cyclic prefix, each of the received multi-path components are a circularly-shifted copies of the transmitted signal. After the FFT, the multi-path components result in a complex weight for each of the FFT bins. We can remove this complex weighting by equalizing the received symbol. To perform equalization, we can estimate estimate the channel at each of the pilot carriers:
+		
+		\begin{equation}
+			\hat{H}_{p_k} = \frac{Y_{p_k}}{X_{p_k}}
+		\end{equation}
+		
+		We then can interpolate the channel estimate to get an estimate of the channel at each of the data carriers. Finally, we can compute equalization weights $A_k$ using either an zero-forcing or MMSE equalizer.
+		
+		\begin{equation}
+			A_{\text{ZF}_k} = \frac{1}{\hat{H}_k}
+		\end{equation}
+		
+		\begin{equation}
+			A_{\text{MMSE}_k} = \frac{\hat{H}_k^{*}}{|\hat{H}_k|^2 + 1/SNR}
+		\end{equation}
+		
+		After equalization, we should be obtain to correctly reconstruct the transmitted symbol.
 		
 		First, a bit-stream is modulated using a desired modulation (PSK, QAM, etc...)
 	 	
