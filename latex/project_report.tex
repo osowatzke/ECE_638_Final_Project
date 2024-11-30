@@ -367,8 +367,18 @@ In this section, we evaluate the performance of an FMCW radar written in MATLAB 
 	    		\label{fig::ofdm_subcarriers}
 		\end{figure}
 		
-		Typically, null carriers are placed at the edges of the band to reduce interference between neighboring channels. A null carrier is also typically placed at DC to avoid problems with DC offsets in the D/A and A/D \cite{802_11a_standard}. An IFFT then modulate each of the symbols with its respective subcarrier.
+		Typically, null carriers are placed at the edges of the band to reduce interference between neighboring channels. A null carrier is also typically placed at DC to avoid problems with DC offsets in the D/A and A/D \cite{802_11a_standard}. An IFFT then modulates each of the symbols with its respective subcarrier.
 		
+		To deal with the effects of a multi-path, a cyclic prefix is added to each of the OFDM symbols. The cyclic prefix appends the last L samples of an OFDM symbol to the beginning of the OFDM symbol as illustrated in Figure \ref{fig::cylic_prefix}.
+		
+		\begin{figure}[H]
+	    		\centering
+	    		\fbox{\includegraphics[width=0.9\linewidth]{cyclic_prefix.png}}
+	    		\caption{OFDM Cyclic Prefix}
+	    		\label{fig::cylic_prefix}
+		\end{figure}
+		
+		With the cyclic prefix, the receiver receives a circularly-shifted copy of the symbol for each of the signal paths. If we take an FFT at the receiver, each sample of the FFT will be a copy of the transmitted FFT samples weighted by a complex number, which results from the sum of the multi-path components. We can remove this complex weighting by equalizing the received symbol. After equalization, we should be obtain to correctly reconstruct the transmitted symbol.
 		
 		First, a bit-stream is modulated using a desired modulation (PSK, QAM, etc...)
 	 	
