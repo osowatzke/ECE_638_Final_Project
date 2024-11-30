@@ -16,6 +16,7 @@ classdef RadarBase < keyValueInitializer
         rangeOSR        = 1;        % Range Oversample Rate
         dopplerOSR      = 1;        % Doppler Oversample Rate
         normalizedUnits = false;    % Normalized units
+        plotResults     = true;     % Flag to plot results
         PSLRIgnoreGates = 3;        % How many gates to ignore on either
                                     % side of peak for PSLR measurement
     end
@@ -46,7 +47,57 @@ classdef RadarBase < keyValueInitializer
             self.generateRdm();
             self.locateTarget();
             self.computeMetrics();
-            self.generatePlots();
+            if self.plotResults
+                self.generatePlots();
+            end
+        end
+
+        % Function measures the peak sidelobe ratio
+        function PSLR_dB = measurePSLR(self)
+
+            % Grab range slice containing peak
+            rangeSlice = self.rdm(:,self.maxDopplerBin);
+
+            % Get peak value
+            rdmPeak = abs(rangeSlice(self.maxRangeGate));
+
+            % Grab peak sidelobe value
+            % Ignore a subset of values around peak
+            ignoreGates = self.PSLRIgnoreGates*self.rangeOSR;
+            ignoreGates = ignoreGates + self.rangeOSR - 1;
+            ignoreGates = self.maxRangeGate + (-ignoreGates:ignoreGates);
+            ignoreGates = mod(ignoreGates - 1, size(self.rdm,1)) + 1;
+            rangeGates = 1:size(self.rdm, 1);
+            sidelobes = rangeSlice(all(rangeGates ~= ignoreGates.', 1));
+            maxSidelobe = max(abs(sidelobes));
+
+            % Compute peak sidelobe ratio
+            PSLR_dB = 20*log10(rdmPeak/maxSidelobe);
+        end
+
+        % Function measures the SNR of the RDM return
+        function measSNR_dB = measureSNR(self)
+
+            % Get RDM peak value
+            rdmPeak = abs(self.rdm(self.maxRangeGate,...
+                self.maxDopplerBin));
+
+            % Measure noise floor
+            ignoreGates = 3*self.rangeOSR + self.rangeOSR - 1;
+            ignoreGates = self.maxRangeGate + (-ignoreGates:ignoreGates);
+            ignoreGates = mod(ignoreGates - 1, size(self.rdm,1)) + 1;
+            rangeGates = 1:size(self.rdm,1);
+            rangeGates = all(rangeGates ~= ignoreGates.', 1);
+            ignoreBins = 3*self.dopplerOSR + self.dopplerOSR - 1;
+            ignoreBins = self.maxDopplerBin + (-ignoreBins:ignoreBins);
+            ignoreBins = mod(ignoreBins - 1, size(self.rdm,1)) + 1;
+            dopplerBins = 1:size(self.rdm,2);
+            dopplerBins = all(dopplerBins ~= ignoreBins.', 1);
+            noisePower = mean(abs(self.rdm(rangeGates, dopplerBins)).^2, 'all');
+
+            % Determine SNR
+            peakPower = abs(rdmPeak).^2;
+            measSNR_dB = 10*log10(peakPower/noisePower);
         end
     end
 
@@ -108,47 +159,15 @@ classdef RadarBase < keyValueInitializer
         % Function computes Radar metrics
         function computeMetrics(self)
 
-            % Grab range slice containing peak
-            rangeSlice = self.rdm(:,self.maxDopplerBin);
+            % Measure peak sidelobe ratio
+            PSLR_dB = self.measurePSLR();
 
-            % Get peak value
-            rdmPeak = abs(rangeSlice(self.maxRangeGate));
-
-            % Grab peak sidelobe value
-            % Ignore a subset of values around peak
-            ignoreGates = self.PSLRIgnoreGates*self.rangeOSR;
-            ignoreGates = ignoreGates + self.rangeOSR - 1;
-            ignoreGates = self.maxRangeGate + (-ignoreGates:ignoreGates);
-            ignoreGates = mod(ignoreGates - 1, size(self.rdm,1)) + 1;
-            rangeGates = 1:size(self.rdm, 1);
-            sidelobes = rangeSlice(all(rangeGates ~= ignoreGates.', 1));
-            maxSidelobe = max(abs(sidelobes));
-
-            % Compute peak sidelobe ratio
-            PSLR_dB = 20*log10(rdmPeak/maxSidelobe);
+            % Measure the RDM SNR
+            measSNR_dB = self.measureSNR();
 
             % Output peak sidelobe ratio
             fprintf('Radar Metrics:\n')
             fprintf('\tPSLR(dB) = %.2f\n', PSLR_dB)
-
-            % Measure noise floor
-            ignoreGates = 3*self.rangeOSR + self.rangeOSR - 1;
-            ignoreGates = self.maxRangeGate + (-ignoreGates:ignoreGates);
-            ignoreGates = mod(ignoreGates - 1, size(self.rdm,1)) + 1;
-            rangeGates = 1:size(self.rdm,1);
-            rangeGates = all(rangeGates ~= ignoreGates.', 1);
-            ignoreBins = 3*self.dopplerOSR + self.dopplerOSR - 1;
-            ignoreBins = self.maxDopplerBin + (-ignoreBins:ignoreBins);
-            ignoreBins = mod(ignoreBins - 1, size(self.rdm,1)) + 1;
-            dopplerBins = 1:size(self.rdm,2);
-            dopplerBins = all(dopplerBins ~= ignoreBins.', 1);
-            noisePower = mean(abs(self.rdm(rangeGates, dopplerBins)).^2, 'all');
-
-            % Determine SNR
-            peakPower = abs(rdmPeak).^2;
-            measSNR_dB = 10*log10(peakPower/noisePower);
-
-            % Output SNR
             fprintf('\tSNR(dB) = %.2f\n\n', measSNR_dB);
         end
 

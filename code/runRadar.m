@@ -107,3 +107,39 @@ radar = FMCWRadar(...
 
 % Run radar
 radar.run();
+
+%% Measure Radar Doppler Tolerance
+f = 77e9;
+lambda = c/f;
+unambigVelocity = lambda*PRF/4;
+targetVelocity = (-128:4:127)*unambigVelocity/128;
+PSLR_dB = zeros(size(targetVelocity));
+
+for i = 1:length(PSLR_dB)
+    % Create radar object
+    radar = FMCWRadar(...
+        'targetRange', 50*rgSize,...
+        'targetVelocity', targetVelocity(i), ...
+        'SNR_dB', 100,...
+        'rangeOSR', 16,...
+        'plotResults', false,...
+        'fastTimeWindow', @(x)chebwin(x,80),... % 80 dB Chebyshev window
+        'slowTimeWindow', @(x)chebwin(x,80),... % 80 dB Chebyshev window
+        'sampleRate', sampleRate,...
+        'PRF', PRF,...
+        'numPulses', numPulses);
+    
+    % Run radar
+    radar.run();
+
+    % Save PSLR from run
+    PSLR_dB(i) = radar.measurePSLR();
+end
+
+figure(4)
+clf;
+plot(targetVelocity, PSLR_dB, 'LineWidth', 1.5);
+ylim([79 81]);
+xlabel('Velocity (m/s)');
+ylabel('PSLR (dB)')
+title('Peak Sidelobe Ratio vs Velocity')

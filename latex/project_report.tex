@@ -137,7 +137,7 @@ In this section, we evaluate the performance of an FMCW radar written in MATLAB 
 	\end{tabular}
 	\end{center}
 	
-	Metrics of interest include the range resolution, peak sidelobe ratio (PSLR), unambiguous range, unambiguous velocity, and received SNR.
+	Metrics of interest include the range resolution, peak sidelobe ratio (PSLR), doppler tolerance, unambiguous range, unambiguous velocity, and received SNR.
 
 	The range resolution is the minimum range separation required for the radar to distinguish two objects. We can compute it according to Equation (\ref{eq::range_resolution}) as:
 	
@@ -184,6 +184,17 @@ In this section, we evaluate the performance of an FMCW radar written in MATLAB 
 	    	\caption{PSLR Measurement with Taylor Window}
 	    	\label{fig::plsr_taylor_window} 
 	\end{figure}
+	
+	We can measure the doppler tolerance of the system, by examining the PSLR in the presence of uncompensated doppler. In Figure \ref{fig::doppler_tolerance}, we show the PSLR when an 80 dB Chebyshev window is applied while sweeping the uncompensated doppler from $-v_{ua}$ to $v_{ua}$.
+	
+	\begin{figure}[H]
+		\centering
+	    	\fbox{\includegraphics[width=0.8\linewidth]{doppler_tolerance.jpg}}
+	    	\caption{PSLR Measurement with Uncompensated Doppler}
+	    	\label{fig::doppler_tolerance} 
+	\end{figure}
+	
+	Note that the PSLR is independent of the uncompensated doppler. This is because the uncompensated doppler simply adds to the frequency of the input tone. This can introduce range error through a process known as range-doppler coupling. However, as long as the doppler shift is in the first ambiguity, we can compensate for any introduced range error.
 	
 	The unambiguous range and velocity of the system can be computed according to Equation (\ref{eq::unambig_range}) and Equation (\ref{eq::unambig_velocity}). This results in the following:
 	
@@ -280,15 +291,13 @@ In this section, we evaluate the performance of an FMCW radar written in MATLAB 
 		\chi \propto \frac{P_t}{\beta_n}
 	\end{equation}
 	
-	Note that the SNR in the RDM is greater than the input SNR by a factor of $G_{sp}$, where $G_{sp}$ is the SNR gain due to signal processing.
-	
-	The signal processing gain for the FMCW radar is given by:
+	Note that the SNR in the RDM is greater than the input SNR by a factor of $G_{sp}$, where $G_{sp}$ is the SNR gain due to signal processing. The signal processing gain for the FMCW radar is given by:
 	
 	\begin{equation}
 		G_{sp} = G_{fast}G_{slow}
 	\end{equation}
 	
-	Here, $G_{fast}$ is the SNR gain due to fast-time processing, and $G_{slow}$ is the SNR gain due to slow-time processing.
+	Here, $G_{fast}$ is the SNR gain due to fast-time processing, and $G_{slow}$ is the SNR gain due to slow-time processing. The fast-time SNR gain is given as follows:
 	
 	\begin{equation}
 		 G_{fast} = \frac{M_{fast}}{L_{fast}} = \frac{f_s/PRF}{L_{fast}}
@@ -324,83 +333,13 @@ In this section, we evaluate the performance of an FMCW radar written in MATLAB 
 		 {G_{sp}}_{(dB)} \approx 51.0069\ \text{dB}
 	\end{equation}
 	
-	If we input a signal with an SNR of 20 dB and measure the SNR in the RDM, we obtain a value of 70.01 dB, which is consistent with the expected signal processing gain.	
-	
-	$PRI \times f_s$ is the size of the fast-time FFT window, $\#PRI$ is the size of the slow-time FFT window 
-	
-	The received SNR is given as follows
-	
-	\begin{equation}
-		\text{SNR}_{\text{(dB)}} = 10\text{log}_{10}\left(\frac{P_r}{P_n}\right) = {P_r}_{\text{(dB)}} - {P_n}_{\text{(dB)}}
-	\end{equation}
-		
-	We assume that the noise is zero mean and Gaussian distributed. Therefore, the noise power can be expressed as follows:
-	
-	\begin{equation}
-		P_n = \sigma^2
-	\end{equation}
-	
-	 The received signal power is then given as follows:
-	 
-	 \begin{equation}
-	 	P_r = \frac{P_tG^2\lambda^2\sigma}{(4{\pi})^3R^4}
-	 \end{equation}
-	 
-	 The range resolution of the system is 
-	
-	\begin{itemize}
-		\item Received SNR
-		\item Unambiguous Range
-		\item Range Resolution
-		\item Doppler Tolerance
-		\item Peak Sidelobe Level (PSL)
-	\end{itemize}
-
-The radar has been configured with the following set of parameters:
-
- as the results of the FMCW radar simulation that was coded with Matlab. The code written programaticaly to allow us easily change the parameters to match the JRC wave and channel properties. This is necessery to have the comprehensive and fair comparison between FMCW and JRC performance. 
-The results below are extracted from the FMCW  radar simulation with parameter below:
-
-	
-	
-	\begin{itemize}
-	\item Carrier Frequency:	77 GHz
-	\item Sampling Rate:		200 MHz
-	\item PRF:				500 KHz
-	\item Code Length:		127
-	\item SNR:				20 dB
-	\end{itemize}
-	
-Simulation contains of generating the chirp signal for transmission, simulatin gthe received signal with target delays, Doppler shifts and noise. Windowin gis applied in both steps to reduce spectral leakage. The produced results are  FFT oerations in both fast and slow time. It supports multiple targets and includes configurable parameters like bandwidth, sample rate, and windowing functions. Graph below is the result of fast-time FFT displaying the target range.
-
-	\begin{figure}[H]
-	    		\centering
-	    		\fbox{\includegraphics[width=0.8\linewidth]{FMCW_Range Slice}}
-	    		\caption{FMCW range slice}
-		\end{figure}
-
-Graph below is the result of slow-time FFT, displaying the target velocity by analizing the phase change over multiple chirps. 
-
-	\begin{figure}[H]
-	    		\centering
-	    		\fbox{\includegraphics[width=0.8\linewidth]{FMCW_Doppler Slice}}
-	    		\caption{FMCW Doppler slice}
-		\end{figure}
-	
-Graph below is the result of mixing both Range and Doppler FFT. The Range-Doppler map's X-axis is a Doppler bins (relative velocity) and Y-axis is a range bins (distance). Bright spots indicate targets and their corresponding tange and velocity.
-	\begin{figure}[H]
-	    		\centering
-	    		\fbox{\includegraphics[width=0.8\linewidth]{FMCW_RDM}}
-	    		\caption{FMCW Range Doppler Map}
-		\end{figure}
-		
+	If we input a signal with an SNR of 20 dB and measure the SNR in the RDM, we obtain a value of 70.01 dB, which is consistent with the expected signal processing gain.
 		
      \section {Communication (OFDM)}
      
 	 \subsection {Background}
- 
- 
-            In this section we skim through OFDM communicaiton protocol. Since the objective of this paper is V2V JRC our focus is on IEEE 802.11 P standard. In this section we familiarize ourself with the functionality, key features, some 802.11 P standard specificaitons and advantages of this communication topology.\par
+	 
+	     In this section we skim through OFDM communicaiton protocol. Since the objective of this paper is V2V JRC our focus is on IEEE 802.11 P standard. In this section we familiarize ourself with the functionality, key features, some 802.11 P standard specificaitons and advantages of this communication topology.\par
     \textbf{  802.11 P} is specifically designed for wireless access in vehicular environments (WAVE) and is widely used for V2V applications within the automotive industry.
       
       \begin{itemize}
