@@ -117,60 +117,6 @@ In this section, we provide background on frequency-modulated continuous wave (F
 	
 	If a return exceeds these limits, it will alias and be detected at another range or velocity.
 	
-The main purpos of the radar, estimating velocity and range of the target, is acuratly achievable with FMCW signlas. The mathotalegy can be simply comprehented by the graph below. The range FFT provides the beat frequency to calculate the target distance and doppler FFT provides the frequncy delta between trnasmitted and received signal to calculate the target velocity. 
-	
-
-Some of Radar's perform metrics of interest that we are going to analize in this paper include but are not limited to:
-
-\begin{itemize}
-\item Received SNR
-\item Maximum Resolvable Range
-\item Range Resolution
-\item Doppler Tolerance
-\item Peak Sidelobe Level (PSL)
-\end{itemize}
-
-	Range (targer distance) can be calculated from equation \ref{eq::range_calculation}. %simple formula below:
-	
-	\begin{equation}
-		R = \frac{c_0|{\Delta}t|}{2} = \frac{c_0|{\Delta}f|}{2\left(\frac{df}{dt}\right)}
-		\label{eq::range_calculation}
-	\end{equation}
-	
-	\begin{itemize}
-	\item Co = speed of light = 3·108 m/s
-	\item \(\Delta \)t = delay time [s]
-	\item \(\Delta \)f = measured frequency difference [Hz]
-	\item R = distance between antenna and the reflecting object (ground) [m]
-	\item df/dt = frequency shift per unit of time
-	\end{itemize}
-
-Other critical parameters to consider for a radar performance are range resolution and Doppler/range ambiguity. 
-Maximum unambiguous range is calculated from formula below:
-
-	\begin{equation}
-		R_{max} = \frac{c_0}{2.PRF}
-		\label{eq:: range ambiguity_calculation}
-	\end{equation}
-
-Maximum unambiguous Doppler velocity is calculated from formula below:
-
-\begin{equation}
-		V_{max} = \frac{PRF.\lambda}{4}
-		\label{eq:: Doppler ambiguity_calculation}
-	\end{equation}
-  
-  Where PRF is Pulse Repetition Frequency (number of pulse per second).
-
-In the interest of comparing FMCW with JRC methode, we outline few advantages of FMCW in radar.
-	\begin{itemize}
-		\item High range resolution
-		\item Continuous operation
-		\item Simultaneous range and velocity measurement
-		\item Simple hardware
-		\item Low power consumption
-	\end{itemize}
-	
 	\subsection {Simulation and Performance}
 
 In this section, we evaluate the performance of an FMCW radar written in MATLAB and configured with the following set of parameters:
@@ -191,7 +137,7 @@ In this section, we evaluate the performance of an FMCW radar written in MATLAB 
 	\end{tabular}
 	\end{center}
 	
-	Metrics of interest include the received SNR, unambiguous range, unambiguous velocity, range resolution, doppler tolerance, and peak sidelobe level (PSL).
+	Metrics of interest include the range resolution, peak sidelobe ratio (PSLR), unambiguous range, unambiguous velocity, and received SNR.
 
 	The range resolution is the minimum range separation required for the radar to distinguish two objects. We can compute it according to Equation (\ref{eq::range_resolution}) as:
 	
@@ -208,9 +154,9 @@ In this section, we evaluate the performance of an FMCW radar written in MATLAB 
 	    	\label{fig::range_resolution}
 	\end{figure}
 		
-	Clearly, the minimum range separation at which the radar can distinguish two targets is when the targets are separated by a single range gate. This implies a range resolution of 0.5 m. This is consistent with the theoretical range resolution.
+	Clearly, the minimum range separation at which the radar can distinguish two objects is when the objects are separated by a single range gate. This implies a range resolution of 0.5 m. This is consistent with the theoretical range resolution.
 	
-	The peak sidelobe ratio (PSLR) is the ratio of the range response peak to its highest sidelobe. The range response of an FMCW radar is the FFT of a tone (i.e. a sinc function). Therefore, the PSLR can vary drastically depending on the location of the FFT samples, which are dependent on the object's range and velocity. To get a more consistent PSLR measurement, we zero-pad the fast-time FFT. Doing so, results in the following range response:
+	The peak sidelobe ratio (PSLR) is the ratio of the range response peak to its highest sidelobe. The range response of an FMCW radar is the FFT of a tone (i.e. a sinc function). Therefore, the PSLR can vary drastically with the location of the FFT samples. To get a more consistent PSLR measurement, we zero-pad the fast-time FFT. Doing so, results in the following range response:
 	
 	\begin{figure}[H]
 	    	\centering
@@ -221,7 +167,7 @@ In this section, we evaluate the performance of an FMCW radar written in MATLAB 
 	
 	Examining the figure, we measure a PSLR of 13.27 dB, which is the expected PSLR measurement for a sinc function.
 	
-	Note that we can improve the PSLR by applying a window. However, this will also degrade the range resolution by increasing the range response's mainlobe width. First, we consider a Chebyshev window with an 80dB peak to sidelobe ratio.
+	Note that we can improve the PSLR by applying a window. However, this will also degrade the range resolution by increasing the range response's mainlobe width. First, we consider a Chebyshev window with an 80dB peak to sidelobe ratio. The resulting range response is shown in Figure \ref{fig::plsr_window}.
 	
 	\begin{figure}[H]
 	    	\centering
@@ -230,7 +176,7 @@ In this section, we evaluate the performance of an FMCW radar written in MATLAB 
 	    	\label{fig::plsr_window} 
 	\end{figure}
 	
-	Examining Figure \ref{fig::plsr_window}, we achieve the expected PSLR of 80 dB. However, the mainlobe width is also increased by a factor of 3.2, which in term degrades the range resolution by a factor of 3.2. Other windows can be selected, which may off a better trade off between range resolution and PSLR. Consider for example a taylor window, which achieves a PSLR of 30.44 dB while only degrading the range resolution by a factor of 1.5.
+	Examining the range response, we achieve the expected PSLR of 80 dB. However, the mainlobe width is also increased by a factor of 3.2, which in term degrades the range resolution by a factor of 3.2. Other windows can be selected, which may off a better trade-off between range resolution and PSLR. Consider a taylor window, for example. It achieves a PSLR of 30.44 dB while only degrading the range resolution by a factor of 1.5.
 	
 	\begin{figure}[H]
 	    	\centering
@@ -249,7 +195,7 @@ In this section, we evaluate the performance of an FMCW radar written in MATLAB 
 		v_{ua} \approx 194.8\ \text{m/s}
 	\end{equation}
 	
-	We can measure the ambiguous range and velocity by placing a reflecting object at ranges and velocities that exceed these limits. For instance, to measure the unambiguous range, we pla1ced an object at 1250 m and looked at the resulting range doppler matrix (RDM).
+	We can measure the ambiguous range and velocity by placing a reflecting object at ranges and velocities that exceed these limits. For instance, to measure the unambiguous range, we place an object at a range of 1250 m and examine the resulting range doppler matrix (RDM).
 	
 	\begin{figure}[H]
 	    	\centering
@@ -296,7 +242,7 @@ In this section, we evaluate the performance of an FMCW radar written in MATLAB 
 		\chi = \frac{P_tG^2\lambda^2\sigma}{(4\pi)^3R^4kT_0\beta_nF_nL_sL_{\alpha}(R)}
 	\end{equation}
 	
-	Each of the variables are defined as follows:
+	Each of the variables in the above expression are defined as follows:
 	
 	\begin{center}
 	\begin{tabular}{|c|c|}
@@ -328,13 +274,13 @@ In this section, we evaluate the performance of an FMCW radar written in MATLAB 
 	\end{tabular}
 	\end{center}	
 	
-	If we fix consider only the contributions of the transmit power and noise equivalent bandwidth, we can derive the relationship among the remaining variables:
+	If we consider only the contributions of the transmit power and noise equivalent bandwidth, we can derive the relationship among the remaining variables:
 	
 	\begin{equation}
 		\chi \propto \frac{P_t}{\beta_n}
 	\end{equation}
 	
-	The SNR in the RDM is greater than the input SNR by a factor of $G_{sp}$, where $G_{sp}$ is the SNR gain due to signal processing.
+	Note that the SNR in the RDM is greater than the input SNR by a factor of $G_{sp}$, where $G_{sp}$ is the SNR gain due to signal processing.
 	
 	The signal processing gain for the FMCW radar is given by:
 	
@@ -343,14 +289,12 @@ In this section, we evaluate the performance of an FMCW radar written in MATLAB 
 	\end{equation}
 	
 	Here, $G_{fast}$ is the SNR gain due to fast-time processing, and $G_{slow}$ is the SNR gain due to slow-time processing.
-
-	%  = \frac{(\#PRI)(PRI)f_s}{L_{fast}L_{slow}}
 	
 	\begin{equation}
 		 G_{fast} = \frac{M_{fast}}{L_{fast}} = \frac{f_s/PRF}{L_{fast}}
 	\end{equation}
 		
-	where $f_s$ is the sample rate and $L_{fast}$ is the SNR loss due to the fast-time FFT window. Using an 80 dB Chebyshev window, we can get the following solution for $G_{fast}$:
+	where $f_s$ is the sample rate and $L_{fast}$ is the SNR loss due to the fast-time FFT window. Using an 80 dB Chebyshev window, we get the following for $G_{fast}$:
 	
 	\begin{equation}
 		G_{fast} \approx 860.8422
@@ -362,13 +306,13 @@ In this section, we evaluate the performance of an FMCW radar written in MATLAB 
 		G_{slow} = \frac{M_{slow}}{L_{slow}} = \frac{\#PRI}{L_{slow}}
 	\end{equation}
 		
-	where $L_{slow}$ is the SNR loss due to the slow-time FFT window. Using an 80 dB Chebyshev window, we can get the following solution for $G_{slow}$
+	where $L_{slow}$ is the SNR loss due to the slow-time FFT window. Using an 80 dB Chebyshev window, we get the following solution for $G_{slow}$:
 	
 	\begin{equation}
 		G_{slow} \approx 146.4771
 	\end{equation}
 	
-	Therefore, the overall signal processing SNR gain is given as follows:
+	Therefore, the overall signal processing SNR gain is given by:
 	
 	\begin{equation}
 		G_{sp} \approx 126094
@@ -380,8 +324,7 @@ In this section, we evaluate the performance of an FMCW radar written in MATLAB 
 		 {G_{sp}}_{(dB)} \approx 51.0069\ \text{dB}
 	\end{equation}
 	
-	If we input a signal with an SNR of 20 dB and measure the SNR in the RDM, we obtain a value of 70.01 dB, which is consistent with the expected signal processing gain.
-	
+	If we input a signal with an SNR of 20 dB and measure the SNR in the RDM, we obtain a value of 70.01 dB, which is consistent with the expected signal processing gain.	
 	
 	$PRI \times f_s$ is the size of the fast-time FFT window, $\#PRI$ is the size of the slow-time FFT window 
 	
