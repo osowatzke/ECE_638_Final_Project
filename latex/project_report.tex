@@ -348,8 +348,29 @@ In this section, we evaluate the performance of an FMCW radar written in MATLAB 
 	 	where $T_s$ is the symbol duration.
 	 	
 	 	The orthogonality of the subcarriers allows the bandwidth of neighboring subchannels to be partially overlapped, improving spectral efficiency.
-	 	 
-	 	  that each subchannel experience  bandwidth of these subchannels is typically chosen to be smaller than the coherence. This allows each of the subchannels to experience flat flat  can also be chosen to be much smaller than the coherence bandwidth 
+	 	
+	 	A block diagram of an OFDM system is given in Figure \ref{fig::ofdm_block_diagram}.
+		
+	 	\begin{figure}[H]
+	    		\centering
+	    		\fbox{\includegraphics[width=0.9\linewidth]{OFDM Block diagram}}
+	    		\caption{OFDM block diagram}
+	    		\label{fig::ofdm_block_diagram}
+		\end{figure}
+		
+		When a bit stream is received, it is modulated using the desired 2-D modulation scheme PSK, QAM, etc...). Then, it is placed into an FFT bin corresponding to a data subcarrier. Non-data carriers are reserved for pilot and null subcarriers as illustrated in Figure \ref{fig::ofdm_subcarriers}.
+		
+		\begin{figure}[H]
+	    		\centering
+	    		\fbox{\includegraphics[width=0.9\linewidth]{OFDM subcarriers}}
+	    		\caption{OFDM subcarriers}
+	    		\label{fig::ofdm_subcarriers}
+		\end{figure}
+		
+		Typically, null carriers are placed at the edges of the band to reduce interference between neighboring channels. A null carrier is also typically placed at DC to avoid problems with DC offsets in the D/A and A/D \cite{802_11a_standard}. An IFFT then modulate each of the symbols with its respective subcarrier.
+		
+		
+		First, a bit-stream is modulated using a desired modulation (PSK, QAM, etc...)
 	 	
 	 	
 	 	We specifically concentrate on the 802.11p standard, which is designed specifically for V2V communication. The 802.11p described in \cite{802_11p_phy_abdelgader}
@@ -371,12 +392,6 @@ In this section, we evaluate the performance of an FMCW radar written in MATLAB 
  \textbf{ Orthogonal Frequency Division Multiplexing (OFDM)} is widely used in Vehicle-to-Vehicle (V2V) communication systems for several reasons, including inherent characteristics that provide efficient data transmission in dynamic, high-speed environments.
 
 Block diagram below is a typical OFDM process from input bit steam, modulation, through the channel, DFT, demodulation and output bit steam. 
-
-		\begin{figure}[H]
-	    		\centering
-	    		\fbox{\includegraphics[width=0.9\linewidth]{OFDM Block diagram}}
-	    		\caption{OFDM block diagram}
-		\end{figure}
       
       The graph below illustrat a typical OFDM fram (64-subcarrier example)
       
@@ -386,12 +401,6 @@ Block diagram below is a typical OFDM process from input bit steam, modulation, 
 	\item Pilot Subcarriers: Subcarriers 7, 21, 43, 57
 	\item DC Subcarrier (Zero): Subcarrier 32
 	\end{itemize}
-
-	\begin{figure}[H]
-	    		\centering
-	    		\fbox{\includegraphics[width=0.9\linewidth]{OFDM subcarriers}}
-	    		\caption{OFDM subcarriers}
-		\end{figure}
 		
 Some of OFDM's perform metrics of interest that we are going to analize in this paper include but are not limited to:
 
