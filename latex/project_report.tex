@@ -290,6 +290,50 @@ In this section, we evaluate the performance of an FMCW radar written in MATLAB 
 	
 	Our measured velocity is consistent with this result.
 	
+	According to \cite{richards-2005}, the SNR at the receiver is given by the following equation:
+	
+	\begin{equation}
+		\chi = \frac{P_tG^2\lambda^2\sigma}{(4\pi)^3R^4kT_0\beta_nF_nL_sL_{\alpha}(R)}
+	\end{equation}
+	
+	Each of the variables are defined as follows:
+	
+	\begin{center}
+	\begin{tabular}{|c|c|}
+		\hline
+		Variable & Definition \\
+		\hline
+		$P_t$ & Transmitter Power \\
+		\hline
+		$G$ & Antenna Gain \\
+		\hline
+		$\lambda$ & Wavelength \\
+		\hline
+		$\sigma$ & RCS \\
+		\hline
+		$R$ & Distance to Object \\
+		\hline
+		$k$ & Boltzmann's Constant \\
+		\hline
+		$T_0$ & Temperature \\
+		\hline
+		$\beta_n$ & Noise Equivalent Bandwidth \\
+		\hline
+		$F_n$ & Noise Figure \\
+		\hline
+		$L_s$ & System Loss \\
+		\hline
+		$L_{\alpha}(R)$ & Atmospheric Loss \\
+		\hline
+	\end{tabular}
+	\end{center}	
+	
+	According to \cite{richards-2005}, the SNR at the receiver is related to the transmit power ($P_t$), the wavelength ($\lambda$), and the noise equivalent bandwidth ($\beta_n$) as follows: 
+	
+	\begin{equation}
+		\chi \propto \frac{P_t\lambda^2}{\beta_n}
+	\end{equation}
+	
 	The received SNR is given as follows
 	
 	\begin{equation}
