@@ -339,6 +339,17 @@ In this section, we evaluate the performance of an FMCW radar written in MATLAB 
      
 	 \subsection {Background}
 	 
+	 	In this section, we provide background on OFDM (orthogonal frequency-division multiplexing). OFDM modulates symbols on orthogonal subcarriers of the following form:
+	 	
+	 	\begin{equation}
+	 		s_k(t) = e^{j2{\pi}kt/T_s}\text{rect}(t/T_s)
+	 	\end{equation}
+	 	
+	 	 The orthogonality of the subcarriers allows the bandwidth of neighboring channels to be overlapped, improving spectral efficiency.
+	 	
+	 	
+	 	We specifically concentrate on the 802.11p standard, which is designed specifically for V2V communication. The 802.11p described in \cite{802_11p_phy_abdelgader}
+	 	
 	     In this section we skim through OFDM communicaiton protocol. Since the objective of this paper is V2V JRC our focus is on IEEE 802.11 P standard. In this section we familiarize ourself with the functionality, key features, some 802.11 P standard specificaitons and advantages of this communication topology.\par
     \textbf{  802.11 P} is specifically designed for wireless access in vehicular environments (WAVE) and is widely used for V2V applications within the automotive industry.
       
