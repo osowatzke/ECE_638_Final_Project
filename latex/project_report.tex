@@ -551,7 +551,28 @@ Where Bk is the bandwidth of the k-th subcarrier, Pk, transmit power, Hk, freque
     		\label{fig::ofdm_rayleigh_fading}
   	  \end{figure}
     
-    		We can compare the received constellation to the one shown in Figure \ref{fig::rx_constellation_diagram}. Doing so, we observe that the clusters are not easily separable like they were previously, indicating a much higher BER.
+    		We can compare the received constellation to the one shown in Figure \ref{fig::rx_constellation_diagram}. Doing so, we observe that the clusters are not easily separable like they were previously, indicating a much higher BER. The average BER in the presence of fading can be computed as follows:
+    		
+    		\begin{equation}
+    			\bar{P}_b = \int_{0}^{\infty}{P_b(\rho)f(\rho)d\rho}
+    		\end{equation}
+    		
+    		$f(\rho)$ is the distribution of the SNR due to Rayleigh fading and is given by
+    		
+    		\begin{equation}
+    			f(\rho) = \frac{1}{\bar{\rho}}e^{-\frac{\rho}{\bar{\rho}}}
+    		\end{equation}
+    			
+    		where $\bar{\rho}$ is the average SNR. In Figure \ref{fig::ofdm_fading_ber}, the measured BER in the presence of Rayleigh fading is compared to the expected BER.
+    		
+    		\begin{figure}[H]
+			\centering
+    			\fbox{\includegraphics[width=0.8\linewidth]{OFDM BER vs SNR}}
+    			\caption{OFDM BER vs. SNR in Rayleigh Fading}
+    			\label{fig::ofdm_fading_ber}
+  	  	\end{figure}
+  	  
+  	  	Referring to the figure, the measured BER rate is consistent with the expected BER.
     		
     		
     		can compare the results to the results shown in Figure 15.
