@@ -441,16 +441,6 @@ In this section, we evaluate the performance of an FMCW radar written in MATLAB 
 		
 		After equalization, we should be obtain to correctly reconstruct the symbols contained in the OFDM data carriers. Each of these symbols can then be demodulated to obtain the resulting bit stream.		
 		
-		The bit error rate (BER) of a single OFDM subcarrier is identical to the BER of a single carrier system, when the SNR ($\rho$) of the given subcarrier is used. For QPSK, this is approximately given by
-		
-		\begin{equation}
-			P_b(\rho_b) \approx Q(\sqrt{2\rho_b})
-		\end{equation}
-		
-		where $\rho_b$ is the SNR per bit.
-		
-		If the modulation is the same for each subcarrier, the BER is the mean of the bit error rate for all active data carriers.
-		
 		
 		
 		 can be computed based on the  each of the data carriers.  
@@ -511,8 +501,34 @@ Where Bk is the bandwidth of the k-th subcarrier, Pk, transmit power, Hk, freque
 
 \subsection {Simulation and Performance}
       
-      We have developed comprehensive MATLAB code to evaluate the performance of an OFDM communication system. We specifically choose to evaluate an OFDM 802.11p system because the 802.11p standard is applicable to VNV communication \cite{802_11p_abdelgader}. The 802.11p standard operates in the DRC Band (5.850 GHz to 5.925 GHz) and uses 64 subcarriers sampled at a rate of 10 MHz. A 16 sample cyclic prefix is added, increasing the symbol duration to 80 samples at 10 MHz or 80 ${\mu}s$. Of the 64 subcarriers, 48 are data carriers, and 4 are pilots. Pilots are specifically located at $\{-21, -7, 7, 21\}$. Data carriers cover all remaining carriers in range $[-26, 26]$ except the DC subcarrier, which is a null carrier.
+      We have developed comprehensive MATLAB code to evaluate the performance of an OFDM communication system. Metrics of interest include the bit error rate (BER) in an AWGN channel, the BER in presence of Rayleigh fading, the capacity of the system, and the peak to average power ratio (PAPR).
       
+      For this analysis, we chose to evaluate an OFDM 802.11p system because the 802.11p standard is applicable to VNV communication \cite{802_11p_abdelgader}. The 802.11p standard operates in the DRC Band (5.850 GHz to 5.925 GHz) and uses 64 subcarriers sampled at a rate of 10 MHz. A 16 sample cyclic prefix is added, increasing the symbol duration from 6.4 ${\mu}s$ to 8.0 ${\mu}s$. Of the 64 subcarriers, 48 are data carriers, and 4 are pilots. Pilots are specifically located at $\{-21, -7, 7, 21\}$. Data carriers cover all the remaining carriers in range $[-26, 26]$ except the DC subcarrier, which is a null carrier.
+      
+		The bit error rate (BER) of a single OFDM subcarrier is identical to the BER of a single carrier system, when the SNR ($\rho$) of the given subcarrier is used. For QPSK, this is approximately given by
+		
+		\begin{equation}
+			P_b(\rho_b) \approx Q(\sqrt{2\rho_b})
+		\end{equation}
+		
+		where $\rho_b$ is the SNR per bit on that subcarrier. If the modulation is the same for each OFDM subcarrier, the BER is the mean of the bit error rate for all active data carriers. In Figure \ref{fig::ofdm_awgn_ber}, we examine the BER of an OFDM system vs SNR.
+		
+		\begin{figure}[H]
+			\centering
+    			\fbox{\includegraphics[width=0.8\linewidth]{OFDM AWGN BER vs SNR}}
+    			\caption{OFDM BER vs. SNR in AWGN channel}
+    			\label{fig::ofdm_awgn_ber}
+		\end{figure}
+		
+		The SNR of each active subcarrier is 64/52 times (or 0.9018 dB) greater that of the received signal because all the signal energy is concentrated in the active subcarriers. After accounting for this SNR gain, the resulting BER is equivalent to the expected BER. 
+		
+		After accounting for an SNR increase of $64/52$ due to the signal power being concentrated in the data subcarriers.
+				
+		The SNR of an individual subcarrier is $64/52 \times$ that of the received signal because the . 
+		
+		The SNR After accounting for the increase an increase in SNR of 64/52 due to coherent gain on 52 of the 64 subcarriers
+	
+	
        and plot the Bit Error Rate (BER) versus SNR across various channel conditions.. Evaluating diverse channel characteristics is key to achieving a comprehensive and unbiased analysis in our study. The summary implemntation of a complete OFDM simulation model parameters and results for AWGN, Rayleight Fading and perfect channel provided below. 
       
 \begin{itemize}
