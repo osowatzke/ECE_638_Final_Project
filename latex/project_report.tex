@@ -632,6 +632,35 @@ Where Bk is the bandwidth of the k-th subcarrier, Pk, transmit power, Hk, freque
     			\label{fig::ofdm_radar_range_resp_no_window_zpad}
   	  	\end{figure}
   	  	
+  	  	As was the case with the FMCW radar, we can reduce the sidelobe level with windowing. However, the windowing is now applied in the frequency domain prior to the IFFT. Figure \ref{fig::ofdm_radar_freq_resp_with_window} shows the frequency response after a 80 dB Chebyshev window is applied.
+  	  	
+  	  	\begin{figure}[H]
+			\centering
+    			\fbox{\includegraphics[width=0.8\linewidth]{ideal_freq_response_with_window.jpg}}
+    			\caption{Ideal Frequency Response after Windowing}
+    			\label{fig::ofdm_radar_freq_resp_with_window}
+  	  	\end{figure}
+  	  	 
+  	  	The corresponding range response is shown in Figure \ref{fig::ofdm_radar_range_resp_with_window}.
+  	  	
+  	  	\begin{figure}[H]
+  	  		\centering
+    			\fbox{\includegraphics[width=0.8\linewidth]{ideal_range_response_with_window_zpad.jpg}}
+    			\caption{Ideal Range Response after Windowing}
+    			\label{fig::ofdm_radar_range_resp_with_window}
+  	  	\end{figure}
+  	  	
+  	  	Note that the missing DC subcarrier severely limits the peak to sidelobe performance. As previously mentioned, the DC subcarrier has been nulled to avoid problems with DC offsets in the D/A and the A/D. It is possible to re-add the DC carrier. However, the OFDM receiver may need more complex IF sampling to take advantage it. As an alternative the transmitter can use the DC subcarrier and the OFDM receiver can ignore it. Note that this will degrade the capacity due to less available power for the other subcarriers. The range response with an 80 dB Chebyshev window after adding a DC subcarrier is shown in Figure \ref{fig::ofdm_radar_range_resp_with_zero_subcarrier}.
+  	  	
+  	  	\begin{figure}[H]
+  	  		\centering
+    			\fbox{\includegraphics[width=0.8\linewidth]{ideal_range_response_with_zero_subcarrier.jpg}}
+    			\caption{Ideal Range Response with Added DC Subcarrier}
+    			\label{fig::ofdm_radar_range_resp_with_zero_subcarrier}
+  	  	\end{figure}
+  	  	
+  	  	Note that the range response is now comparable to an FMCW radar.
+  	  	
 % See if this can be incorporated in introduction	
 \iffalse 
  The convergence of radar and communication systems, often referred to as joint radar-communication (JRC), has emerged due to several technological and practical motivations. Some of the primary reasons why radar and communication systems are being integrated listed below :
