@@ -1,14 +1,14 @@
 %% OFDM Radar w/ Default Parameters
 radar = ofdmRadar(...
     'nDataCarriers', 49,...
-    'nullDcSubcarrier', false);
+    'nullDcSubcarrier', true);
 radar.run();
 
 %% OFDM Radar (Target at Large Range);
 radar = ofdmRadar(...
     'nDataCarriers', 49,...
     'nullDcSubcarrier', false,...
-    'targetRange', 500);
+    'targetRange', 50);
 radar.run();
 
 %% OFDM Radar (Target at Even Larger Range);

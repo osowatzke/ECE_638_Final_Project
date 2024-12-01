@@ -7,6 +7,7 @@
 \usepackage{amsmath}
 %\usepackage{natbib}
 \usepackage{cite}
+\usepackage{lipsum}
 
 \graphicspath{ {./}{./images/} }
 
@@ -28,8 +29,23 @@ Tucson, USA \\
 imanmiraki@arizona.edu}}
 
 \begin{document}
+
+
 	\raggedbottom
 	\maketitle
+	%\twocolumn[
+	%\begin {@twocolumnfalse}
+	
+\begin {abstract}
+
+
+This paper explores the integration of radar and communication systems using a Joint Radar-Communication (JRC) framework based on Orthogonal Frequency Division Multiplexing (OFDM). By leveraging OFDM waveforms for both radar sensing and data communication, the proposed system achieves enhanced spectrum utilization, reduced hardware complexity, and efficient resource sharing. The JRC design incorporates zero-forcing techniques to generate Range-Doppler Matrices (RDMs) from OFDM returns, enabling accurate radar sensing while maintaining high communication capacity. Simulation results demonstrate that the system provides comparable radar resolution and communication performance to standalone implementations, with notable advantages in dynamic range and sidelobe suppression. Additionally, parameter adjustments optimize radar detection for varying target distances and velocities, achieving reliable operation up to 700 meters. These results highlight the potential of JRC systems for modern vehicular and multi-functional applications where sensing and communication coexist seamlessly.
+
+
+\end{abstract}
+
+
+
 \section {Introduction}
      Vehicle-to-Vehicle (V2V) networks seek to enhance road safety and reduce traffic congestion by sharing road and traffic information between vehicles in real time. To avoid delays associated with third party networks, vehicle-to-vehicle communication systems need dedicated bandwidth. Instead of wasting additional spectrum resources, joint radar communication (JRC) systems attempt to integrate radar and communication systems. This results in reduced bandwidth usage and reduced power consumption while eliminating the need for additional hardware.
      
@@ -610,7 +626,7 @@ There are many variables and parameters that can influence the quality of the re
 
 \begin{figure}[H]
 \centering
-\fbox{\includegraphics[width=0.8\linewidth]{OFDMRadar_with DCNull_200m}}
+\fbox{\includegraphics[width=0.8\linewidth]{OFDMRadar_with DCNull_50m}}
 \caption{OFDM/Radar with DC null range plot}
 \end{figure}
 
@@ -618,12 +634,12 @@ The next plot displays the signal with the same parameter without the DC null. T
 
 \begin{figure}[H]
 \centering
-\fbox{\includegraphics[width=0.8\linewidth]{OFDMRadar_No DCNull_200m}}
+\fbox{\includegraphics[width=0.8\linewidth]{OFDMRadar_No DCNull_50m}}
 \caption{OFDM/Radar without DC null range plot}
 \end{figure}
 
-The previous results were simulated for a target located at 200m. We have increased the target range to 500 and 1000m to see the received data quality and degradation in a long target range. As the plots indicate, in the 500m range which considers a long range for V2V radar applications, we still have a distinguishable target peak (delta of 23dB). At 900m range the dynamic range degrades significantly to around 9dB. \par
-\textbf{ Note: } To have an efficient report, we only display the analysis for signals without the DC Nulls.
+The previous results were simulated for a target located at 50m. We have increased the target range to 500 and 900m to see the received data quality and degradation in a long target range. As the plots indicate, in the 500m range which considers a long range for V2V radar applications, we still have a distinguishable target peak (delta of 23dB). At 900m range the dynamic range degrades significantly to around 9dB. \par
+\textbf{ Note: } For an effective presentation, we only display the analysis for signals without the DC Nulls.
 \begin{figure}[H]
 \centering
 \fbox{\includegraphics[width=1.0\linewidth]{Mix_500-900m}}
@@ -656,9 +672,9 @@ Number of Pilot Carriers & 16x4 \\
 \hline 
 Number of Pulses & 128 \\
 \hline 
-Target Range & 200 \\
+Target Range & 50 m \\
 \hline 
-Target Velocity & 50 \\
+Target Velocity & 50  m/s\\
 \hline 
 \end{tabular}
 \end{center}
@@ -668,15 +684,16 @@ The graph below presents the simulation results using the parameters described a
 
 \begin{figure}[H]
 \centering
-\fbox{\includegraphics[width=0.8\linewidth]{OFDMRadar_No DCNull_T200_Improve}}
-\caption{OFDM/Radar range plot for 200m target}
+\fbox{\includegraphics[width=0.8\linewidth]{OFDMRadar_No DCNull_T50_Improve}}
+\caption{OFDM/Radar range plot for 50m target}
 \end{figure} 
 The Doppler results for the above parameters plotted in the graph below. 
 \begin{figure}[H]
 \centering
-\fbox{\includegraphics[width=0.8\linewidth]{OFDMRadar_No DCNull_Doppler_T200_Improve}}
-\caption{OFDM/Radar range plot for 200m target}
+\fbox{\includegraphics[width=0.8\linewidth]{OFDMRadar_No DCNull_Doppler_T50_Improve}}
+\caption{OFDM/Radar range plot for 50m target}
 \end{figure} 
+
 Finally, we present the maximum achievable range with sufficient resolution to facilitate easy target analysis and detection. The best results were achieved at 700m. The received signal degraded significantly after 700m range. 
 
 \begin{figure}[H]
