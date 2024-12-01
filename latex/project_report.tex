@@ -546,8 +546,41 @@ Where Bk is the bandwidth of the k-th subcarrier, Pk, transmit power, Hk, freque
   	 It is important to highlight the cyclic prefix reduces the effective data rate, which slightly decreases the channel capacity. Adjust for this overhead if needed.
     
     \section {JRC}
-		 \subsection {Background}
-		 
+		\subsection {Background}
+
+		In this section, we design a JRC system using zero forcing to generate RDMs from OFDM returns. The ideal range response is given by:
+		
+		\begin{equation}
+			x[n] = \delta[n]
+		\end{equation}
+		
+		The frequency response of the ideal range response is flat:
+		
+		\begin{equation}
+			X[k] = 1\ \forall\ 0 \leq k < N 
+		\end{equation}
+		
+		We can generate the ideal range response from any known sequence $z[n]$, which has a non-zero frequency response $Z[k]\ \forall\ 0 \leq k < N$. To generate the ideal range response we can multiply $Z[k]$ element-wise with $H[k]$, where $H[k]$ is defined as follows:
+		
+		\begin{equation}
+			H[k] = \frac{1}{Z[k]} \forall\ 0 \leq k < N
+		\end{equation}
+		
+		After element-wise multiplication, the result is $X[k]$. Finally, we can apply an IFFT to $X[k]$ to generate $x[n]$, the ideal range response.
+		
+		If we instead receive a circularly-shifted copy of $z[n]$ (i.e. $y[n] = z[[n-m]_N]$), the FFT of the resulting sequence is given as follows:
+		
+		\begin{equation}
+			Y[k] = Z[k]W_N^{km}
+		\end{equation}
+		
+		If we multiply $H[k]$ element-wise with $Y[k]$, we obtain $W_N^{km}$, which results in a range response of $\delta[n-m]$ after IFFT processing. This is the desired result.
+		
+		In an OFDM system, the reflections will be a circularly shifted copy of the transmitted waveform as long as their delay does not exceed the cyclic prefix.
+		
+		
+% See if this can be incorporated in introduction	
+\iffalse 
  The convergence of radar and communication systems, often referred to as joint radar-communication (JRC), has emerged due to several technological and practical motivations. Some of the primary reasons why radar and communication systems are being integrated listed below :
  
  \begin{itemize}
@@ -558,6 +591,7 @@ Where Bk is the bandwidth of the k-th subcarrier, Pk, transmit power, Hk, freque
 \end{itemize}		 
 		 
 The orthogonality or low correlation of the frequency domain allows the two subsystems not to interfere with each other. The disadvantage is that the spectrumutilization of the system is low and energy sharing is difficult to achieve. Other crutial disadvantage we need to overcome is OFDM signals are sensitive to the Doppler shift and multipath effects, which leads to a loss of subcarrier orthogonality and intersymbol interference (ISI) \cite{9992221}.
+\fi
 
 \subsection {Simulation and Performance}
       
