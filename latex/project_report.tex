@@ -542,7 +542,19 @@ Where Bk is the bandwidth of the k-th subcarrier, Pk, transmit power, Hk, freque
 		
 		The SNR of each active subcarrier is 64/52 times (or 0.9018 dB) greater that of the received signal because all the signal energy is concentrated in the active subcarriers. After accounting for this SNR gain, the resulting BER is equivalent to the expected BER. 
         
+        We also examine the BER of the OFDM receiver in the presence of Rayleigh fading. To do so, we apply Rayleigh fading to the signal amplitude prior to applying additive white gaussian noise. We can then generate a received constellation map for each of the symbols modulated on the data carriers. For 20 dB SNR, the received constellation map is shown in Figure \ref{fig::ofdm_rayleigh_fading}.
+        
+      \begin{figure}[H]
+		\centering
+    		\fbox{\includegraphics[width=0.8\linewidth]{OFDM Constellation Diagram}}
+    		\caption{OFDM Received Constellation Diagram after Rayleigh Fading}
+    		\label{fig::ofdm_rayleigh_fading}
+  	  \end{figure}
     
+    		We can compare the received constellation to the one shown in Figure \ref{fig::rx_constellation_diagram}. Doing so, we observe that the clusters are not easily separable like they were previously, indicating a much higher BER.
+    		
+    		
+    		can compare the results to the results shown in Figure 15.
     For our To evaluate the performance of the 802.11p system, we generated OFDM symbols and fed them through a channel model and into an simulated OFDM receiver. The power spectral density of the transmitted signal using QPSK is shown below:
       
     \begin{figure}[H]
