@@ -439,43 +439,9 @@ In this section, we evaluate the performance of an FMCW radar written in MATLAB 
 			A_{\text{MMSE}_k} = \frac{\hat{H}_k^{*}}{|\hat{H}_k|^2 + 1/SNR}
 		\end{equation}
 		
-		After equalization, we should be obtain to correctly reconstruct the symbols contained in the OFDM data carriers. Each of these symbols can then be demodulated to obtain the resulting bit stream.		
+		After equalization, we should be obtain to correctly reconstruct the symbols contained in the OFDM data carriers. Each of these symbols can then be demodulated to obtain the received bit stream.
 		
-		
-		
-		 can be computed based on the  each of the data carriers.  
-		 		
-		First, a bit-stream is modulated using a desired modulation (PSK, QAM, etc...)
-	 	
-	 	
-	 	We specifically concentrate on the 802.11p standard, which is designed specifically for V2V communication. The 802.11p described in \cite{802_11p_abdelgader}
-	 	
-	     In this section we skim through OFDM communicaiton protocol. Since the objective of this paper is V2V JRC our focus is on IEEE 802.11 P standard. In this section we familiarize ourself with the functionality, key features, some 802.11 P standard specificaitons and advantages of this communication topology.\par
-    \textbf{  802.11 P} is specifically designed for wireless access in vehicular environments (WAVE) and is widely used for V2V applications within the automotive industry.
-      
-      \begin{itemize}
-      \item Frequency Band:		5.850 GHz to 5.925 GHz (DSRC Band)
-	\item Channel Bandwidth:	10 MHz
-	\item Modulation:		BPSK, QPSK, 16-QAM
-	\item Maximum Data Rate:	27 Mbps (Theoretical)
-	\item Range: 			Up to 1 km (ideal conditions)
-	\item Vehicle Speed :                Up to 200 km/h
-	\item Security:			WPA2, Authentication, Message Integrity
-	\item Applications:		Collision avoidance, traffic management, V2X
-	\end{itemize}
-	
- \textbf{ Orthogonal Frequency Division Multiplexing (OFDM)} is widely used in Vehicle-to-Vehicle (V2V) communication systems for several reasons, including inherent characteristics that provide efficient data transmission in dynamic, high-speed environments.
-
-Block diagram below is a typical OFDM process from input bit steam, modulation, through the channel, DFT, demodulation and output bit steam. 
-      
-      The graph below illustrat a typical OFDM fram (64-subcarrier example)
-      
-      	\begin{itemize}
-      	\item Guard Band (Zero Subcarriers): Subcarriers 0–5 and 59–63
-	\item Data Subcarriers: Subcarriers 6–28 and 37–58
-	\item Pilot Subcarriers: Subcarriers 7, 21, 43, 57
-	\item DC Subcarrier (Zero): Subcarrier 32
-	\end{itemize}
+		% Look at moving the capacity formulas into result
 		
 Some of OFDM's perform metrics of interest that we are going to analize in this paper include but are not limited to:
 
@@ -574,87 +540,10 @@ Where Bk is the bandwidth of the k-th subcarrier, Pk, transmit power, Hk, freque
   	  
   	  	Referring to the figure, the measured BER rate is consistent with the expected BER.
     		
-    		
-    		can compare the results to the results shown in Figure 15.
-    For our To evaluate the performance of the 802.11p system, we generated OFDM symbols and fed them through a channel model and into an simulated OFDM receiver. The power spectral density of the transmitted signal using QPSK is shown below:
-      
-    \begin{figure}[H]
-    		\centering
-    		\fbox{\includegraphics[width=0.8\linewidth]{OFDM Power spectral density}}
-    		\caption{OFDM Power Spectral Density}
-	\end{figure}
-      
-      To evaluate the peak-to-average power ratio, we generated OFDM symbols using QPSK to modulate each of the data carriers. We then measured the ratio of peak to average power to be roughly 11.8 dB.  The resulting spectrum from our simulation is shown below:
-      
-      
-       pFor the simulations that follow, we use QPSK modulation to encode each of the data subcarriers.
-      
-	  
-		
-		After accounting for an SNR increase of $64/52$ due to the signal power being concentrated in the data subcarriers.
-				
-		The SNR of an individual subcarrier is $64/52 \times$ that of the received signal because the . 
-		
-		The SNR After accounting for the increase an increase in SNR of 64/52 due to coherent gain on 52 of the 64 subcarriers
-	
-	
-       and plot the Bit Error Rate (BER) versus SNR across various channel conditions.. Evaluating diverse channel characteristics is key to achieving a comprehensive and unbiased analysis in our study. The summary implemntation of a complete OFDM simulation model parameters and results for AWGN, Rayleight Fading and perfect channel provided below. 
-      
-\begin{itemize}
-\item 64 Subcarriers, 48 Data carriers, 10 K Symbols adn 16 Cyclic-prefix
-\item 4th order QAM modulation and 10 MHz Sample rate
-\item Pilots are inserted at standard intervals and zero carriers are placed at the edges of the spectrum.
-\item The IFFT converts the frequency domain symbols to the time domain. 
-\item A Hamming window is applied to each OFDM symbol to reduce spectral leakage. 
-\item A cyclic prefix is added to the windowed OFDM symbols to mitigate ISI. 
-\item An AWGN channel is used to transmit the flattened signal to the receiver.\par
-\item The receiver removes the cyclic prefix. 
-\item The data sub-carriers are extracted and demodulated from FFT, results in frequency domain. 
-\item The received bits are compared to the transmitted bits to calculate the BER vs SNR values. 
-\end{itemize}
-The power spectral density of trasmitted OfDM signal shown in the graph below. The flat region conrresponds to the active subcarriers of the OFDM signal (each subcarrier carries equal power and spans the same bandwidth). There is a dip null in the center correspoinding to the DC (zero frequency) subcarrier which used to avoid interference. The dips at the edges are the guard bands to rduce spectral leakage and interference with adjacent channels.
-
-	\begin{figure}[H]
-    		\centering
-    		\fbox{\includegraphics[width=0.8\linewidth]{OFDM Power spectral density}}
-    		\caption{OFDM Power Spectral Density}
-	\end{figure}
-
-  The graph below is a constellation coresponding to 4th order QAM with AWGN channel propery.  The points are tightly packed around the ideal constellation locations, indicating that noise has minimal impact on the received signal (high SNR conditions).This diagram demonstrates that the system performs well under high SNR conditions, maintaining accurate symbol transmission and reception.
-    
-    
-     
-    
-    The BER decreases exponentially as the SNR increases, which is typical for digital communication systems. The close alignment of the measured and reference curves validates the simulation accuracy and ensures the OFDM system is working as intended. The system shows robust performance at higher SNR values, achieving nearly error-free communication. This analysis is crucial for validating the system and ensuring its effectiveness in real-world applications.
-    
-    
-         \begin{figure}[H]
-		\centering
-    		\fbox{\includegraphics[width=0.8\linewidth]{OFDM AWGN BER vs SNR}}
-    		\caption{OFDM BER vs. SNR (AWGN) }
-  	  \end{figure}
-    
-
-  The results below are from the same signal charactristics transmitted through Rayleigh fading channel. The points are tightly clustered around the ideal constellation positions (caused by delay fading) that implying effective channel conditions and robust equalization process. The constellation diagram results indicates that the system operates in a highl SNR environment where noise has minimal impact. 
-
-	\begin{figure}[H]
-		\centering
-    		\fbox{\includegraphics[width=0.8\linewidth]{OFDM Constellation Diagram}}
-    		\caption{OFDM Constellation Diagram  (Rayleigh)}
-  	  \end{figure}
-
-The plot below represents the Bit Error Rate (BER) vs. Signal-to-Noise Ratio (SNR) performance of an OFDM system. It compares the measured BER from the simulation against the theoretical (reference) BER for the given modulation scheme and channel model. Both curves show a monotonic decrease in BER with increasing SNR, which is expected as higher SNR improves the signal quality and reduces errors. Around 6-10 dB, the curve begins to drop sharply, indicating the SNR threshold beyond which the system transitions from error-prone to error-free performance. This plot confirms that the OFDM system performs reliably under high SNR and aligns closely with theoretical predictions.
-    
-    \begin{figure}[H]
-		\centering
-    		\fbox{\includegraphics[width=0.8\linewidth]{OFDM BER vs SNR}}
-    		\caption{OFDM BER vs. SNR}
-  	  \end{figure}    
-  	  
+    	  % Look at refactoring this section
+    	    	  
   	  For the given parameter, B total=10 MHz, N subcarriers=64, N data=48, P total =1 W (assumed for simplicity) and No=1 nW/Hz, the total channels capacity for given OFDM  with AWGN is around 99.74 Mbps. \par
   	 It is important to highlight the cyclic prefix reduces the effective data rate, which slightly decreases the channel capacity. Adjust for this overhead if needed.
- 
-  	  
     
     \section {JRC}
 		 \subsection {Background}
