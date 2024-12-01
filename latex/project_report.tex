@@ -576,7 +576,18 @@ Where Bk is the bandwidth of the k-th subcarrier, Pk, transmit power, Hk, freque
 		
 		If we multiply $H[k]$ element-wise with $Y[k]$, we obtain $W_N^{km}$, which results in a range response of $\delta[n-m]$ after IFFT processing. This is the desired result.
 		
-		In an OFDM system, the reflections will be a circularly shifted copy of the transmitted waveform as long as their delay does not exceed the cyclic prefix.
+		In an OFDM system, the reflections will be a circularly shifted copy of the transmitted waveform as long as their delay does not exceed the cyclic prefix. To physically implement this system, we need to consider the last $N$ samples of each transmitted OFDM symbol as $z[n]$.
+		
+		\begin{figure}[H]
+			\centering
+    			\fbox{\includegraphics[width=0.8\linewidth]{ofdm_radar_waveform.png}}
+    			\caption{OFDM Sample Designation}
+    			\label{fig::ofdm_radar_waveform}
+  	  	\end{figure}
+		
+		After transmitting, we can wait $L$ samples before receiving. If the signal has no delay, our range response will be a delta function. However, if the delay of the signal ($m$) is in range $[1, L]$, we will receive a circular-shifted copy of the $z[n]$, and the range response will be a delayed delta function of the form $\delta[n-m]$. 
+		
+		We don't have to take an FFT of $z[n]$ to obtain $Z[k]$. Instead, we can get $Z[k]$ from the OFDM subcarriers prior to IFFT processing. If the cyclic prefix is placed at the start of the symbol as shown in Figure \ref{fig::cylic_prefix}, $Z[k]$ is identical to the IFFT input. If the window is divided evenly between the start and the back of symbol as shown in Figure \ref{fig::ofdm_windowing}, $Z[k]$ is the IFFT input multiplied elementwise with $W_N^{kL/2}$.
 		
 		
 % See if this can be incorporated in introduction	
