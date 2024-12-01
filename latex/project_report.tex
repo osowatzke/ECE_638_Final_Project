@@ -605,6 +605,18 @@ Where Bk is the bandwidth of the k-th subcarrier, Pk, transmit power, Hk, freque
 		
 		We don't have to take an FFT of $z[n]$ to obtain $Z[k]$. Instead, we can get $Z[k]$ from the OFDM subcarriers prior to IFFT processing. If the cyclic prefix is placed at the start of the symbol as shown in Figure \ref{fig::cylic_prefix}, $Z[k]$ is identical to the IFFT input. If the window is divided evenly between the start and the back of symbol as shown in Figure \ref{fig::ofdm_windowing}, $Z[k]$ is the IFFT input multiplied elementwise with $W_N^{kL/2}$.
 		
+		In the 802.11p standard, not all of the subcarriers are non-zero, which prevents us from fully realizing this system. However, we can instead invert all of the non-zero subcarriers, when determining the FFT of our matched filter, $H[k]$. The resulting frequency response is shown in Figure \ref{fig::ofdm_radar_freq_resp_no_window}.
+		
+		\begin{figure}[H]
+			\centering
+    			\fbox{\includegraphics[width=0.8\linewidth]{ideal_frequency_response_no_window.jpg}}
+    			\caption{Ideal Frequency Response with Zero Subcarriers}
+    			\label{fig::ofdm_radar_freq_resp_no_window}
+  	  	\end{figure}
+		
+		We can take an IFFT to determine the resulting range response. However, because the frequency response is no longer flat, we will not be left with a delta function. Instead we expect a sinc function minus a DC offset due to the missing DC subcarrier.
+		
+		
 		
 % See if this can be incorporated in introduction	
 \iffalse 
