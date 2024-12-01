@@ -614,10 +614,24 @@ Where Bk is the bandwidth of the k-th subcarrier, Pk, transmit power, Hk, freque
     			\label{fig::ofdm_radar_freq_resp_no_window}
   	  	\end{figure}
 		
-		We can take an IFFT to determine the resulting range response. However, because the frequency response is no longer flat, we will not be left with a delta function. Instead we expect a sinc function minus a DC offset due to the missing DC subcarrier.
+		We can take an IFFT to determine the resulting range response. However, because the frequency response is no longer flat, we will not be left with a delta function. Instead we expect a sinc function minus a DC offset due to the missing DC subcarrier. The corresponding range response is shown in Figure \ref{fig::ofdm_radar_range_resp_no_window}.
 		
+		\begin{figure}[H]
+			\centering
+    			\fbox{\includegraphics[width=0.8\linewidth]{ideal_range_response_no_window.jpg}}
+    			\caption{Ideal Range Response with Zero Subcarriers}
+    			\label{fig::ofdm_radar_range_resp_no_window}
+  	  	\end{figure}
 		
+		The sinc-like appearance of the range response is not readily apparent. However, we can zero-pad the IFFT to increase the resolution of the range response. We must perform this zero padding in the middle of the input sequence to preserve the relative positions of the non-zero subcarriers.
 		
+		\begin{figure}[H]
+			\centering
+    			\fbox{\includegraphics[width=0.8\linewidth]{ideal_range_response_no_window_zpad.jpg}}
+    			\caption{Interpolated Range Response with Zero Subcarriers}
+    			\label{fig::ofdm_radar_range_resp_no_window_zpad}
+  	  	\end{figure}
+  	  	
 % See if this can be incorporated in introduction	
 \iffalse 
  The convergence of radar and communication systems, often referred to as joint radar-communication (JRC), has emerged due to several technological and practical motivations. Some of the primary reasons why radar and communication systems are being integrated listed below :
