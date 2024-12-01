@@ -439,12 +439,26 @@ In this section, we evaluate the performance of an FMCW radar written in MATLAB 
 			A_{\text{MMSE}_k} = \frac{\hat{H}_k^{*}}{|\hat{H}_k|^2 + 1/SNR}
 		\end{equation}
 		
-		After equalization, we should be obtain to correctly reconstruct the transmitted symbol.
+		After equalization, we should be obtain to correctly reconstruct the symbols contained in the OFDM data carriers. Each of these symbols can then be demodulated to obtain the resulting bit stream.		
 		
+		The bit error rate (BER) of a single OFDM subcarrier is identical to the BER of a single carrier system, when the SNR ($\rho$) of the given subcarrier is used. For QPSK, this is approximately given by
+		
+		\begin{equation}
+			P_b(\rho_b) \approx Q(\sqrt{2\rho_b})
+		\end{equation}
+		
+		where $\rho_b$ is the SNR per bit.
+		
+		If the modulation is the same for each subcarrier, the BER is the mean of the bit error rate for all active data carriers.
+		
+		
+		
+		 can be computed based on the  each of the data carriers.  
+		 		
 		First, a bit-stream is modulated using a desired modulation (PSK, QAM, etc...)
 	 	
 	 	
-	 	We specifically concentrate on the 802.11p standard, which is designed specifically for V2V communication. The 802.11p described in \cite{802_11p_phy_abdelgader}
+	 	We specifically concentrate on the 802.11p standard, which is designed specifically for V2V communication. The 802.11p described in \cite{802_11p_abdelgader}
 	 	
 	     In this section we skim through OFDM communicaiton protocol. Since the objective of this paper is V2V JRC our focus is on IEEE 802.11 P standard. In this section we familiarize ourself with the functionality, key features, some 802.11 P standard specificaitons and advantages of this communication topology.\par
     \textbf{  802.11 P} is specifically designed for wireless access in vehicular environments (WAVE) and is widely used for V2V applications within the automotive industry.
@@ -497,7 +511,9 @@ Where Bk is the bandwidth of the k-th subcarrier, Pk, transmit power, Hk, freque
 
 \subsection {Simulation and Performance}
       
-      We have developed comprehensive MATLAB code to evaluate and plot the Bit Error Rate (BER) versus SNR across various channel conditions.. Evaluating diverse channel characteristics is key to achieving a comprehensive and unbiased analysis in our study. The summary implemntation of a complete OFDM simulation model parameters and results for AWGN, Rayleight Fading and perfect channel provided below. 
+      We have developed comprehensive MATLAB code to evaluate the performance of an OFDM communication system. We specifically choose to evaluate an OFDM 802.11p system because the 802.11p standard is applicable to VNV communication \cite{802_11p_abdelgader}. The 802.11p standard operates in the DRC Band (5.850 GHz to 5.925 GHz) and uses 64 subcarriers sampled at a rate of 10 MHz. A 16 sample cyclic prefix is added, increasing the symbol duration to 80 samples at 10 MHz or 80 ${\mu}s$. Of the 64 subcarriers, 48 are data carriers, and 4 are pilots. Pilots are specifically located at $\{-21, -7, 7, 21\}$. Data carriers cover all remaining carriers in range $[-26, 26]$ except the DC subcarrier, which is a null carrier.
+      
+       and plot the Bit Error Rate (BER) versus SNR across various channel conditions.. Evaluating diverse channel characteristics is key to achieving a comprehensive and unbiased analysis in our study. The summary implemntation of a complete OFDM simulation model parameters and results for AWGN, Rayleight Fading and perfect channel provided below. 
       
 \begin{itemize}
 \item 64 Subcarriers, 48 Data carriers, 10 K Symbols adn 16 Cyclic-prefix
