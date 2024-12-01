@@ -501,17 +501,37 @@ Where Bk is the bandwidth of the k-th subcarrier, Pk, transmit power, Hk, freque
 
 \subsection {Simulation and Performance}
       
-      We have developed comprehensive MATLAB code to evaluate the performance of an OFDM communication system. Metrics of interest include the bit error rate (BER) in an AWGN channel, the BER in presence of Rayleigh fading, the capacity of the system, and the peak to average power ratio (PAPR).
+      We have developed comprehensive MATLAB code to evaluate the performance of an OFDM communication system. Metrics of interest include the peak to average power ratio (PAPR), the bit error rate (BER) in an AWGN channel, the BER in presence of Rayleigh fading, and the capacity of the system.
       
       For this analysis, we chose to evaluate an OFDM 802.11p system because the 802.11p standard is applicable to VNV communication \cite{802_11p_abdelgader}. The 802.11p standard operates in the DRC Band (5.850 GHz to 5.925 GHz) and uses 64 subcarriers sampled at a rate of 10 MHz. A 16 sample cyclic prefix is added, increasing the symbol duration from 6.4 ${\mu}s$ to 8.0 ${\mu}s$. Of the 64 subcarriers, 48 are data carriers, and 4 are pilots. Pilots are specifically located at $\{-21, -7, 7, 21\}$. Data carriers cover all the remaining carriers in range $[-26, 26]$ except the DC subcarrier, which is a null carrier.
       
-		The bit error rate (BER) of a single OFDM subcarrier is identical to the BER of a single carrier system, when the SNR ($\rho$) of the given subcarrier is used. For QPSK, this is approximately given by
+    The power spectral density of the transmitted OFDM signal is shown in Figure \ref{fig::ofdm_psd}.
+    
+    \begin{figure}[H]
+    		\centering
+    		\fbox{\includegraphics[width=0.8\linewidth]{OFDM Power spectral density}}
+    		\caption{OFDM Power Spectral Density}
+    		\label{fig::ofdm_psd}
+	\end{figure}
+    
+    The location of null carrier is also consistent with the 802.11p standard. We were able to perform power measurements on this signal to determine the PAPR. When the data carriers are modulated using QPSK modulation, we measure a PAPR of 11.8 dB. The measured PAPR is significant because it forces us to run the high power amplifier at reduced power levels, which can degrade the transmitted power and in turn the SNR of the system.
+    
+    To evaluate the BER in an AWGN channel, we add gaussian noise to the transmitted signal to achieve a given SNR. Then, we process the resulting signal with a model of the OFDM receiver. After FFT processing, we can generate a constellation diagram from the resulting data carriers. Figure \ref{fig::rx_constellation_diagram} shows the received constellation diagram for an OFDM signal using QPSK modulation at 20 dB SNR.
+      
+      \begin{figure}[H]
+		\centering
+    		\fbox{\includegraphics[width=0.8\linewidth]{OFDM AWGN Constellation}}
+    		\caption{OFDM Received Constellation after AWGN Channel}
+    		\label{fig::rx_constellation_diagram}
+  	  \end{figure}
+    
+    		The expected bit error rate (BER) for a single OFDM subcarrier is identical to the BER of a single carrier system, when the SNR of the given subcarrier is considered. For QPSK, this is approximately given by
 		
 		\begin{equation}
 			P_b(\rho_b) \approx Q(\sqrt{2\rho_b})
 		\end{equation}
 		
-		where $\rho_b$ is the SNR per bit on that subcarrier. If the modulation is the same for each OFDM subcarrier, the BER is the mean of the bit error rate for all active data carriers. In Figure \ref{fig::ofdm_awgn_ber}, we examine the BER of an OFDM system vs SNR.
+		where $\rho_b$ is the SNR per bit. If the modulation is the same for each OFDM subcarrier, the BER is the mean BER for all active data carriers. In Figure \ref{fig::ofdm_awgn_ber}, we examine the BER of an OFDM system vs SNR.
 		
 		\begin{figure}[H]
 			\centering
@@ -521,6 +541,22 @@ Where Bk is the bandwidth of the k-th subcarrier, Pk, transmit power, Hk, freque
 		\end{figure}
 		
 		The SNR of each active subcarrier is 64/52 times (or 0.9018 dB) greater that of the received signal because all the signal energy is concentrated in the active subcarriers. After accounting for this SNR gain, the resulting BER is equivalent to the expected BER. 
+        
+    
+    For our To evaluate the performance of the 802.11p system, we generated OFDM symbols and fed them through a channel model and into an simulated OFDM receiver. The power spectral density of the transmitted signal using QPSK is shown below:
+      
+    \begin{figure}[H]
+    		\centering
+    		\fbox{\includegraphics[width=0.8\linewidth]{OFDM Power spectral density}}
+    		\caption{OFDM Power Spectral Density}
+	\end{figure}
+      
+      To evaluate the peak-to-average power ratio, we generated OFDM symbols using QPSK to modulate each of the data carriers. We then measured the ratio of peak to average power to be roughly 11.8 dB.  The resulting spectrum from our simulation is shown below:
+      
+      
+       pFor the simulations that follow, we use QPSK modulation to encode each of the data subcarriers.
+      
+	  
 		
 		After accounting for an SNR increase of $64/52$ due to the signal power being concentrated in the data subcarriers.
 				
@@ -554,11 +590,7 @@ The power spectral density of trasmitted OfDM signal shown in the graph below. T
   The graph below is a constellation coresponding to 4th order QAM with AWGN channel propery.  The points are tightly packed around the ideal constellation locations, indicating that noise has minimal impact on the received signal (high SNR conditions).This diagram demonstrates that the system performs well under high SNR conditions, maintaining accurate symbol transmission and reception.
     
     
-     \begin{figure}[H]
-		\centering
-    		\fbox{\includegraphics[width=0.8\linewidth]{OFDM AWGN Constellation}}
-    		\caption{OFDM Constellation Diagram  (AWGN) }
-  	  \end{figure}
+     
     
     The BER decreases exponentially as the SNR increases, which is typical for digital communication systems. The close alignment of the measured and reference curves validates the simulation accuracy and ensures the OFDM system is working as intended. The system shows robust performance at higher SNR values, achieving nearly error-free communication. This analysis is crucial for validating the system and ensuring its effectiveness in real-world applications.
     
