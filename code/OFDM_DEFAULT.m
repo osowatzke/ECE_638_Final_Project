@@ -9,7 +9,7 @@ classdef OFDM_DEFAULT
         NULL_DC_SUBCARRIER = true;
         AUTOPLACE_PILOTS   = false;
         CYCLIC_PREFIX_LEN  = 16;
-        WINDOW_LEN         = 4;
+        WINDOW_LEN         = 0;
         USE_IDEAL_CHAN_EST = true;
         EQ_ALGORITHM       = 'mmse';
         INTERP_METHOD      = 'linear';

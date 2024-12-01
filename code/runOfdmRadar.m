@@ -4,6 +4,60 @@ radar = ofdmRadar(...
     'nullDcSubcarrier', true);
 radar.run();
 
+%% OFDM Radar PSLR Measurement
+f = 5.9e9;
+c = physconst('lightspeed');
+lambda = c/f;
+sampleRate = 10e6;
+PRI = 84/sampleRate;
+PRF = 1/PRI;
+unambigVelocity = PRF*lambda/4;
+targetVelocity = -100:10:100; %(-128:4:127)*unambigVelocity/128;
+PSLR_dB = zeros(size(targetVelocity));
+
+for i = 1:length(PSLR_dB)
+    radar = ofdmRadar(...
+        'nDataCarriers', 49,...
+        'targetVelocity', targetVelocity(i),...
+        'nullDcSubcarrier', false, ...
+        'plotResults', false,...
+        'SNR_dB', 200,...
+        'numPulses', 256);
+    radar.run();
+    PSLR_dB(i) = radar.measurePSLR();
+end
+
+figure(1)
+clf;
+plot(targetVelocity, PSLR_dB);
+
+%% OFDM Radar PSLR Measurement
+f = 5.9e9;
+c = physconst('lightspeed');
+lambda = c/f;
+sampleRate = 10e6;
+PRI = 84/sampleRate;
+unambigRange = c*PRI/2;
+targetRange = linspace(0,unambigRange,20);
+PSLR_dB = zeros(size(targetRange));
+
+for i = 1:length(PSLR_dB)
+    radar = ofdmRadar(...
+        'nDataCarriers', 49,...
+        'targetRange', targetRange(i),...
+        'targetVelocity', 0,...
+        'nullDcSubcarrier', false, ...
+        'plotResults', false,...
+        'SNR_dB', 200,...
+        'numPulses', 256);
+    radar.run();
+    PSLR_dB(i) = radar.measurePSLR();
+end
+
+figure(1)
+clf;
+plot(targetRange, PSLR_dB);
+
 %% OFDM Radar (Target at Large Range);
 radar = ofdmRadar(...
     'nDataCarriers', 49,...
