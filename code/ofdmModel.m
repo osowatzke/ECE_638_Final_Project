@@ -41,6 +41,7 @@ classdef ofdmModel < keyValueInitializer
         receiver         = [];
         bits             = [];
         txSignal         = [];
+        PAPR_dB          = [];
     end
 
     % Public class methods
@@ -50,6 +51,7 @@ classdef ofdmModel < keyValueInitializer
         function run(self)
             self.createTxSignal();
             self.runReceiver();
+            self.getMetrics();
             self.plotResults();
         end
 
@@ -136,6 +138,19 @@ classdef ofdmModel < keyValueInitializer
             end
         end
 
+        % Function computes the OFDM metrics
+        function getMetrics(self)
+
+            % Compute peak to average power ratio
+            avgPwr = mean(abs(self.txSignal).^2);
+            peakPwr = max(abs(self.txSignal).^2);
+            self.PAPR_dB = 10*log10(peakPwr/avgPwr);
+
+            % Display Peak to average power ratio
+            fprintf('OFDM Metrics:\n')
+            fprintf('\tPSLR(dB) = %.2f\n\n', self.PAPR_dB)
+        end
+
         % Function computes a reference bit error rate
         function refBer = computeRefBer(self)
 
@@ -193,6 +208,7 @@ classdef ofdmModel < keyValueInitializer
             self.plotBer();
             self.plotTxSpectrum();
             self.plotRxConstellation();
+            self.plotTxSignal();
         end
 
         % Function plots the bit error rate
@@ -260,6 +276,33 @@ classdef ofdmModel < keyValueInitializer
             title('Received Constellation Diagram at High SNR');
             xlabel('In Phase');
             ylabel('Quadrature');
+        end
+
+        % Function plots the transmitted waveform
+        function plotTxSignal(self)
+    
+            % Normalize transmitted signal
+            signalPower = abs(self.txSignal)./max(abs(self.txSignal));
+
+            % Create time axis
+            timeAxis = 0:(length(signalPower)-1);
+            timeAxis = timeAxis/self.sampleRate;
+
+            % Plot peak to average power ratio
+            figure(4)
+            clf;
+            plot(timeAxis, 20*log10(signalPower), 'LineWidth', 1.5);
+            hold on;
+            plot([timeAxis(1) timeAxis(end)], -self.PAPR_dB*ones(1,2), 'LineWidth', 1.5);
+            xlim([timeAxis(1) timeAxis(end)])
+            ylim([-20 0]);
+            grid on;
+
+            % Label Plot
+            title('Plot of Signal')
+            legend('Signal Power', 'Average Power');
+            xlabel('time (s)')
+            ylabel('Power (dB)')
         end
     end
 end
