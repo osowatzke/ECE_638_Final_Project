@@ -823,11 +823,7 @@ where $N$ is the number of subcarriers and $L_{fast}$ is the SNR loss due to the
 
 Using Equation (\ref{eq::fmcw_fast_time_snr_gain}) with a PRF of $320\ \text{MHz}/(80 \times 16) = 125\ \text{kHz}$, we compute $1469.56$ as the equivalent FMCW SNR gain. Note that FMCW SNR gain is greater than the OFDM Radar SNR gain by approximately $(N + L)/N$. For the specified set of parameters, that works out to be roughly 0.97 dB. Therefore, we expect to the SNR in the RDM to be approximately 13 dB lower for the JRC system than it is for the FMCW radar.
 
-which  b other variable in the SNR equation that will change for an OFDM radar is the fast signal processing gain of an OFDM radar is given by 
-
-the unambiguous range and velocity are less critical than they are in an FMCW radar. In other words, the OFDM radar is only able to operate well within the unambiguous range and velocity of the system.
-
-
+\iffalse
 The next plot displays the signal with the same parameter without the DC null. The pick received power is almost the same as the signal received with DC null. However, the sidelobes and noise floor shifted down significantly (average of 17 dB lower). Lower sidelobes and noise floor is crucial to some applications with high scattering noise. By including DC offset, the available bandwidth is fully utilized, leading to better spectral efficiency. Each subcarrier contributes to the total system data rate. Utilizing the DC subcarrier adds additional capacity, increasing the total throughput of the system.
 
 \begin{figure}[H]
@@ -903,20 +899,32 @@ The RDM results for the given parameters, shown in the graph below, demonstrate 
 \fbox{\includegraphics[width=0.8\linewidth]{OFDMRadar_RDM_Optimized}}
 \caption{OFDM/Radar RDM Plot}
 \end{figure} 
+\fi
 
-The parameters for the optimized OFDM yield distinct power spectral density and BER vs. SNR results. As anticipated, the total power density decreases by 30 dB, a direct consequence of the increased number of data carriers, which has been multiplied by a factor of 32 compared to OFDM stand-alone. The measured average signal power for both optimized OFDM/Radar and OFDM stand-alone are in the same range (-13 dB).
+We can also analyze the communication OFDM performance after the system is tailored to JRC applications. The power spectral density of the transmitted waveform is included in Figure \ref{fig::updated_ofdm_psd}.
 
 \begin{figure}[H]
 \centering
 \fbox{\includegraphics[width=0.8\linewidth]{Pwr Density_Optimized OFDMRadar}}
-\caption{OFDM/Radar Power Spectral Density}
+\caption{Updated OFDM Power Spectral Density}
+\label{fig::updated_ofdm_psd}
 \end{figure} 
-The final parameter compared for optimized OFDM signal integrity against stand-alone OFDM is the BER vs. SNR. The plot below shows that the BER results align with the expected values and are within the same range as those of stand-alone OFDM.
+
+As anticipated, the total power density decreases by 30 dB, a direct consequence of an increased number of data carriers, which have been increased by a factor of 32 compared to the 802.11p OFDM standard.
+
+We have also generated an updated BER curve to illustrate the performance in an AWGN channel. The updated curve is included in Figure \ref{fig::updated_ofdm_ber}
+
 \begin{figure}[H]
 \centering
 \fbox{\includegraphics[width=0.8\linewidth]{BER vs SNR_Optimized OFDMRadar_AWGN}}
-\caption{OFDM/Radar BER vs SNR}
-\end{figure} 
+\caption{Updated OFDM BER vs SNR}
+\label{fig::updated_ofdm_ber}
+\end{figure}
+
+Note that the BER is equivalent to the BER curve shown in Figure \ref{fig::ofdm_awgn_ber}. This occurs because the ratio of active carriers to subcarriers remains the same (i.e. the signal energy has the same concentration in the active subcarriers).
+
+In practice, for a fixed signal power, the SNR will be lower when the bandwidth is wider because we have a greater noise bandwidth and a fixed power spectral density.
+
 \section {Conclusion}
 While JRC may slightly compromise the standalone performance of either radar (resolution) or communication (capacity), it offers significant advantages in shared resource utilization, reduced hardware cost, and suitability for modern multi-functional systems like autonomous vehicles.
 
