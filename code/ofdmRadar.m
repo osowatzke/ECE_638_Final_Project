@@ -140,6 +140,13 @@ classdef ofdmRadar < RadarBase
             % Determine target power
             targetPower_dB = self.SNR_dB - max(self.SNR_dB);
 
+            % Determine the power of transmitted waveform
+            txWaveformPower_dB = 10*log10(mean(abs(self.txWaveform).^2));
+
+            % Scale the target power by the power of the
+            % transmitted waveform
+            targetPower_dB = targetPower_dB - txWaveformPower_dB;
+
             % Determine what gate the return will land in
             targetRangeGate = round(self.targetRange/self.rgSize);
 

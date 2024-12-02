@@ -305,6 +305,7 @@ In this section, we evaluate the performance of an FMCW radar written in MATLAB 
 	
 	\begin{equation}
 		\chi \propto \frac{P_t}{\beta_n}
+		\label{eq::snr_propto}
 	\end{equation}
 	
 	Note that the SNR in the RDM is greater than the input SNR by a factor of $G_{sp}$, where $G_{sp}$ is the SNR gain due to signal processing. The signal processing gain for the FMCW radar is given by:
@@ -317,6 +318,7 @@ In this section, we evaluate the performance of an FMCW radar written in MATLAB 
 	
 	\begin{equation}
 		 G_{fast} = \frac{M_{fast}}{L_{fast}} = \frac{f_s/PRF}{L_{fast}}
+		 \label{eq::fmcw_fast_time_snr_gain}
 	\end{equation}
 		
 	where $f_s$ is the sample rate and $L_{fast}$ is the SNR loss due to the fast-time FFT window. Using an 80 dB Chebyshev window, we get the following for $G_{fast}$:
@@ -770,7 +772,57 @@ Examining the figure, we can infer that the object separation is approaching the
 
 Examining the above figure, we find that the mainlobe width is $138.01\ \text{m} - 101.824\ \text{m} = 36.186\ \text{m}$. Our measured range resolution is then $36.186\ \text{m} /2 = 18.093 \ \text{m}$. We can also compute the range resolution of the system using Equation (\ref{eq::range_resolution}) with a bandwidth $\beta = 53/64 \times 10\ \text{MHz} = 8.281\ \text{MHz}$. This results in a range resolution of $18.1\ \text{m}$, which is consistent with the measured data.
 
+Note that this range resolution is insufficient for automotive radar applications. However, we can design an OFDM system with more bandwidth in the 77 GHz band that will achieve better range resolution. 
 
+For this system, we increase the bandwidth from 10MHz to 300MHz and scale the OFDM parameters by 16. The updated parameters are included in the table below:
+
+\begin{center}
+\begin{tabular}{|c|c|}
+\hline
+\textbf {Parameter} & \textbf {Value }\\
+\hline
+Carrier Frequency & 77 GHz \\
+\hline
+Sample Rate & 300 MHz \\
+\hline
+Number of Subcarriers & 16x64\\
+\hline
+Number of Data Carriers & 16x48 + 1 \\
+\hline 
+Number of Pilot Carriers & 16x4 \\
+\hline 
+\end{tabular}
+\end{center}
+
+With the updated parameters, the active carriers will have a bandwidth of $300 \text{MHz} \times (52 \times 16 + 1)/(64 \times 16) \approx 244\ \text{MHz}$. This bandwidth should correspond to a range resolution of 0.6142 m. In Figure \ref{fig::802_11p_ofdm_improved_range_response_mainlobe_width}, we measure the mainlobe width of the range response to confirm the updated range resolution.
+
+
+\begin{figure}[H]
+\centering
+\fbox{\includegraphics[width=0.8\linewidth]{802_11p_ofdm_improved_range_response_mainlobe_width.jpg}}
+\caption{Updated OFDM Radar Range Response Mainlobe Width}
+\label{fig::802_11p_ofdm_improved_range_response_mainlobe_width}
+\end{figure}
+
+Referring to the above figure, the mainlobe width is now 1.2296 m, which corresponds to a range resolution of 0.6148 m. It is important to note that this range resolution will further degrade after windowing is applied. However, in general, this is a much more acceptable range resolution for an automotive radar.
+
+We can also compare the SNR of this system to the SNR of the FMCW radar. As mentioned in Equation (\ref{eq::snr_propto}), the SNR is proportional to the transmit power. For an OFDM system, the transmit power is reduced by the PAPR to ensure the amplifier operates in its linear region. This will lead to an SNR degradation of 11.8 dB with respect to an FMCW radar.
+
+The SNR in the RDM will also be scaled by the signal processing SNR gain ($G_{sp}$). Compared to the FMCW radar, only the fast time signal processing gain will be different. If the transmitted symbols are encoded with constant amplitude modulation, then the fast time signal processing SNR gain is given as follows:
+
+\begin{equation*}
+	G_{fast} = \frac{N}{L_{fast}}
+\end{equation*}
+
+where $N$ is the number of subcarriers and $L_{fast}$ is the SNR loss due to the fast-time window. For the given system, with an 80 dB Chebyshev window the fast time SNR gain will be
+
+\begin{equation*}
+	G_{fast} \approx 587.4917
+\end{equation*}
+
+Using Equation (\ref{eq::fmcw_fast_time_snr_gain}) with a PRF of $300e6/(80 \times 16) = 234.375\ \text{kHz}$, we compute $734.504$ as the equivalent FMCW SNR gain. Note that FMCW SNR gain is greater than the OFDM Radar SNR gain by approximately $(N + L)/N$. For the specified set of parameters, that works out to be roughly 0.97 dB. Therefore, we expect to the SNR in the RDM to be approximately 13 dB lower for the JRC system than it is for the FMCW radar.
+
+which  b other variable in the SNR equation that will change for an OFDM radar is the fast signal processing gain of an OFDM radar is given by 
 
 the unambiguous range and velocity are less critical than they are in an FMCW radar. In other words, the OFDM radar is only able to operate well within the unambiguous range and velocity of the system.
 
@@ -858,13 +910,7 @@ The parameters for the optimized OFDM yield distinct power spectral density and 
 \fbox{\includegraphics[width=0.8\linewidth]{Pwr Density_Optimized OFDMRadar}}
 \caption{OFDM/Radar Power Spectral Density}
 \end{figure} 
-<<<<<<< HEAD
-
-The final parameter compared for optimized OFDM signal integrity against stand-alone OFDM is the BER vs. SNR. The plot below shows that the BER results align with the expected values and are within the same range as those of OFDM  stand-alone.
-
-=======
 The final parameter compared for optimized OFDM signal integrity against stand-alone OFDM is the BER vs. SNR. The plot below shows that the BER results align with the expected values and are within the same range as those of stand-alone OFDM.
->>>>>>> f422779ece9c9e0eb26abd1fca95e6e9cb6ff7ff
 \begin{figure}[H]
 \centering
 \fbox{\includegraphics[width=0.8\linewidth]{BER vs SNR_Optimized OFDMRadar_AWGN}}
