@@ -459,33 +459,9 @@ In this section, we evaluate the performance of an FMCW radar written in MATLAB 
 		
 		After equalization, we should be obtain to correctly reconstruct the symbols contained in the OFDM data carriers. Each of these symbols can then be demodulated to obtain the received bit stream.
 		
-		% Look at moving the capacity formulas into result
-		
-Some of OFDM's perform metrics of interest that we are going to analize in this paper include but are not limited to:
-
-\begin{itemize}
-\item Received SNR
-\item Bit Error Rate (BER)
-\item Channel Capacity
-\end{itemize}
-
-One channel's property needs to be analysed and compared is the channel capacity. We use the simple fromula below (Shannon-Hartley theorem) to calculate the channel capacity. 
-Where Bk is the bandwidth of the k-th subcarrier, Pk, transmit power, Hk, frequency response magnitude and Nk is a noise power.   
-%Where H (m, n) , Hmn is the channel frequency response of the n symbol on the m sub carrier. 
-	
-		%\begin{equation}
-		%	    		C_{m,n} = \text{log}_2\left(1 + \text{SNR}|H(m,n)|^2\right)
-	    	%	\label{eq:ofdm_capacity}
-		%\end{equation}
-
-			\begin{equation}
-			C_{k} = B_{k}.\text{log}_2\left(1 +\frac{ \text P_{k}.|H_{k}|^2}{N_{k}}\right)
-	    		\label{eq:ofdm_capacity}
-	    		\end{equation}
-
 \subsection {Simulation and Performance}
       
-      We have developed comprehensive MATLAB code to evaluate the performance of an OFDM communication system. Metrics of interest include the peak to average power ratio (PAPR), the bit error rate (BER) in an AWGN channel, the BER in presence of Rayleigh fading, and the capacity of the system.
+      We have developed comprehensive MATLAB code to evaluate the performance of an OFDM communication system. Metrics of interest include the peak to average power ratio (PAPR), the bit error rate (BER) in an AWGN channel, the BER in presence of Rayleigh fading, and the resulting capacity.
       
       For this analysis, we chose to evaluate an OFDM 802.11p system because the 802.11p standard is applicable to VNV communication \cite{802_11p_abdelgader}. The 802.11p standard operates in the DRC Band (5.850 GHz to 5.925 GHz) and uses 64 subcarriers sampled at a rate of 10 MHz. A 16 sample cyclic prefix is added, increasing the symbol duration from 6.4 ${\mu}s$ to 8.0 ${\mu}s$. Of the 64 subcarriers, 48 are data carriers, and 4 are pilots. Pilots are specifically located at $\{-21, -7, 7, 21\}$. Data carriers cover all the remaining carriers in range $[-26, 26]$ except the DC subcarrier, which is a null carrier.
       
@@ -557,11 +533,36 @@ Where Bk is the bandwidth of the k-th subcarrier, Pk, transmit power, Hk, freque
   	  	\end{figure}
   	  
   	  	Referring to the figure, the measured BER rate is consistent with the expected BER.
-    		
-    	  % Look at refactoring this section
     	    	  
-  	  For the given parameter, B total=10 MHz, N subcarriers=64, N data=48, P total =1 W (assumed for simplicity) and No=1 nW/Hz, the total channels capacity for given OFDM  with AWGN is around 99.74 Mbps. \par
-  	 It is important to highlight the cyclic prefix reduces the effective data rate, which slightly decreases the channel capacity. Adjust for this overhead if needed.
+    	  Next, we can analyze the channel capacity of the system. The channel capacity of an individual OFDM subcarrier is given by:
+    	  
+    	  \begin{equation}
+			C_{k} = B_{k}\text{log}_2\left(1 +\frac{ \text P_{k}\cdot|H_{k}|^2}{N_{k}}\right)
+	    		\label{eq:ofdm_subcarrier_capacity}
+	    	\end{equation}
+	    	
+	    	where Bk is the bandwidth of the subcarrier, Pk is the transmit power of the subcarrier, Hk is frequency response of the subcarrier, and Nk is the noise power of the subcarrier. For an AWGN channel with uniform power allocation, the channel capacity is given by:
+	    	
+	    	\begin{equation}
+	    		C = NB_0\text{log}_2\left(1 + \frac{P_0\cdot|H_0|^2}{N_0}\right)
+	    	\end{equation}
+	    	
+	    	where $B_0$, $P_0$ $H_0$, and $N_0$ are defined with respect to the 0-th subcarrier. Note that we can redefine this equation using the bandwidth of the active carriers, which we denote as $B$ and the SNR of the active carriers.
+	    	
+	    	\begin{equation}
+	    		C = B\text{log}_2\left(1 + \text{SNR}\right)
+	    	\end{equation} 
+	    	
+	    For an 802.11p OFDM system, we have to account for an SNR gain of $64/52$ due to all the energy being concentrated in the active subcarriers and bandwidth reduction of $52/64$ because only a fraction subcarriers are used. A plot of the resulting capacity is shown below:
+	    
+	    \begin{figure}[H]
+	    		\centering
+    			\fbox{\includegraphics[width=0.8\linewidth]{awgn_capacity.jpg}}
+    			\caption{OFDM 802.11p AWGN Capacity}
+    			\label{fig::ofdm_awgn_capacity}
+	    \end{figure}
+	    
+	   	In practice, the spectral efficiency of the system is lower than the capacity because of the bandwidth occupied by the pilots and the cyclic prefix, which reduces the effective data rates. For the 802.11p standard, the cyclic prefix occupies 20\% of the symbol duration.
     
     \section {JRC}
 		\subsection {Background}
