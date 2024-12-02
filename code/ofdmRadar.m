@@ -133,7 +133,13 @@ classdef ofdmRadar < RadarBase
 
         % Function computes the radar's received data
         function getRxData(self)
-            
+
+            % Determine noise power
+            noisePower_dB = -max(self.SNR_dB);
+
+            % Determine target power
+            targetPower_dB = self.SNR_dB - max(self.SNR_dB);
+
             % Determine what gate the return will land in
             targetRangeGate = round(self.targetRange/self.rgSize);
 
@@ -150,13 +156,17 @@ classdef ofdmRadar < RadarBase
             % Each target return is a delay and doppler shifted
             % copy of the transmitted waveform
             for i = 1:length(targetRangeGate)
-                self.rxData = self.rxData + [zeros(targetRangeGate(i),1);...
+                self.rxData = self.rxData + 10^(targetPower_dB(i)/20)*...
+                    [zeros(targetRangeGate(i),1);...
                     self.txWaveform(1:(end-targetRangeGate(i)))].*...
                     exp(1i*2*pi*doppFreqNorm(i)*n);
             end
 
             % Add complex gaussian noise to return
-            self.rxData = awgn(self.rxData, self.SNR_dB, 'measured');
+            noise = 10^(noisePower_dB/20)*1/sqrt(2)*...
+                complex(randn(size(self.rxData)),randn(size(self.rxData)));
+
+            self.rxData = self.rxData + noise;
 
             % Remove half window length from leading and trailing
             % ends of received data. These overlap with last and next
@@ -210,14 +220,28 @@ classdef ofdmRadar < RadarBase
             % Inverse FFT shift window to match FFT ordering
             window = ifftshift(window);
 
-            % Muliply by the window and perform an inverse FFT
-            mfOut = ifft(Fmfout.*window);
+            % Determine the size of the range IFFT
+            rangeFftSize = size(Fmfout,1)*self.rangeOSR;
+
+            % We can zero-pad the IFFT input, but we must perform zero
+            % padding in the middle of the sequence
+            mfIn = Fmfout.*window;
+            padSize = (rangeFftSize - size(mfIn,1));
+            zeroPad = zeros(padSize, size(mfIn, 2));
+            mfIn = [mfIn(1:(size(mfIn,1)/2),:);...
+                zeroPad; mfIn((end - size(mfIn,1)/2 + 1):end,:)];
+
+            % Perform an inverse FFT
+            mfOut = ifft(mfIn);
 
             % Create a slow-time window
             window = self.slowTimeWin(self.numPulses).';
 
+            % Determine doppler FFT size
+            dopplerFftSize = self.dopplerOSR*size(mfOut,2);
+
             % Muliply by the window and perform a slow-time FFT
-            self.rdm = fft(mfOut.*window,[],2);
+            self.rdm = fft(mfOut.*window,dopplerFftSize,2);
         end
     end
 end

@@ -1,7 +1,49 @@
-%% OFDM Radar w/ Default Parameters
+%% OFDM Radar Range Resolution Measurement
+c = physconst('lightspeed');
+sampleRate = 10e6;
+rgSize = c/(2*sampleRate);
+
 radar = ofdmRadar(...
+    'targetRange', [8*rgSize, 10*rgSize],...
+    'targetVelocity', [0 0],...
+    'SNR_dB', [100 100],...
+    'rangeOSR', 16,...
     'nDataCarriers', 49,...
-    'targetVelocity',50,...
+    'nullDcSubcarrier', false,...
+    'fastTimeWin',@(x)rectwin(x),...
+    'slowTimeWin',@(x)rectwin(x));
+radar.run();
+
+%% OFDM Radar Range Resolution Measurement (Part #2)
+c = physconst('lightspeed');
+sampleRate = 10e6;
+rgSize = c/(2*sampleRate);
+
+radar = ofdmRadar(...
+    'targetRange', 8*rgSize,...
+    'targetVelocity', 0,...
+    'SNR_dB', 100,...
+    'rangeOSR', 256,...
+    'nDataCarriers', 49,...
+    'nullDcSubcarrier', false,...
+    'fastTimeWin',@(x)rectwin(x),...
+    'slowTimeWin',@(x)rectwin(x));
+radar.run();
+
+%% OFDM Radar PSLR Measurement
+radar = ofdmRadar(...
+    'targetRange', 50,...
+    'targetVelocity', 0,...
+    'SNR_dB', 100,...
+    'nullDcSubcarrier', false);
+radar.run();
+
+%% OFDM Radar PSLR Measurement w/ DC Subcarrier
+radar = ofdmRadar(...
+    'targetRange', 50,...
+    'targetVelocity', 0,...
+    'SNR_dB', 100,...
+    'nDataCarriers', 49,...
     'nullDcSubcarrier', false);
 radar.run();
 
@@ -30,6 +72,7 @@ end
 
 figure(1)
 clf;
+<<<<<<< HEAD
 plot(targetVelocity, PSLR_dB, LineWidth=1.5);
 
 
@@ -40,6 +83,15 @@ plot(targetVelocity, PSLR_dB, LineWidth=1.5);
             ylabel('PSLR (dB)');
              grid on;
             linewidth(1.5);
+=======
+plot(targetVelocity, PSLR_dB, 'LineWidth', 1.5);
+grid on;
+
+ % Label Plot
+title('Peak Sidelobe Ratio vs Velocity')
+xlabel('Velocity (m/s)')
+ylabel('PSLR (dB)')
+>>>>>>> f422779ece9c9e0eb26abd1fca95e6e9cb6ff7ff
 
 %% OFDM Radar PSLR Measurement
 f = 5.9e9;
@@ -48,7 +100,7 @@ lambda = c/f;
 sampleRate = 10e6;
 PRI = 84/sampleRate;
 unambigRange = c*PRI/2;
-targetRange = linspace(0,unambigRange,20);
+targetRange = linspace(0,unambigRange);
 PSLR_dB = zeros(size(targetRange));
 
 for i = 1:length(PSLR_dB)
@@ -66,6 +118,7 @@ end
 
 figure(1)
 clf;
+<<<<<<< HEAD
 plot(targetRange, PSLR_dB, LineWidth=1.5);
 
  % Label Plot
@@ -74,6 +127,24 @@ plot(targetRange, PSLR_dB, LineWidth=1.5);
             xlabel('Range (m)');
             ylabel('PSLR (dB)');
             grid on;
+=======
+plot(targetRange, PSLR_dB, 'LineWidth', 1.5);
+xlim([targetRange(1) targetRange(end)])
+grid on;
+
+% Determine the maximum range with acceptable performance
+c = physconst('lightspeed');
+Rmax = c*16/sampleRate/2;
+line(Rmax*ones(1,2), ylim, 'color', 'red',...
+    'LineWidth',1.5, 'LineStyle', '--')
+
+% Label Plot
+legend('R_{max}','PSLR(dB)');
+title('Peak Sidelobe Ratio vs Range')
+xlabel('Range (m)')
+ylabel('PSLR (dB)')
+
+>>>>>>> f422779ece9c9e0eb26abd1fca95e6e9cb6ff7ff
 %% OFDM Radar (Target at Large Range);
 radar = ofdmRadar(...
     'nDataCarriers', 49,...
