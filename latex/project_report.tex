@@ -774,7 +774,7 @@ Examining the above figure, we find that the mainlobe width is $138.01\ \text{m}
 
 Note that this range resolution is insufficient for automotive radar applications. However, we can design an OFDM system with more bandwidth in the 77 GHz band that will achieve better range resolution. 
 
-For this system, we increase the bandwidth from 10MHz to 300MHz and scale the OFDM parameters by 16. The updated parameters are included in the table below:
+For this system, we increase the bandwidth from 10MHz to 320MHz and scale the OFDM parameters by 32. The updated parameters are included in the table below:
 
 \begin{center}
 \begin{tabular}{|c|c|}
@@ -783,18 +783,18 @@ For this system, we increase the bandwidth from 10MHz to 300MHz and scale the OF
 \hline
 Carrier Frequency & 77 GHz \\
 \hline
-Sample Rate & 300 MHz \\
+Sample Rate & 320 MHz \\
 \hline
-Number of Subcarriers & 16x64\\
+Number of Subcarriers & 32x64\\
 \hline
-Number of Data Carriers & 16x48 + 1 \\
+Number of Data Carriers & 32x48 + 1 \\
 \hline 
-Number of Pilot Carriers & 16x4 \\
+Number of Pilot Carriers & 32x4 \\
 \hline 
 \end{tabular}
 \end{center}
 
-With the updated parameters, the active carriers will have a bandwidth of $300 \text{MHz} \times (52 \times 16 + 1)/(64 \times 16) \approx 244\ \text{MHz}$. This bandwidth should correspond to a range resolution of 0.6142 m. In Figure \ref{fig::802_11p_ofdm_improved_range_response_mainlobe_width}, we measure the mainlobe width of the range response to confirm the updated range resolution.
+With the updated parameters, the active carriers will have a bandwidth of $320 \text{MHz} \times (52 \times 16 + 1)/(64 \times 16) \approx 260\ \text{MHz}$. This bandwidth should correspond to a range resolution of 0.5758 m. In Figure \ref{fig::802_11p_ofdm_improved_range_response_mainlobe_width}, we measure the mainlobe width of the range response to confirm the updated range resolution.
 
 
 \begin{figure}[H]
@@ -804,7 +804,7 @@ With the updated parameters, the active carriers will have a bandwidth of $300 \
 \label{fig::802_11p_ofdm_improved_range_response_mainlobe_width}
 \end{figure}
 
-Referring to the above figure, the mainlobe width is now 1.2296 m, which corresponds to a range resolution of 0.6148 m. It is important to note that this range resolution will further degrade after windowing is applied. However, in general, this is a much more acceptable range resolution for an automotive radar.
+Referring to the above figure, the mainlobe width is now 1.1527 m, which corresponds to a range resolution of 0.5763 m. It is important to note that this range resolution will further degrade after windowing is applied. However, for automotive applications, this is a much more acceptable range resolution than what was provided by the 802.11p radar.
 
 We can also compare the SNR of this system to the SNR of the FMCW radar. As mentioned in Equation (\ref{eq::snr_propto}), the SNR is proportional to the transmit power. For an OFDM system, the transmit power is reduced by the PAPR to ensure the amplifier operates in its linear region. This will lead to an SNR degradation of 11.8 dB with respect to an FMCW radar.
 
@@ -817,10 +817,10 @@ The SNR in the RDM will also be scaled by the signal processing SNR gain ($G_{sp
 where $N$ is the number of subcarriers and $L_{fast}$ is the SNR loss due to the fast-time window. For the given system, with an 80 dB Chebyshev window the fast time SNR gain will be
 
 \begin{equation*}
-	G_{fast} \approx 587.4917
+	G_{fast} \approx 1175.54
 \end{equation*}
 
-Using Equation (\ref{eq::fmcw_fast_time_snr_gain}) with a PRF of $300e6/(80 \times 16) = 234.375\ \text{kHz}$, we compute $734.504$ as the equivalent FMCW SNR gain. Note that FMCW SNR gain is greater than the OFDM Radar SNR gain by approximately $(N + L)/N$. For the specified set of parameters, that works out to be roughly 0.97 dB. Therefore, we expect to the SNR in the RDM to be approximately 13 dB lower for the JRC system than it is for the FMCW radar.
+Using Equation (\ref{eq::fmcw_fast_time_snr_gain}) with a PRF of $320\ \text{MHz}/(80 \times 16) = 125\ \text{kHz}$, we compute $1469.56$ as the equivalent FMCW SNR gain. Note that FMCW SNR gain is greater than the OFDM Radar SNR gain by approximately $(N + L)/N$. For the specified set of parameters, that works out to be roughly 0.97 dB. Therefore, we expect to the SNR in the RDM to be approximately 13 dB lower for the JRC system than it is for the FMCW radar.
 
 which  b other variable in the SNR equation that will change for an OFDM radar is the fast signal processing gain of an OFDM radar is given by 
 
@@ -839,13 +839,13 @@ The previous results were simulated for a target located at 50m. We have increas
 \textbf{ Note: } For an effective presentation, we only display the analysis for signals without the DC Nulls.
 \begin{figure}[H]
 \centering
-\fbox{\includegraphics[width=1\linewidth]{Mix_500-900m}}
+\fbox{\includegraphics[width=1.0\linewidth]{Mix_500-900m}}
 \caption{OFDM/Radar No DC null range plot 500m (left) and 900m (right)}
 \end{figure} 
 To ensure a fair comparison between OFDM and FMCW radar, the PSLR versus range graph is presented. Up to a range of 200 meters, the PSLR remains high at 80 dB, indicating excellent radar detection performance. Beyond 200 meters, the PSLR decreases significantly, and by approximately 1200 meters, the range becomes ambiguous.
 \begin{figure}[H]
 \centering
-\fbox{\includegraphics[width=0.8\linewidth]{OFDMRadar_PSLR vs Range}}
+\fbox{\includegraphics[width=1.0\linewidth]{OFDMRadar_PSLR vs Range}}
 \caption{OFDM/Radar PSLR Measurement vs Range}
 \end{figure} 
 The plot below represents a Range-Doppler Map (RDM), which is a visualization used in radar systems to show the relationship between detected targets' range and relative velocity. A strong return is observed around 100 meters range and close to 50 m/s velocity. This suggests a stationary or slow-moving target with strong radar reflectivity. Other ranges (e.g., 300m, 700m) show some faint signals, but these are significantly weaker compared to the strong reflection near 100m. The resolution along the velocity axis can be further refined to detect smaller velocity variations in moving targets which can addressed by optimizing the OFDM parameter in the next step. 
@@ -857,7 +857,7 @@ The plot below represents a Range-Doppler Map (RDM), which is a visualization us
 The same PSLR vs velocity evaluation was performed for Doppler and is plotted below. It is important to note that, unlike standalone radar, the PSLR is influenced by uncompensated Doppler. The low PSLR values for Doppler make target velocity estimation challenging beyond 200 m/s.
 \begin{figure}[H]
 \centering
-\fbox{\includegraphics[width=0.8\linewidth]{OFDMRadar_PSLR vs Velocity}}
+\fbox{\includegraphics[width=1.0\linewidth]{OFDMRadar_PSLR vs Velocity}}
 \caption{OFDM/Radar PSLR Measurement vs Velocity}
 \end{figure} 
 
@@ -871,13 +871,13 @@ OFDM radar written in MATLAB and configured with the following set of parameters
 \hline
 Carrier Frequency & 77 GHz \\
 \hline
-Sample Rate & 200 MHz \\
+Sample Rate & 320 MHz \\
 \hline
-Number of Subcarriers & 16x64\\
+Number of Subcarriers & 32x64\\
 \hline
-Number of Data Carriers & 16x48 + 1 \\
+Number of Data Carriers & 32x48 + 1 \\
 \hline 
-Number of Pilot Carriers & 16x4 \\
+Number of Pilot Carriers & 32x4 \\
 \hline 
 Number of Pulses & 128 \\
 \hline 
@@ -903,7 +903,7 @@ The RDM results for the given parameters, shown in the graph below, demonstrate 
 \caption{OFDM/Radar RDM Plot}
 \end{figure} 
 
-The parameters for the optimized OFDM yield distinct power spectral density and BER vs. SNR results. As anticipated, the total power density decreases by 20 dB, a direct consequence of the increased number of data carriers, which has been multiplied by a factor of 16 compared to OFDM stand-alone. The measured average signal power for both optimized OFDM/Radar and OFDM stand-alone are in the same range (-13 dB).
+The parameters for the optimized OFDM yield distinct power spectral density and BER vs. SNR results. As anticipated, the total power density decreases by 30 dB, a direct consequence of the increased number of data carriers, which has been multiplied by a factor of 32 compared to OFDM stand-alone. The measured average signal power for both optimized OFDM/Radar and OFDM stand-alone are in the same range (-13 dB).
 
 \begin{figure}[H]
 \centering
