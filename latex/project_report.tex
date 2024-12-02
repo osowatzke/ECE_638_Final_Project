@@ -787,13 +787,13 @@ The previous results were simulated for a target located at 50m. We have increas
 \textbf{ Note: } For an effective presentation, we only display the analysis for signals without the DC Nulls.
 \begin{figure}[H]
 \centering
-\fbox{\includegraphics[width=1.0\linewidth]{Mix_500-900m}}
+\fbox{\includegraphics[width=1\linewidth]{Mix_500-900m}}
 \caption{OFDM/Radar No DC null range plot 500m (left) and 900m (right)}
 \end{figure} 
 To ensure a fair comparison between OFDM and FMCW radar, the PSLR versus range graph is presented. Up to a range of 200 meters, the PSLR remains high at 80 dB, indicating excellent radar detection performance. Beyond 200 meters, the PSLR decreases significantly, and by approximately 1200 meters, the range becomes ambiguous.
 \begin{figure}[H]
 \centering
-\fbox{\includegraphics[width=1.0\linewidth]{OFDMRadar_PSLR vs Range}}
+\fbox{\includegraphics[width=0.8\linewidth]{OFDMRadar_PSLR vs Range}}
 \caption{OFDM/Radar PSLR Measurement vs Range}
 \end{figure} 
 The plot below represents a Range-Doppler Map (RDM), which is a visualization used in radar systems to show the relationship between detected targets' range and relative velocity. A strong return is observed around 100 meters range and close to 50 m/s velocity. This suggests a stationary or slow-moving target with strong radar reflectivity. Other ranges (e.g., 300m, 700m) show some faint signals, but these are significantly weaker compared to the strong reflection near 100m. The resolution along the velocity axis can be further refined to detect smaller velocity variations in moving targets which can addressed by optimizing the OFDM parameter in the next step. 
@@ -805,7 +805,7 @@ The plot below represents a Range-Doppler Map (RDM), which is a visualization us
 The same PSLR vs velocity evaluation was performed for Doppler and is plotted below. It is important to note that, unlike standalone radar, the PSLR is influenced by uncompensated Doppler. The low PSLR values for Doppler make target velocity estimation challenging beyond 200 m/s.
 \begin{figure}[H]
 \centering
-\fbox{\includegraphics[width=1.0\linewidth]{OFDMRadar_PSLR vs Velocity}}
+\fbox{\includegraphics[width=0.8\linewidth]{OFDMRadar_PSLR vs Velocity}}
 \caption{OFDM/Radar PSLR Measurement vs Velocity}
 \end{figure} 
 
