@@ -210,14 +210,28 @@ classdef ofdmRadar < RadarBase
             % Inverse FFT shift window to match FFT ordering
             window = ifftshift(window);
 
-            % Muliply by the window and perform an inverse FFT
-            mfOut = ifft(Fmfout.*window);
+            % Determine the size of the range IFFT
+            rangeFftSize = size(Fmfout,1)*self.rangeOSR;
+
+            % We can zero-pad the IFFT input, but we must perform zero
+            % padding in the middle of the sequence
+            mfIn = Fmfout.*window;
+            padSize = (rangeFftSize - size(mfIn,1));
+            zeroPad = zeros(padSize, size(mfIn, 2));
+            mfIn = [mfIn(1:(size(mfIn,1)/2),:);...
+                zeroPad; mfIn((end - size(mfIn,1)/2 + 1):end,:)];
+
+            % Perform an inverse FFT
+            mfOut = ifft(mfIn);
 
             % Create a slow-time window
             window = self.slowTimeWin(self.numPulses).';
 
+            % Determine doppler FFT size
+            dopplerFftSize = self.dopplerOSR*size(mfOut,2);
+
             % Muliply by the window and perform a slow-time FFT
-            self.rdm = fft(mfOut.*window,[],2);
+            self.rdm = fft(mfOut.*window,dopplerFftSize,2);
         end
     end
 end

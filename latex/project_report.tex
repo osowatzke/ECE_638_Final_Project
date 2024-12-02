@@ -692,15 +692,68 @@ The orthogonality or low correlation of the frequency domain allows the two subs
 
 \subsection {Simulation and Performance}
       
-There are many variables and parameters that can influence the quality of the received data. To investigate the accuracy of the JRC received data, we have simulated and compared the results for many scenarios. The first OFDM-Radar simulation consists of DC subcarrier (Zero Frequency) which is used in OFDM signals to avoid issues with DC offset in the receiver, and eliminate interference from low-frequency noise. 
+There are many variables and parameters that can influence the performance of a JRC system. To investigate the performance, we have simulated and compared the results for many scenarios. The first simulation we performed used an OFDM 802.11p transmitter with an OFDM radar receiver. The transmitter includes a null subcarrier at DC which limits the PSLR as shown in Figure \ref{fig::pslr_802_11p_ofdm_radar}.
 
 \begin{figure}[H]
 \centering
-\fbox{\includegraphics[width=0.8\linewidth]{OFDMRadar_with DCNull_50m}}
-\caption{OFDM/Radar with DC null range plot}
+\fbox{\includegraphics[width=0.8\linewidth]{802_11p_ofdm_range_response.jpg}}
+\caption{PSLR Measurement for 802.11p OFDM Radar}
+\label{fig::pslr_802_11p_ofdm_radar}
 \end{figure}
 
-The next plot illustrates the signal using the same parameters but without the DC null. The peak received power is nearly identical to that of the signal with the DC null. However, the sidelobes and noise floor are significantly reduced, averaging 17 dB lower. This reduction is critical for applications sensitive to high scattering noise. Including the DC subcarrier ensures full utilization of the available bandwidth, enhancing spectral efficiency. Each subcarrier contributes to the system's overall data rate, and using the DC subcarrier adds capacity, thereby increasing the total system throughput.
+There we measure a PSLR of 26.30 dB - even when using a 80 dB Chebyshev window. If we add a DC subcarrier to the OFDM transmission as previously suggest, we can achieve a much better PSLR as shown in Figure \ref{fig::pslr_802_11p_mod_ofdm_radar}.
+
+\begin{figure}[H]
+\centering
+\fbox{\includegraphics[width=0.8\linewidth]{802_11p_ofdm_mod_range_response.jpg}}
+\caption{PSLR Measurement for Modified 802.11p OFDM Radar}
+\label{fig::pslr_802_11p_mod_ofdm_radar}
+\end{figure}
+
+The PSLR is now 79.92 dB, which is consistent with our 80 dB Chebyshev window. If the receiver can utilize the DC subcarrier, we expect no capacity degradation for the communication system. However, if the DC subcarrier is unused by the receiver, we will see a degradation in capacity.
+
+\iffalse
+The capacity of an OFDM system is given by:
+
+\begin{equation}
+	C = \text{max}{\sum_{P_j: \sum_j{P_j \leq P}}{W\text{log}_2\left\right)}
+\end{equation}
+\fi
+
+We can also examine the doppler tolerance of the system by measuring the PLSR while varying the amount of uncompensated doppler shift. The doppler tolerance of the system is shown in Figure \ref{fig::ofdm_radar_doppler_tolerance}.
+
+\begin{figure}[H]
+\centering
+\fbox{\includegraphics[width=0.8\linewidth]{OFDMRadar_PSLR vs Velocity}}
+\caption{OFDM Radar Doppler Tolerance}
+\label{fig::ofdm_radar_doppler_tolerance}
+\end{figure}
+
+Note unlike the FMCW radar, the PSLR varies with uncompensated doppler. When an 80 dB Chebyshev window is applied, we see a PSLR degradation of ~25 dB for objects with a relative velocity 100 m/s. The PSLR degrades with velocity, because uncompensated doppler creates a mismatch between the FFT of the matched filter $H[k]$ and the FFT of the data $X[k]$.
+
+The JRC system is also only designed to detect returns with delays equal to or smaller than the length of a cyclic prefix. For the 802.11p standard, this range is defined as follows:
+
+\begin{equation}
+R_{max} = \frac{ct_0}{2} = \frac{c(L/f_s)}{2} = 240 m
+\end{equation}
+
+In Figure \ref{fig::ofdm_radar_pslr_vs_range}, we examine the PSLR against range.
+
+\begin{figure}[H]
+\centering
+\fbox{\includegraphics[width=0.8\linewidth]{OFDMRadar_PSLR vs Range}}
+\caption{OFDM Radar PSLR vs Range}
+\label{fig::ofdm_radar_pslr_vs_range}
+\end{figure}
+
+As expected, we see that the PSLR steeply degrades when the range exceeds $R_{max}$.
+
+For an OFDM radar, we have already stated the unambiguous range and velocity. However, due to the demonstrated performance degradations at large ranges and velocities, it is not meaningful to evaluate performance outside of the first range and velocity ambiguity. Even though it is limited to the first ambiguities, an automotive 802.11p radar will still be able to measure an acceptable range of ranges and velocities.
+
+the unambiguous range and velocity are less critical than they are in an FMCW radar. In other words, the OFDM radar is only able to operate well within the unambiguous range and velocity of the system.
+
+
+The next plot displays the signal with the same parameter without the DC null. The pick received power is almost the same as the signal received with DC null. However, the sidelobes and noise floor shifted down significantly (average of 17 dB lower). Lower sidelobes and noise floor is crucial to some applications with high scattering noise. By including DC offset, the available bandwidth is fully utilized, leading to better spectral efficiency. Each subcarrier contributes to the total system data rate. Utilizing the DC subcarrier adds additional capacity, increasing the total throughput of the system.
 
 \begin{figure}[H]
 \centering
@@ -710,32 +763,24 @@ The next plot illustrates the signal using the same parameters but without the D
 
 The previous results were simulated for a target located at 50m. We have increased the target range to 500 and 900m to see the received data quality and degradation in a long target range. As the plots indicate, in the 500m range which considers a long range for V2V radar applications, we still have a distinguishable target peak (PSLR 23dB). At 900m range the dynamic range degrades significantly to around 9dB. \par
 \textbf{ Note: } For an effective presentation, we only display the analysis for signals without the DC Nulls.
-
-
 \begin{figure}[H]
 \centering
 \fbox{\includegraphics[width=1.0\linewidth]{Mix_500-900m}}
 \caption{OFDM/Radar No DC null range plot 500m (left) and 900m (right)}
 \end{figure} 
-
 To ensure a fair comparison between OFDM and FMCW radar, the PSLR versus range graph is presented. Up to a range of 200 meters, the PSLR remains high at 80 dB, indicating excellent radar detection performance. Beyond 200 meters, the PSLR decreases significantly, and by approximately 1200 meters, the range becomes ambiguous.
-
 \begin{figure}[H]
 \centering
 \fbox{\includegraphics[width=1.0\linewidth]{OFDMRadar_PSLR vs Range}}
 \caption{OFDM/Radar PSLR Measurement vs Range}
 \end{figure} 
-
 The plot below represents a Range-Doppler Map (RDM), which is a visualization used in radar systems to show the relationship between detected targets' range and relative velocity. A strong return is observed around 100 meters range and close to 50 m/s velocity. This suggests a stationary or slow-moving target with strong radar reflectivity. Other ranges (e.g., 300m, 700m) show some faint signals, but these are significantly weaker compared to the strong reflection near 100m. The resolution along the velocity axis can be further refined to detect smaller velocity variations in moving targets which can addressed by optimizing the OFDM parameter in the next step. 
-
 \begin{figure}[H]
 \centering
 \fbox{\includegraphics[width=0.8\linewidth]{OFDMRadar_RDM}}
 \caption{OFDM/Radar RDM Plot}
 \end{figure} 
-
 The same PSLR vs velocity evaluation was performed for Doppler and is plotted below. It is important to note that, unlike standalone radar, the PSLR is influenced by uncompensated Doppler. The low PSLR values for Doppler make target velocity estimation challenging beyond 200 m/s.
-
 \begin{figure}[H]
 \centering
 \fbox{\includegraphics[width=1.0\linewidth]{OFDMRadar_PSLR vs Velocity}}
@@ -777,9 +822,7 @@ The graph below presents the simulation results using the parameters described a
 \fbox{\includegraphics[width=0.8\linewidth]{OFDMRadar_No DCNull_T50_Improve}}
 \caption{OFDM/Radar range plot for 50m target}
 \end{figure} 
-
 The RDM results for the given parameters, shown in the graph below, demonstrate enhanced resolution with the newly optimized OFDM parameters.
-
 \begin{figure}[H]
 \centering
 \fbox{\includegraphics[width=0.8\linewidth]{OFDMRadar_RDM_Optimized}}
@@ -793,19 +836,12 @@ The parameters for the optimized OFDM yield distinct power spectral density and 
 \fbox{\includegraphics[width=0.8\linewidth]{Pwr Density_Optimized OFDMRadar}}
 \caption{OFDM/Radar Power Spectral Density}
 \end{figure} 
-
 The final parameter compared for optimized OFDM signal integrity against stand-alone OFDM is the BER vs. SNR. The plot below shows that the BER results align with the expected values and are within the same range as those of stand-alone OFDM.
-
 \begin{figure}[H]
 \centering
 \fbox{\includegraphics[width=0.8\linewidth]{BER vs SNR_Optimized OFDMRadar_AWGN}}
 \caption{OFDM/Radar BER vs SNR}
 \end{figure} 
-
-
-
-
-
 \section {Conclusion}
 While JRC may slightly compromise the standalone performance of either radar (resolution) or communication (capacity), it offers significant advantages in shared resource utilization, reduced hardware cost, and suitability for modern multi-functional systems like autonomous vehicles.
 
