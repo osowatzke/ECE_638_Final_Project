@@ -1,7 +1,8 @@
 %% OFDM Radar w/ Default Parameters
 radar = ofdmRadar(...
     'nDataCarriers', 49,...
-    'nullDcSubcarrier', true);
+    'targetVelocity',50,...
+    'nullDcSubcarrier', false);
 radar.run();
 
 %% OFDM Radar PSLR Measurement
@@ -31,6 +32,12 @@ figure(1)
 clf;
 plot(targetVelocity, PSLR_dB);
 
+
+ % Label Plot
+            title('Peak Sidelobe Ratio vs Velocity')
+            %legend('Signal Power', 'Average Power');
+            xlabel('Velocity (m/s)')
+            ylabel('PSLR (dB)')
 %% OFDM Radar PSLR Measurement
 f = 5.9e9;
 c = physconst('lightspeed');
@@ -58,6 +65,11 @@ figure(1)
 clf;
 plot(targetRange, PSLR_dB);
 
+ % Label Plot
+            title('Peak Sidelobe Ratio vs Range')
+            %legend('Signal Power', 'Average Power');
+            xlabel('Range (m)')
+            ylabel('PSLR (dB)')
 %% OFDM Radar (Target at Large Range);
 radar = ofdmRadar(...
     'nDataCarriers', 49,...
@@ -75,7 +87,7 @@ radar.run();
 %% OFDM Radar Improved Parameters
 radar = ofdmRadar(...
     'carrierFreq', 77e9,...
-    'targetRange', 200,...
+    'targetRange', 50,...
     'targetVelocity', 50,...
     'sampleRate', 200e6,...
     'nSubcarriers', 16*64,...

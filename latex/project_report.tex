@@ -677,7 +677,7 @@ The orthogonality or low correlation of the frequency domain allows the two subs
 
 \subsection {Simulation and Performance}
       
-There are many variables and parameters that can influence the quality of the received data. To investigate the accuracy of the JRC received data, we have simulated and compared the results for many scenarios. The first OFDM-Radar simulation consists of DC subcarrier (Zero Frequency) which is used in OFDM signals to avoid issues with DC offset in the receiver, eliminate interference from low-frequency noise. 
+There are many variables and parameters that can influence the quality of the received data. To investigate the accuracy of the JRC received data, we have simulated and compared the results for many scenarios. The first OFDM-Radar simulation consists of DC subcarrier (Zero Frequency) which is used in OFDM signals to avoid issues with DC offset in the receiver, and eliminate interference from low-frequency noise. 
 
 \begin{figure}[H]
 \centering
@@ -685,7 +685,7 @@ There are many variables and parameters that can influence the quality of the re
 \caption{OFDM/Radar with DC null range plot}
 \end{figure}
 
-The next plot displays the signal with the same parameter without the DC null. The pick received power is almost the same as the signal received with DC null. However, the sidelobes and noise floor shifted down significantly (average of 17 dB lower). Lower sidelobes and noise floor is crucial to some applications with high scattering noise. By including DC offset, the available bandwidth is fully utilized, leading to better spectral efficiency. Each subcarrier contributes to the total system data rate. Utilizing the DC subcarrier adds additional capacity, increasing the total throughput of the system.
+The next plot illustrates the signal using the same parameters but without the DC null. The peak received power is nearly identical to that of the signal with the DC null. However, the sidelobes and noise floor are significantly reduced, averaging 17 dB lower. This reduction is critical for applications sensitive to high scattering noise. Including the DC subcarrier ensures full utilization of the available bandwidth, enhancing spectral efficiency. Each subcarrier contributes to the system's overall data rate, and using the DC subcarrier adds capacity, thereby increasing the total system throughput.
 
 \begin{figure}[H]
 \centering
@@ -693,18 +693,38 @@ The next plot displays the signal with the same parameter without the DC null. T
 \caption{OFDM/Radar without DC null range plot}
 \end{figure}
 
-The previous results were simulated for a target located at 50m. We have increased the target range to 500 and 900m to see the received data quality and degradation in a long target range. As the plots indicate, in the 500m range which considers a long range for V2V radar applications, we still have a distinguishable target peak (delta of 23dB). At 900m range the dynamic range degrades significantly to around 9dB. \par
+The previous results were simulated for a target located at 50m. We have increased the target range to 500 and 900m to see the received data quality and degradation in a long target range. As the plots indicate, in the 500m range which considers a long range for V2V radar applications, we still have a distinguishable target peak (PSLR 23dB). At 900m range the dynamic range degrades significantly to around 9dB. \par
 \textbf{ Note: } For an effective presentation, we only display the analysis for signals without the DC Nulls.
+
+
 \begin{figure}[H]
 \centering
 \fbox{\includegraphics[width=1.0\linewidth]{Mix_500-900m}}
 \caption{OFDM/Radar No DC null range plot 500m (left) and 900m (right)}
 \end{figure} 
-Doppler is one other critical parameter to identify the reliable radar system. The Doppler simulation results provided for both 500 and 900m in the figure below. As we expected the higher range degrades the Doppler results dynamic range (22 to 14 dB). However, in this Doppler result the resolution is not adequate to provide an accurate result. The flat signal peak indicates a high ambiguity and unreliable target velocity estimation.
+
+To ensure a fair comparison between OFDM and FMCW radar, the PSLR versus range graph is presented. Up to a range of 200 meters, the PSLR remains high at 80 dB, indicating excellent radar detection performance. Beyond 200 meters, the PSLR decreases significantly, and by approximately 1200 meters, the range becomes ambiguous.
+
 \begin{figure}[H]
 \centering
-\fbox{\includegraphics[width=1.0\linewidth]{Mix_500-900m_Doppler}}
-\caption{OFDM/Radar Doppler plot for 500m (left) and 900m (right)}
+\fbox{\includegraphics[width=1.0\linewidth]{OFDMRadar_PSLR vs Range}}
+\caption{OFDM/Radar PSLR Measurement vs Range}
+\end{figure} 
+
+The plot below represents a Range-Doppler Map (RDM), which is a visualization used in radar systems to show the relationship between detected targets' range and relative velocity. A strong return is observed around 100 meters range and close to 50 m/s velocity. This suggests a stationary or slow-moving target with strong radar reflectivity. Other ranges (e.g., 300m, 700m) show some faint signals, but these are significantly weaker compared to the strong reflection near 100m. The resolution along the velocity axis can be further refined to detect smaller velocity variations in moving targets which can addressed by optimizing the OFDM parameter in the next step. 
+
+\begin{figure}[H]
+\centering
+\fbox{\includegraphics[width=0.8\linewidth]{OFDMRadar_RDM}}
+\caption{OFDM/Radar RDM Plot}
+\end{figure} 
+
+The same PSLR vs velocity evaluation was performed for Doppler and is plotted below. It is important to note that, unlike standalone radar, the PSLR is influenced by uncompensated Doppler. The low PSLR values for Doppler make target velocity estimation challenging beyond 200 m/s.
+
+\begin{figure}[H]
+\centering
+\fbox{\includegraphics[width=1.0\linewidth]{OFDMRadar_PSLR vs Velocity}}
+\caption{OFDM/Radar PSLR Measurement vs Velocity}
 \end{figure} 
 
 A key advantage of the OFDM technique is its flexibility to adjust parameters, enabling optimal performance tailored to the application and channel characteristics in various environments. We have adjusted the OFDM parameters to optimize radar performance while preserving high communication efficiency and capacity.
@@ -735,27 +755,42 @@ Target Velocity & 50  m/s\\
 \end{center}
 
 
-The graph below presents the simulation results using the parameters described above. While the noise floor has risen to 45 dB, the dynamic range remains around 38 dB, similar to the unimproved simulation at a 200m range. Another significant improvement is the enhanced resolution of the detected peak, leading to more accurate range measurements.
+The graph below presents the simulation results using the parameters described above. While the noise floor has risen to 45 dB, the PSLR remains around 38 dB, similar to the unimproved simulation at a 50m range. Another significant improvement is the enhanced resolution of the detected peak, leading to more accurate range measurements.
 
 \begin{figure}[H]
 \centering
 \fbox{\includegraphics[width=0.8\linewidth]{OFDMRadar_No DCNull_T50_Improve}}
 \caption{OFDM/Radar range plot for 50m target}
 \end{figure} 
-The Doppler results for the above parameters plotted in the graph below. 
-\begin{figure}[H]
-\centering
-\fbox{\includegraphics[width=0.8\linewidth]{OFDMRadar_No DCNull_Doppler_T50_Improve}}
-\caption{OFDM/Radar range plot for 50m target}
-\end{figure} 
 
-Finally, we present the maximum achievable range with sufficient resolution to facilitate easy target analysis and detection. The best results were achieved at 700m. The received signal degraded significantly after 700m range. 
+The RDM results for the given parameters, shown in the graph below, demonstrate enhanced resolution with the newly optimized OFDM parameters.
 
 \begin{figure}[H]
 \centering
-\fbox{\includegraphics[width=0.8\linewidth]{Mix_Improved_700m}}
-\caption{OFDM/Radar range (left) and Doppler (right) plot for 700m target}
+\fbox{\includegraphics[width=0.8\linewidth]{OFDMRadar_RDM_Optimized}}
+\caption{OFDM/Radar RDM Plot}
 \end{figure} 
+
+The parameters for the optimized OFDM yield distinct power spectral density and BER vs. SNR results. As anticipated, the total power density decreases by 20 dB, a direct consequence of the increased number of data carriers, which has been multiplied by a factor of 16 compared to OFDM stand-alone.
+
+\begin{figure}[H]
+\centering
+\fbox{\includegraphics[width=0.8\linewidth]{Pwr Density_Optimized OFDMRadar}}
+\caption{OFDM/Radar Power Spectral Density}
+\end{figure} 
+
+The final parameter compared for optimized OFDM signal integrity against stand-alone OFDM is the BER vs. SNR. The plot below shows that the BER results align with the expected values and are within the same range as those of stand-alone OFDM.
+
+\begin{figure}[H]
+\centering
+\fbox{\includegraphics[width=0.8\linewidth]{BER vs SNR_Optimized OFDMRadar_AWGN}}
+\caption{OFDM/Radar BER vs SNR}
+\end{figure} 
+
+
+
+
+
 \section {Conclusion}
 While JRC may slightly compromise the standalone performance of either radar (resolution) or communication (capacity), it offers significant advantages in shared resource utilization, reduced hardware cost, and suitability for modern multi-functional systems like autonomous vehicles.
 
