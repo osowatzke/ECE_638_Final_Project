@@ -133,7 +133,13 @@ classdef ofdmRadar < RadarBase
 
         % Function computes the radar's received data
         function getRxData(self)
-            
+
+            % Determine noise power
+            noisePower_dB = -max(self.SNR_dB);
+
+            % Determine target power
+            targetPower_dB = self.SNR_dB - max(self.SNR_dB);
+
             % Determine what gate the return will land in
             targetRangeGate = round(self.targetRange/self.rgSize);
 
@@ -150,13 +156,17 @@ classdef ofdmRadar < RadarBase
             % Each target return is a delay and doppler shifted
             % copy of the transmitted waveform
             for i = 1:length(targetRangeGate)
-                self.rxData = self.rxData + [zeros(targetRangeGate(i),1);...
+                self.rxData = self.rxData + 10^(targetPower_dB(i)/20)*...
+                    [zeros(targetRangeGate(i),1);...
                     self.txWaveform(1:(end-targetRangeGate(i)))].*...
                     exp(1i*2*pi*doppFreqNorm(i)*n);
             end
 
             % Add complex gaussian noise to return
-            self.rxData = awgn(self.rxData, self.SNR_dB, 'measured');
+            noise = 10^(noisePower_dB/20)*1/sqrt(2)*...
+                complex(randn(size(self.rxData)),randn(size(self.rxData)));
+
+            self.rxData = self.rxData + noise;
 
             % Remove half window length from leading and trailing
             % ends of received data. These overlap with last and next
