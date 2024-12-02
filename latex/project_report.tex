@@ -551,6 +551,7 @@ In this section, we evaluate the performance of an FMCW radar written in MATLAB 
 	    	
 	    	\begin{equation}
 	    		C = B\text{log}_2\left(1 + \text{SNR}\right)
+	    		\label{eq::chan_capacity_simplified}
 	    	\end{equation} 
 	    	
 	    For an 802.11p OFDM system, we have to account for an SNR gain of $64/52$ due to all the energy being concentrated in the active subcarriers and bandwidth reduction of $52/64$ because only a fraction subcarriers are used. A plot of the resulting capacity is shown below:
@@ -923,7 +924,22 @@ We have also generated an updated BER curve to illustrate the performance in an 
 
 Note that the BER is equivalent to the BER curve shown in Figure \ref{fig::ofdm_awgn_ber}. This occurs because the ratio of active carriers to subcarriers remains the same (i.e. the signal energy has the same concentration in the active subcarriers).
 
-In practice, for a fixed signal power, the SNR will be lower when the bandwidth is wider because we have a greater noise bandwidth and a fixed power spectral density.
+In practice, for a fixed signal power, the SNR will be lower when the bandwidth is wider because we have a greater noise bandwidth and a fixed power spectral density. This can be visualized by expressing capacity in the following form:
+
+\begin{equation}
+	C = B\text{log}_2\left(1 + \frac{P}{{N_0}B} \right)
+\end{equation}
+
+We can now consider values of $\frac{P}{N_0}$ that achieve different SNRs with a 10 MHz bandwidth and examine the effects of increased bandwidth when the transmit power and noise power spectral density are held constant. Figure \ref{fig::capacity_vs_bandwidth} shows the results of this experiment along with the corresponding SNRs with a 10 MHz bandwidth.
+
+\begin{figure}[H]
+\centering
+\fbox{\includegraphics[width=0.8\linewidth]{capacity_vs_bandwidth.jpg}}
+\caption{Effect of Bandwidth on Capacity}
+\label{fig::capacity_vs_bandwidth}
+\end{figure}
+
+Examining the above figure, we can conclude that the channel capacity of the modified OFDM system will not degrade as a result of the increased bandwidth.  
 
 \section {Conclusion}
 While JRC may slightly compromise the standalone performance of either radar (resolution) or communication (capacity), it offers significant advantages in shared resource utilization, reduced hardware cost, and suitability for modern multi-functional systems like autonomous vehicles.
