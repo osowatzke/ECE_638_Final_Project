@@ -30,14 +30,17 @@ end
 
 figure(1)
 clf;
-plot(targetVelocity, PSLR_dB);
+plot(targetVelocity, PSLR_dB, LineWidth=1.5);
 
 
  % Label Plot
             title('Peak Sidelobe Ratio vs Velocity')
             %legend('Signal Power', 'Average Power');
-            xlabel('Velocity (m/s)')
-            ylabel('PSLR (dB)')
+            xlabel('Velocity (m/s)');
+            ylabel('PSLR (dB)');
+             grid on;
+            linewidth(1.5);
+
 %% OFDM Radar PSLR Measurement
 f = 5.9e9;
 c = physconst('lightspeed');
@@ -63,13 +66,14 @@ end
 
 figure(1)
 clf;
-plot(targetRange, PSLR_dB);
+plot(targetRange, PSLR_dB, LineWidth=1.5);
 
  % Label Plot
             title('Peak Sidelobe Ratio vs Range')
             %legend('Signal Power', 'Average Power');
-            xlabel('Range (m)')
-            ylabel('PSLR (dB)')
+            xlabel('Range (m)');
+            ylabel('PSLR (dB)');
+            grid on;
 %% OFDM Radar (Target at Large Range);
 radar = ofdmRadar(...
     'nDataCarriers', 49,...
