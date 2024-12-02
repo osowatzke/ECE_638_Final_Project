@@ -659,7 +659,22 @@ Where Bk is the bandwidth of the k-th subcarrier, Pk, transmit power, Hk, freque
     			\label{fig::ofdm_radar_range_resp_with_zero_subcarrier}
   	  	\end{figure}
   	  	
-  	  	Note that the range response is now comparable to an FMCW radar.
+  	  	Note that the range response is now comparable to an FMCW radar. Similar to an FMCW radar, we can stack up many symbols and perform a Doppler FFT across them, to determine the object's velocity. A block diagram of the resulting receiver is shown in Figure \ref{fig::ofdm_radar_receiver}.
+  	  	
+  	  	\begin{figure}[H]
+  	  		\centering
+    			\fbox{\includegraphics[width=0.9\linewidth]{ofdm_radar_receiver.png}}
+    			\caption{OFDM Radar Receiver}
+    			\label{fig::ofdm_radar_receiver}
+  	  	\end{figure}
+  	  	
+  	  	The unambiguous range and velocity of the system are given by Equation (\ref{eq::unambig_range}) and Equation (\ref{eq::unambig_velocity}), where the PRF is defined as follows:
+  	  	
+  	  	\begin{equation}
+  	  		PRF = \frac{f_s}{N + L}
+  	  	\end{equation}
+  	  	
+  	  	where $f_s$ is the sample rate, $N$ is the number of subcarriers, and $L$ is the cyclic prefix length.
   	  	
 % See if this can be incorporated in introduction	
 \iffalse 
