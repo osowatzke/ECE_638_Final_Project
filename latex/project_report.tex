@@ -562,7 +562,7 @@ In this section, we evaluate the performance of an FMCW radar written in MATLAB 
     \section {JRC}
 		\subsection {Background}
 
-		In this section, we design a JRC system using zero forcing to generate RDMs from OFDM returns. The ideal range response is given by:
+		In this section, we design a JRC system using zero forcing to generate RDMs from OFDM returns. To understand our implementation, we first provide some more additional on radar processing. The ideal range response is given by:
 		
 		\begin{equation}
 			x[n] = \delta[n]
@@ -571,13 +571,13 @@ In this section, we evaluate the performance of an FMCW radar written in MATLAB 
 		The frequency response of the ideal range response is flat:
 		
 		\begin{equation}
-			X[k] = 1\ \forall\ 0 \leq k < N 
+			X[k] = 1,\quad 0 \leq k < N 
 		\end{equation}
 		
-		We can generate the ideal range response from any known sequence $z[n]$, which has a non-zero frequency response $Z[k]\ \forall\ 0 \leq k < N$. To generate the ideal range response we can multiply $Z[k]$ element-wise with $H[k]$, where $H[k]$ is defined as follows:
+		We can generate the ideal range response from any known sequence $z[n]$, which has a non-zero frequency response (i.e. $Z[k] \neq 0,\ 0 \leq k < N$). To generate the ideal range response we can multiply $Z[k]$ element-wise with $H[k]$, where $H[k]$ is defined as follows:
 		
 		\begin{equation}
-			H[k] = \frac{1}{Z[k]} \forall\ 0 \leq k < N
+			H[k] = \frac{1}{Z[k]},\quad 0 \leq k < N
 		\end{equation}
 		
 		After element-wise multiplication, the result is $X[k]$. Finally, we can apply an IFFT to $X[k]$ to generate $x[n]$, the ideal range response.
@@ -590,7 +590,7 @@ In this section, we evaluate the performance of an FMCW radar written in MATLAB 
 		
 		If we multiply $H[k]$ element-wise with $Y[k]$, we obtain $W_N^{km}$, which results in a range response of $\delta[n-m]$ after IFFT processing. This is the desired result.
 		
-		In an OFDM system, the reflections will be a circularly shifted copy of the transmitted waveform as long as their delay does not exceed the cyclic prefix. To physically implement this system, we need to consider the last $N$ samples of each transmitted OFDM symbol as $z[n]$.
+		In an OFDM system, each of the reflections will be a circularly shifted copy of the transmitted waveform as long as their delay does not exceed the cyclic prefix. To physically implement this system, we need to consider the last $N$ samples of each transmitted OFDM symbol as $z[n]$.
 		
 		\begin{figure}[H]
 			\centering
@@ -599,9 +599,9 @@ In this section, we evaluate the performance of an FMCW radar written in MATLAB 
     			\label{fig::ofdm_radar_waveform}
   	  	\end{figure}
 		
-		After transmitting, we can wait $L$ samples before receiving. If the signal has no delay, our range response will be a delta function. However, if the delay of the signal ($m$) is in range $[1, L]$, we will receive a circular-shifted copy of the $z[n]$, and the range response will be a delayed delta function of the form $\delta[n-m]$. 
+		After transmitting, we need to wait $L$ samples before receiving. If the signal has no delay, our range response will be a delta function. However, if the delay of the signal ($m$) is in range $[1, L]$, we will receive a circular-shifted copy of the $z[n]$, and the range response will be a delayed delta function of the form $\delta[n-m]$. 
 		
-		We don't have to take an FFT of $z[n]$ to obtain $Z[k]$. Instead, we can get $Z[k]$ from the OFDM subcarriers prior to IFFT processing. If the cyclic prefix is placed at the start of the symbol as shown in Figure \ref{fig::cylic_prefix}, $Z[k]$ is identical to the IFFT input. If the window is divided evenly between the start and the back of symbol as shown in Figure \ref{fig::ofdm_windowing}, $Z[k]$ is the IFFT input multiplied elementwise with $W_N^{kL/2}$.
+		We do not have to take an FFT of $z[n]$ to obtain $Z[k]$. Instead, we can get $Z[k]$ from the OFDM subcarriers prior to IFFT processing. If the cyclic prefix is placed at the start of the symbol as shown in Figure \ref{fig::cylic_prefix}, $Z[k]$ is identical to the IFFT input. If the window is divided evenly between the start and the back of symbol as shown in Figure \ref{fig::ofdm_windowing}, $Z[k]$ is the IFFT input multiplied elementwise with $W_N^{kL/2}$.
 		
 		In the 802.11p standard, not all of the subcarriers are non-zero, which prevents us from fully realizing this system. However, we can instead invert all of the non-zero subcarriers, when determining the FFT of our matched filter, $H[k]$. The resulting frequency response is shown in Figure \ref{fig::ofdm_radar_freq_resp_no_window}.
 		
@@ -630,7 +630,7 @@ In this section, we evaluate the performance of an FMCW radar written in MATLAB 
     			\label{fig::ofdm_radar_range_resp_no_window_zpad}
   	  	\end{figure}
   	  	
-  	  	As was the case with the FMCW radar, we can reduce the sidelobe level with windowing. However, the windowing is now applied in the frequency domain prior to the IFFT. Figure \ref{fig::ofdm_radar_freq_resp_with_window} shows the frequency response after a 80 dB Chebyshev window is applied.
+  	  	As was the case with the FMCW radar, we can reduce the sidelobe level with windowing. For the JRC system, the windowing needs to be applied in the frequency domain prior to the IFFT. Figure \ref{fig::ofdm_radar_freq_resp_with_window} shows the frequency response after a 80 dB Chebyshev window is applied.
   	  	
   	  	\begin{figure}[H]
 			\centering
@@ -648,7 +648,7 @@ In this section, we evaluate the performance of an FMCW radar written in MATLAB 
     			\label{fig::ofdm_radar_range_resp_with_window}
   	  	\end{figure}
   	  	
-  	  	Note that the missing DC subcarrier severely limits the peak to sidelobe performance. As previously mentioned, the DC subcarrier has been nulled to avoid problems with DC offsets in the D/A and the A/D. It is possible to re-add the DC carrier. However, the OFDM receiver may need more complex IF sampling to take advantage it. As an alternative the transmitter can use the DC subcarrier and the OFDM receiver can ignore it. Note that this will degrade the capacity due to less available power for the other subcarriers. The range response with an 80 dB Chebyshev window after adding a DC subcarrier is shown in Figure \ref{fig::ofdm_radar_range_resp_with_zero_subcarrier}.
+  	  	Note that the missing DC subcarrier severely limits the peak to sidelobe performance. As previously mentioned, the DC subcarrier has been nulled to avoid problems with DC offsets in the D/A and the A/D. It is possible to insert a non-zero DC subcarrier to get around this performance limitation. However, the OFDM receiver will need more complex IF sampling to take advantage it. As an alternative the transmitter can use the DC subcarrier and the OFDM receiver can ignore it. Note that this will degrade the capacity because there will be less power on the utilized subcarriers. Figure \ref{fig::ofdm_radar_range_resp_with_zero_subcarrier} shows the range response with an 80 dB Chebyshev window after adding a non-zero DC subcarrier.
   	  	
   	  	\begin{figure}[H]
   	  		\centering
@@ -657,7 +657,7 @@ In this section, we evaluate the performance of an FMCW radar written in MATLAB 
     			\label{fig::ofdm_radar_range_resp_with_zero_subcarrier}
   	  	\end{figure}
   	  	
-  	  	Note that the range response is now comparable to an FMCW radar. Similar to an FMCW radar, we can stack up many symbols and perform a Doppler FFT across them, to determine the object's velocity. A block diagram of the resulting receiver is shown in Figure \ref{fig::ofdm_radar_receiver}.
+  	  	Note that the range response is now comparable to an FMCW radar. To determine the object's velocity, we can stack up many symbols and perform a Doppler FFT across them. This is the same process we used in the FMCW radar with symbols instead of chirps. A block diagram of the resulting receiver is shown in Figure \ref{fig::ofdm_radar_receiver}.
   	  	
   	  	\begin{figure}[H]
   	  		\centering
@@ -666,13 +666,13 @@ In this section, we evaluate the performance of an FMCW radar written in MATLAB 
     			\label{fig::ofdm_radar_receiver}
   	  	\end{figure}
   	  	
-  	  	The unambiguous range and velocity of the system are given by Equation (\ref{eq::unambig_range}) and Equation (\ref{eq::unambig_velocity}), where the PRF is defined as follows:
+  	  	The unambiguous range and velocity of this system are given by Equation (\ref{eq::unambig_range}) and Equation (\ref{eq::unambig_velocity}), where the PRF is defined as follows:
   	  	
   	  	\begin{equation}
   	  		PRF = \frac{f_s}{N + L}
   	  	\end{equation}
   	  	
-  	  	where $f_s$ is the sample rate, $N$ is the number of subcarriers, and $L$ is the cyclic prefix length.
+  	  	Here $f_s$ defines the sample rate, $N$ defines the number of subcarriers, and $L$ defines the cyclic prefix length.
   	  	
 % See if this can be incorporated in introduction	
 \iffalse 
