@@ -48,7 +48,7 @@ This paper presents the design and evaluation of a Joint Radar-Communication (JR
   \section {Radar}
    \subsection {Background}
    
-In this section, we provide background on frequency-modulated continuous wave (FMCW) radar, which is used in many automotive applications. FMCW radar continuously transmits a signal whose frequency varies linearly over time (chirp). It measures the time delay between the transmitted and the reflected signals (echoes) to determine the distance of reflecting objects. It can also determine the relative velocity of these objects, by measuring frequency shifts caused by the doppler effect.
+In this section, we provide background on frequency-modulated continuous wave (FMCW) radar, which is used in many automotive applications. FMCW radar continuously transmits a signal whose frequency varies linearly over time (chirp). It measures the time delay between the transmitted and the reflected signals (echoes) to determine the distance of reflecting objects. It can also determine the relative velocity of these objects, by measuring frequency shifts caused by the doppler effect \cite{7455584}.
 
 	\begin{figure}[H]
     		\centering
@@ -101,7 +101,7 @@ In this section, we provide background on frequency-modulated continuous wave (F
 		\label{eq::range_resolution}
 	\end{equation}
 	
-	Because fine range resolution is desired, $\beta$ is typically very large (on the order of 150MHz-500MHz). This would typically require very high sample rates. However, one of the benefits of an FMCW radar is that the ADC samples tones instead of a full bandwidth signal. Thus, we only need to sample at a rate high enough to capture returns at the largest range of interest. For an automotive radar, this may only be on the order of 100-200 m, which can significantly reduce the sample rates and in turn reduce the radar's cost.
+	Because fine range resolution is desired, $\beta$ is typically very large (on the order of 150MHz-500MHz). This would typically require very high sample rates. However, one of the benefits of an FMCW radar is that the ADC samples tones instead of a full bandwidth signal. Thus, we only need to sample at a rate high enough to capture returns at the largest range of interest \cite{richards-2005}. For an automotive radar, this may only be on the order of 100-200 m, which can significantly reduce the sample rates and in turn reduce the radar's cost.
 	
 	After low-pass filtering and sampling the signal, Figure \ref{fig::fmcw_radar} illustrates the next step in the signal processing (a fast-time FFT). This FFT detects the frequency of each tone, which is proportional to the object's distance. Thus, the fast-time FFT allows the radar to detect the distance of reflecting objects.
 	
@@ -351,7 +351,7 @@ In this section, we evaluate the performance of an FMCW radar written in MATLAB 
      
 	 \subsection {Background}
 	 
-	 	In this section, we provide background on OFDM (orthogonal frequency-division multiplexing). OFDM is a form of multicarrier modulation. In multicarrier modulation, the total channel bandwidth is divided into multiple subchannels, so that each subchannel experiences relatively flat fading. The subchannel spacing of OFDM differs from other forms of multicarrier modulation. OFDM modulates symbols on orthogonal subcarriers of the following form:
+	 	In this section, we provide background on OFDM (orthogonal frequency-division multiplexing). OFDM is a form of multicarrier modulation. In multicarrier modulation, the total channel bandwidth is divided into multiple subchannels, so that each subchannel experiences relatively flat fading \cite{djordjevic-2017}. The subchannel spacing of OFDM differs from other forms of multicarrier modulation. OFDM modulates symbols on orthogonal subcarriers of the following form:
 	 	
 	 	\begin{equation}
 	 		s_k(t) = e^{j2{\pi}kt/T_s}\text{rect}(t/T_s)
@@ -359,7 +359,7 @@ In this section, we evaluate the performance of an FMCW radar written in MATLAB 
 	 	
 	 	where $T_s$ is the symbol duration.
 	 	
-	 	The orthogonality of the subcarriers allows the bandwidth of neighboring subchannels to be partially overlapped, improving spectral efficiency.
+	 	The orthogonality of the subcarriers allows the bandwidth of neighboring subchannels to be partially overlapped, improving spectral efficiency \cite{djordjevic-2017}.
 	 	
 	 	A block diagram of an OFDM system is given in Figure \ref{fig::ofdm_block_diagram}.
 		
@@ -370,7 +370,7 @@ In this section, we evaluate the performance of an FMCW radar written in MATLAB 
 	    		\label{fig::ofdm_block_diagram}
 		\end{figure}
 		
-		When a bit stream is received, it is modulated using the desired 2-D modulation scheme PSK, QAM, etc...). Then, it is placed into an FFT bin corresponding to a data subcarrier. Non-data carriers are reserved for pilot and null subcarriers as illustrated in Figure \ref{fig::ofdm_subcarriers}.
+		When a bit stream is received, it is modulated using the desired 2-D modulation scheme (PSK, QAM, etc...). Then, it is placed into an FFT bin corresponding to a data subcarrier. Non-data carriers are reserved for pilot and null subcarriers as illustrated in Figure \ref{fig::ofdm_subcarriers}.
 		
 		\begin{figure}[H]
 	    		\centering
@@ -399,7 +399,7 @@ In this section, we evaluate the performance of an FMCW radar written in MATLAB 
 	    		\label{fig::ofdm_windowing}
 		\end{figure}
 		
-		Then a window is multiplied element-wise with the symbol. A commonly applied window is
+		Then a window is multiplied element-wise with the symbol. A commonly applied window is provided in \cite{djordjevic-2017}, and is given by:
 		
 		\begin{equation}
 			w_1(t) = \frac{1}{2}[1 - \cos\pi(t + T_{win} + T_G/2)/T_{win}]
@@ -435,13 +435,13 @@ In this section, we evaluate the performance of an FMCW radar written in MATLAB 
 			T_4 = T_{FFT} + T_G/2 + T_{win}
 		\end{equation}
 		
-		At the receiver, the window and or cyclic prefix are removed before the signal is demodulated with an FFT. Because of the cyclic prefix, each of the received multi-path components are a circularly-shifted copies of the transmitted signal. After the FFT, the multi-path components result in a complex weight for each of the FFT bins. We can remove this complex weighting by equalizing the received symbol. To perform equalization, we can estimate the channel at each of the pilot carriers:
+		At the receiver, the window and cyclic prefix are removed before the signal is demodulated with an FFT. Because of the cyclic prefix, each of the received multi-path components are a circularly-shifted copies of the transmitted signal. After the FFT, the multi-path components result in a complex weight for each of the FFT bins. We can remove this complex weighting by equalizing the received symbol. To perform equalization, we can estimate the channel at each of the pilot carriers:
 		
 		\begin{equation}
 			\hat{H}_{p_k} = \frac{Y_{p_k}}{X_{p_k}}
 		\end{equation}
 		
-		We then can interpolate the channel estimate to get an estimate of the channel at each of the data carriers. Finally, we can compute equalization weights $A_k$ using either an zero-forcing or MMSE equalizer.
+		We then can interpolate the channel estimate to get an estimate of the channel at each of the data carriers. Finally, we can compute equalization weights $A_k$ using either an zero-forcing or MMSE equalizer \cite{Vilar2015ImplementationOZ}.
 		
 		\begin{equation}
 			A_{\text{ZF}_k} = \frac{1}{\hat{H}_k}
@@ -457,7 +457,7 @@ In this section, we evaluate the performance of an FMCW radar written in MATLAB 
       
       We have developed comprehensive MATLAB code to evaluate the performance of an OFDM communication system. Metrics of interest include the peak to average power ratio (PAPR), the bit error rate (BER) in an AWGN channel, the BER in presence of Rayleigh fading, and the resulting capacity.
       
-      For this analysis, we chose to evaluate an OFDM 802.11p system because the 802.11p standard is applicable to VNV communication \cite{802_11p_abdelgader}. The 802.11p standard operates in the DRC Band (5.850 GHz to 5.925 GHz) and uses 64 subcarriers sampled at a rate of 10 MHz. A 16 sample cyclic prefix is added, increasing the symbol duration from 6.4 ${\mu}s$ to 8.0 ${\mu}s$. Of the 64 subcarriers, 48 are data carriers, and 4 are pilots. Pilots are specifically located at $\{-21, -7, 7, 21\}$. Data carriers cover all the remaining carriers in range $[-26, 26]$ except the DC subcarrier, which is a null carrier.
+      For this analysis, we chose to evaluate an OFDM 802.11p system because the 802.11p standard is applicable to VNV communication. The 802.11p standard operates in the DRC Band (5.850 GHz to 5.925 GHz) and uses 64 subcarriers sampled at a rate of 10 MHz. A 16 sample cyclic prefix is added, increasing the symbol duration from 6.4 ${\mu}s$ to 8.0 ${\mu}s$. Of the 64 subcarriers, 48 are data carriers, and 4 are pilots. Pilots are specifically located at $\{-21, -7, 7, 21\}$. Data carriers cover all the remaining carriers in range $[-26, 26]$ except the DC subcarrier, which is a null carrier \cite{802_11p_abdelgader}.
       
     The power spectral density of the transmitted OFDM signal is shown in Figure \ref{fig::ofdm_psd}.
     
