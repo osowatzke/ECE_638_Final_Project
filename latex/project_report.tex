@@ -670,6 +670,7 @@ In this section, we evaluate the performance of an FMCW radar written in MATLAB 
   	  	
   	  	\begin{equation}
   	  		PRF = \frac{f_s}{N + L}
+  	  		\label{eq::ofdm_radar_prf}
   	  	\end{equation}
   	  	
   	  	Here $f_s$ defines the sample rate, $N$ defines the number of subcarriers, and $L$ defines the cyclic prefix length.
@@ -726,9 +727,19 @@ In Figure \ref{fig::ofdm_radar_pslr_vs_range}, we examine the PSLR against range
 
 As expected, we see that the PSLR steeply degrades when the range exceeds $R_{max}$. For comparison, we note that this range degradation does not occur in an FCMW radar.
 
-For an OFDM radar, we have already stated the unambiguous range and velocity. However, due to the demonstrated performance degradations at large ranges and velocities, it is not meaningful to evaluate performance outside of the first range and velocity ambiguity. Even though it is limited to the first ambiguities, an automotive 802.11p radar will still be able to measure an acceptable range of ranges and velocities.
+For an OFDM radar, we can solve for the unambiguous range and velocity using Equations (\ref{eq::unambig_range}), (\ref{eq::unambig_velocity}), and (\ref{eq::ofdm_radar_prf}). This leads to the following results:
 
-After adding a non-zero DC subcarrier, we can also examine the range resolution of the system. The range resolution is the minimum separation at which two objects are resolvable. For this experiment, we disable the range window to get the finest possible range resolution and zero-pad the IFFT to increase our visibility of the resulting range response. In Figure \ref{fig::ofdm_radar_range_resolution}, we show the range response of two objects separated by 30 m.
+\begin{equation}
+	R_{ua} = 1200\ \text{m}
+\end{equation}
+
+\begin{equation}
+	v_{ua} \approx 1589\ \text {m/s}
+\end{equation}
+
+Due to the demonstrated performance degradations at large ranges and velocities, it is not meaningful to evaluate performance outside of the first range and velocity ambiguity. As a result, we do not attempt to measure the unambiguous range and velocity. In the 802.11p radar is range and velocity-limited well within the first ambiguities. However, even with this limitation it still will be able to measure an acceptable set of ranges and velocities.
+
+We can now examine the range resolution of the system. The range resolution is the minimum separation at which two objects are resolvable. For this experiment, we disable the range window to get the finest possible range resolution and zero-pad the IFFT to increase our visibility of the resulting range response. In Figure \ref{fig::ofdm_radar_range_resolution}, we show the range response of two objects separated by 30 m.
 
 \begin{figure}[H]
 \centering
@@ -737,7 +748,7 @@ After adding a non-zero DC subcarrier, we can also examine the range resolution 
 \label{fig::ofdm_radar_range_resolution}
 \end{figure}
 
-Examining the figure, we can infer that the object separation is approaching the radar's range resolution. For a sinc response, two objects are separated by the range resolution when one response reaches its peak, while the other experiences its first null. In other words the range resolution is half the range response's mainlobe width. In Figure \ref{fig::ofdm_radar_mainlobe_width}, we measure the mainlobe width of the range response without a window function.
+Examining the figure, we can infer that the object separation is approaching the radar's range resolution. For a sinc response, two objects are separated by the range resolution when one response is at its peak, while the other is at its first null. In other words the range resolution is half the range response's mainlobe width. In Figure \ref{fig::ofdm_radar_mainlobe_width}, we measure the mainlobe width of the range response without a window function.
 
 \begin{figure}[H]
 \centering
@@ -746,9 +757,9 @@ Examining the figure, we can infer that the object separation is approaching the
 \label{fig::ofdm_radar_mainlobe_width}
 \end{figure}
 
-Examining the above figure, we find that the mainlobe width is $138.01\ \text{m} - 101.824\ \text{m} = 36.186\ \text{m}$. Our measured range resolution is then $36.186\ \text{m} /2 = 18.093 \ \text{m}$. We can also compute the range resolution of the system using Equation (\ref{eq::range_resolution}) with a bandwidth $\beta = 53/64 \times 10\ \text{MHz} = 8.281\ \text{MHz}$. This results in a range resolution of $18.1\ \text{m}$, which is consistent with the measured data.
+Examining the above figure, we find that the mainlobe width is $36.186\ \text{m}$. Our measured range resolution is then $36.186\ \text{m} /2 = 18.093 \ \text{m}$. For reference, we can compute the range resolution of the system using Equation (\ref{eq::range_resolution}) with a bandwidth $\beta = 53/64 \times 10\ \text{MHz} = 8.281\ \text{MHz}$. This results in a range resolution of $18.1\ \text{m}$, which is consistent with the measured data.
 
-Note that this range resolution is insufficient for automotive radar applications. However, we can design an OFDM system with more bandwidth in the 77 GHz band that will achieve better range resolution. 
+Note that this range resolution is significantly larger than it was for the FMCW radar. In fact, its range resolution is insufficient for automotive radar applications. However, we can design an OFDM system with more bandwidth in the 77 GHz band that will achieve a better range resolution. 
 
 For this system, we increase the bandwidth from 10MHz to 320MHz and scale the OFDM parameters by 32. The updated parameters are included in the table below:
 
