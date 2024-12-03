@@ -468,7 +468,7 @@ In this section, we evaluate the performance of an FMCW radar written in MATLAB 
     		\label{fig::ofdm_psd}
 	\end{figure}
     
-    The location of null carrier is also consistent with the 802.11p standard. We were able to perform power measurements on this signal to determine the PAPR. When the data carriers are modulated using QPSK modulation, we measure a PAPR of 11.8 dB. The measured PAPR is significant because it forces us to run the high power amplifier at reduced power levels, which can degrade the transmitted power and in turn the SNR of the system.
+    The location of null carrier is also consistent with the 802.11p standard. We were able to perform power measurements on this signal to determine the PAPR. When the data carriers are modulated using QPSK modulation, we measure a PAPR of 11.8 dB. The measured PAPR is significant because it forces us to run the high power amplifier at reduced power levels, which can degrade the transmitted power and in turn the SNR of the system \cite{4289157}.
     
     To evaluate the BER in an AWGN channel, we add gaussian noise to the transmitted signal to achieve a given SNR. Then, we process the resulting signal with a model of the OFDM receiver. After FFT processing, we can generate a constellation diagram from the resulting data carriers. Figure \ref{fig::rx_constellation_diagram} shows the received constellation diagram for an OFDM signal using QPSK modulation at 20 dB SNR.
       
