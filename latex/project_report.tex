@@ -808,7 +808,7 @@ where $N$ is the number of subcarriers and $L_{fast}$ is the SNR loss due to the
 
 Using Equation (\ref{eq::fmcw_fast_time_snr_gain}) with a PRF of $320\ \text{MHz}/(80 \times 16) = 125\ \text{kHz}$, we compute $1469.56$ as the equivalent FMCW SNR gain. Note that FMCW SNR gain is greater than the OFDM Radar SNR gain by approximately $(N + L)/N$. For the given OFDM parameters, that works out to be roughly 0.97 dB. Therefore, we expect the SNR in the RDM to be approximately 13 dB lower for the JRC system than it is for the FMCW radar.
 
-We can also analyze the communication OFDM performance after the system is tailored to JRC applications. The power spectral density of the transmitted waveform is included in Figure \ref{fig::updated_ofdm_psd}.
+We can now analyze the performance impact of the updated OFDM parameters on the communication system. The power spectral density of the transmitted waveform is included in Figure \ref{fig::updated_ofdm_psd}.
 
 \begin{figure}[H]
 \centering
@@ -819,7 +819,9 @@ We can also analyze the communication OFDM performance after the system is tailo
 
 As anticipated, the total power density decreases by 30 dB, a direct consequence of an increased number of data carriers, which have been increased by a factor of 32 compared to the 802.11p OFDM standard.
 
-We have also generated an updated BER curve to illustrate the performance in an AWGN channel. The updated curve is included in Figure \ref{fig::updated_ofdm_ber}
+The radar operates on LOS reflections generated with a fine antenna beamwidth. Therefore, the JRC communication system will operate on channel with little to no multi-path components. As a result, we treat the communication channel as roughly AWGN and only analyze the AWGN performance.
+
+The BER curve using the updated OFDM parameters and assuming an AWGN channel is included in Figure \ref{fig::updated_ofdm_ber}
 
 \begin{figure}[H]
 \centering
@@ -830,13 +832,13 @@ We have also generated an updated BER curve to illustrate the performance in an 
 
 Note that the BER is equivalent to the BER curve shown in Figure \ref{fig::ofdm_awgn_ber}. This occurs because the ratio of active carriers to subcarriers remains the same (i.e. the signal energy has the same concentration in the active subcarriers).
 
-In practice, for a fixed signal power, the SNR will be lower when the bandwidth is wider because we have a greater noise bandwidth and a fixed power spectral density. This can be visualized by expressing capacity in the following form:
+Finally, we can determine the effect of the OFDM parameters on channel capacity. We again assume an AWGN channel. For a fixed signal power, the SNR will be lower when the bandwidth is larger because we have a greater noise bandwidth and a fixed noise power spectral density. This can be visualized by expressing capacity in the following form:
 
 \begin{equation}
 	C = B\text{log}_2\left(1 + \frac{P}{{N_0}B} \right)
 \end{equation}
 
-We can now consider values of $\frac{P}{N_0}$ that achieve different SNRs with a 10 MHz bandwidth and examine the effects of increased bandwidth when the transmit power and noise power spectral density are held constant. Figure \ref{fig::capacity_vs_bandwidth} shows the results of this experiment along with the corresponding SNRs with a 10 MHz bandwidth.
+We now consider values of $\frac{P}{N_0}$ that achieve different SNRs with the 10 MHz bandwidth of the 802.11p system. For these values of $\frac{P}{N_0}$, we have examined how increasing the bandwidth affects the channel capacity. Figure \ref{fig::capacity_vs_bandwidth} shows the results of this experiment along with the corresponding SNRs assuming a 10 MHz bandwidth.
 
 \begin{figure}[H]
 \centering
@@ -849,21 +851,16 @@ Examining the above figure, we can conclude that the channel capacity of the mod
 
 \section {Conclusion}
 
-In this paper, we presented a JRC implementation, which used an OFDM 802.11p transmitter and zero forcing to generate RDMs from OFDM returns. We, then, compared the performance of this system to that of an FMCW radar.
+In this paper, we presented a JRC implementation, which used an OFDM 802.11p transmitter and zero forcing to generate RDMs from OFDM returns. We started by providing background and performance results for an FMCW radar. Then, we provided background and performance results for the OFDM system. Finally, we detailed our JRC implementation and compared its performance to the performance of the stand-alone systems.
 
-We observed that performance of the radar degraded with range and uncompensated doppler shifts. Despite this degradation, we inferred that the OFDM radar would provide acceptable PSLR performance over ranges and velocities encountered in an automotive environment. We also observed a degradation in SNR due to the high PAPR and cyclic prefix of OFDM symbols. More significantly, we found that the range resolution of the 802.11p radar was significantly worse than the FMCW radar, due to its low bandwidth. This makes the 802.11p radar impractical for automotive radar use.
+We observed that performance of the radar degraded with range and uncompensated doppler shifts. Despite this degradation, we inferred that the OFDM radar would provide acceptable PSLR performance over ranges and velocities encountered in an automotive environment. We also observed a degradation in SNR due to the high PAPR and cyclic prefix of OFDM symbols. Finally, we found that the range resolution of the 802.11p radar was significantly worse than the FMCW radar, due to its low bandwidth. This makes the 802.11p radar impractical for automotive radar use.
 
-To achieve better range resolution, we also experimented with a 320 MHz bandwidth JRC system operating in the 77 GHz band. This provided a sufficient range resolution, without degrading the OFDM performance in an AWGN channel.
+To achieve better range resolution, we also experimented with a 320 MHz bandwidth JRC system operating in the 77 GHz band. This system provided a sufficient range resolution and did not degrade the OFDM performance in an AWGN channel.
 
-With a reduction in the OFDM PAPR and an increase in the channel bandwidth, we believe that the presented OFDM radar will be able to sufficiently meet both radar and communication objectives, while reducing total bandwidth usage, power consumption, and amount of required hardware.
-
+With a reduction in the OFDM PAPR and an increase in the channel bandwidth, we believe that the presented JRC system will be able to sufficiently meet both radar and communication objectives, while reducing total bandwidth usage, power consumption, and the amount of required hardware.
 
 	\bibliographystyle {IEEEtran}
 	\bibliography {References}
-	
-	%\nocite{yang_subcarrier_multiplexing}
-	%\bibliography{sources}{}
-   % \bibliographystyle{ieeetr}
   
 \end{document}
 
