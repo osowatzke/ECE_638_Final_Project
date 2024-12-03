@@ -148,7 +148,7 @@ classdef ofdmModel < keyValueInitializer
 
             % Display Peak to average power ratio
             fprintf('OFDM Metrics:\n')
-            fprintf('\tPSLR(dB) = %.2f\n\n', self.PAPR_dB)
+            fprintf('\tPAPR(dB) = %.2f\n\n', self.PAPR_dB)
         end
 
         % Function computes a reference bit error rate

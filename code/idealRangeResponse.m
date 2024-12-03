@@ -23,13 +23,23 @@ xlabel('Normalized Frequency (\times pi rad/sample)')
 ylabel('Magnitude');
 
 %% Get range response
-% Determine the Range Response
+% Pad the frequency response
 fftSize = N;
 Ypad = [zeros(1, fftSize/2-N/2), Y, zeros(1, fftSize/2-N/2)];
+
+% IFFT shift to get FFT indexing
 Yshift = ifftshift(Ypad);
+
+% Perform IFFT
 y = ifft(Yshift, fftSize);
+
+% Normalize result
 y = y/max(abs(y));
+
+% Create time axis
 n = (0:(length(y)-1));
+
+% Plot results
 figure(2)
 clf;
 plot(n,db(y),'LineWidth',1.5);
@@ -40,13 +50,23 @@ ylabel('Magnitude (dB)')
 title('Ideal Range Response');
 
 %% Get range response w/ zero-padding
-% Determine the Range Response
+% Pad the frequency response
 fftSize = 16*N;
 Ypad = [zeros(1, fftSize/2-N/2), Y, zeros(1, fftSize/2-N/2)];
+
+% IFFT shift to get FFT indexing
 Yshift = ifftshift(Ypad);
+
+% Perform IFFT
 y = ifft(Yshift, fftSize);
+
+% Normalize result
 y = y/max(abs(y));
+
+% Create time axis
 n = (0:(length(y)-1));
+
+% Plot results
 figure(3)
 clf;
 plot(n,db(y),'LineWidth',1.5);
@@ -76,13 +96,23 @@ xlabel('Normalized Frequency (\times pi rad/sample)')
 ylabel('Magnitude');
 
 %% Get range response w/ zero-padding
-% Determine the Range Response
+% Pad the frequency response
 fftSize = 16*N;
 Ypad = [zeros(1, fftSize/2-N/2), Y, zeros(1, fftSize/2-N/2)];
+
+% IFFT shift to get FFT indexing
 Yshift = ifftshift(Ypad);
+
+% Perform IFFT
 y = ifft(Yshift, fftSize);
+
+% Normalize result
 y = y/max(abs(y));
+
+% Create time axis
 n = (0:(length(y)-1));
+
+% Plot results
 figure(5)
 clf;
 plot(n,db(y),'LineWidth',1.5);
@@ -113,14 +143,23 @@ win = [zeros(ceil(padSize/2),1); win; zeros(floor(padSize/2),1)].';
 % Apply window
 Y = Y.*win;
 
-%% Get range response
-% Determine the Range Response
+% Pad the frequency response
 fftSize = 16*N;
 Ypad = [zeros(1, fftSize/2-N/2), Y, zeros(1, fftSize/2-N/2)];
+
+% IFFT shift to get FFT indexing
 Yshift = ifftshift(Ypad);
+
+% Perform IFFT
 y = ifft(Yshift, fftSize);
+
+% Normalize result
 y = y/max(abs(y));
+
+% Create time axis
 n = (0:(length(y)-1));
+
+% Plot results
 figure(6)
 clf;
 plot(n,db(y),'LineWidth',1.5);

@@ -29,14 +29,17 @@ ylabel('Capacity (bps)')
 title('OFDM 802.11p Capacity')
 
 %% Capacity against bandwidth
+% Determine P_N0 to achieve SNR's @ 10 MHz
 SNR_dB = 0:4:20;
 SNR = 10.^(SNR_dB/10);
 B = 10e6;
 P_N0 = B*SNR;
 
+% Determine result capacity
 B = (10e6:10e6:500e6).';
 C = B.*log2(1 + P_N0./B);
 
+% Plot results
 figure(2)
 clf;
 plot(B,C, 'LineWidth', 1.5)
