@@ -528,7 +528,7 @@ In this section, we evaluate the performance of an FMCW radar written in MATLAB 
   	  
   	  	Referring to the figure, the measured BER rate is consistent with the expected BER.
     	    	  
-    	  Finally, we can analyze the channel capacity of the system. The channel capacity of an individual OFDM subcarrier is given by:
+    	  Finally, we can analyze the channel capacity of the system. The channel capacity of an individual OFDM subcarrier is given in \cite{djordjevic-2017} as
     	  
     	  \begin{equation}
 			C_{k} = B_{k}\text{log}_2\left(1 +\frac{ \text P_{k}\cdot|H_{k}|^2}{N_{k}}\right)
@@ -548,7 +548,7 @@ In this section, we evaluate the performance of an FMCW radar written in MATLAB 
 	    		\label{eq::chan_capacity_simplified}
 	    	\end{equation} 
 	    	
-	    For an 802.11p OFDM system, we have to account for an SNR gain of $64/52$ due to all the energy being concentrated in the active subcarriers and bandwidth reduction of $52/64$ because only a fraction subcarriers are used. A plot of the resulting capacity is shown below:
+	    For an 802.11p OFDM system, the bandwidth of the active subcarriers is $52/64$ times the input bandwidth. As previously stated, the SNR of the active carriers is $64/52$ greater than the received SNR due to all the energy being concentrated in the active subcarriers. A plot of the resulting capacity after accounting account for these factors is shown below:
 	    
 	    \begin{figure}[H]
 	    		\centering
@@ -557,7 +557,7 @@ In this section, we evaluate the performance of an FMCW radar written in MATLAB 
     			\label{fig::ofdm_awgn_capacity}
 	    \end{figure}
 	    
-	   	In practice, the spectral efficiency of the system is lower than the capacity because of the bandwidth occupied by the pilots and the cyclic prefix, which reduces the effective data rates. For the 802.11p standard, the cyclic prefix occupies 20\% of the symbol duration.
+	   	In practice, the spectral efficiency of the system is lower than the capacity because of the bandwidth occupied by the pilots and the cyclic prefix, which reduce the effective data rates.
     
     \section {JRC}
 		\subsection {Background}
