@@ -38,16 +38,12 @@ imanmiraki@arizona.edu}}
 
 
 This paper presents the design and evaluation of a Joint Radar-Communication (JRC) system utilizing Orthogonal Frequency Division Multiplexing (OFDM). The proposed system combines radar and communication functionalities to enhance spectrum efficiency, reduce hardware costs, and improve resource sharing. A zero-forcing technique is employed to generate Range-Doppler Maps (RDMs) from OFDM returns. Performance metrics of the JRC system are compared with standalone radar and standalone OFDM implementations, highlighting trade-offs in resolution, sidelobe suppression, and signal-to-noise ratio (SNR). While the 802.11p-based OFDM radar exhibited degraded resolution and PSLR due to limited bandwidth, a redesigned system using 320 MHz bandwidth at 77 GHz achieved significantly improved range resolution, making it viable for automotive applications. Despite slight compromises in radar resolution and communication capacity, the JRC system demonstrates its potential for multi-functional applications like autonomous vehicles, balancing performance with cost and spectral efficiency.
-
-
 \end{abstract}
 
-
-
 \section {Introduction}
-     Vehicle-to-Vehicle (V2V) networks seek to enhance road safety and reduce traffic congestion by sharing road and traffic information between vehicles in real time. To avoid delays associated with third party networks, vehicle-to-vehicle communication systems need dedicated bandwidth. Instead of wasting additional spectrum resources, joint radar communication (JRC) systems attempt to integrate radar and communication systems. This results in reduced bandwidth usage and reduced power consumption while eliminating the need for additional hardware.
+     Vehicle-to-Vehicle (V2V) networks seek to enhance road safety and reduce traffic congestion by sharing road and traffic information between vehicles in real time. To avoid delays associated with third party networks, vehicle-to-vehicle communication systems need dedicated bandwidth \cite{8500189}. Instead of wasting additional spectrum resources, joint radar communication (JRC) systems attempt to integrate radar and communication systems \cite{8972666}. This results in reduced bandwidth usage and reduced power consumption while eliminating the need for additional hardware.
      
-     In this paper, we design a JRC system, which uses OFDM for communication and zero-forcing to generate a range response from the OFDM returns. Next, we examine the performance of this system and compare it to standalone radar and standalone OFDM implementations.
+     In this paper, we design a JRC system, which uses OFDM for communication and zero-forcing to generate a range response from the OFDM returns. Our paper is organized as follows. First, we provide background and performance results for an radar automotive radar system. Next, we provide background and performance results for an OFDM 802.11p communication system. Finally, we create a JRC system based on the OFDM 802.11p standard and evaluate its performance against standalone radar and standalone OFDM implementations.
         
   \section {Radar}
    \subsection {Background}
