@@ -943,13 +943,13 @@ Examining the above figure, we can conclude that the channel capacity of the mod
 
 \section {Conclusion}
 
-In this paper, we presented a JRC implementation, which used an OFDM 802.11p transmitter and zero forcing to generate RDMs from the OFDM returns. We compared the performance of this system to that of an FMCW radar.
+In this paper, we presented a JRC implementation, which used an OFDM 802.11p transmitter and zero forcing to generate RDMs from OFDM returns. We, then, compared the performance of this system to that of an FMCW radar.
 
-We observed that performance of the radar degraded with range and uncompensated doppler shifts. Despite this degradation, we inferred that the OFDM radar would provide acceptable PSLR performance over ranges and velocities accounted in an automotive environment. Additionally, we observed a degradation in SNR due to the high PAPR and cyclic prefix of OFDM symbols - with the high PAPR being the dominant factor. More significantly, we found that the range resolution of the 802.11p radar was significantly worse than the FMCW radar, due to its low bandwidth. This makes it impractical to use for automotive radar.
+We observed that performance of the radar degraded with range and uncompensated doppler shifts. Despite this degradation, we inferred that the OFDM radar would provide acceptable PSLR performance over ranges and velocities encountered in an automotive environment. We also observed a degradation in SNR due to the high PAPR and cyclic prefix of OFDM symbols. More significantly, we found that the range resolution of the 802.11p radar was significantly worse than the FMCW radar, due to its low bandwidth. This makes the 802.11p radar impractical for automotive radar use.
 
-To achieve better range resolution, we also experimented with a 320 MHz bandwidth JRC system operating in the 77 GHz band. This provided a sufficient range resolution, without degrading the performance of the OFDM system in an AWGN environment.
+To achieve better range resolution, we also experimented with a 320 MHz bandwidth JRC system operating in the 77 GHz band. This provided a sufficient range resolution, without degrading the OFDM performance in an AWGN channel.
 
-While JRC may slightly compromise the standalone performance of either radar (resolution) or communication (capacity), it offers significant advantages in shared resource utilization, reduced hardware cost, and suitability for modern multi-functional systems like autonomous vehicles.
+With a reduction in the OFDM PAPR and an increase in the channel bandwidth, we believe that the presented OFDM radar will be able to sufficiently meet both radar and communication objectives, while reducing total bandwidth usage, power consumption, and amount of required hardware.
 
 
 	\bibliographystyle {IEEEtran}
