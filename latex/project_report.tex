@@ -479,7 +479,7 @@ In this section, we evaluate the performance of an FMCW radar written in MATLAB 
     		\label{fig::rx_constellation_diagram}
   	  \end{figure}
     
-    		The expected bit error rate (BER) for a single OFDM subcarrier is identical to the BER of a single carrier system, when the SNR of the given subcarrier is considered. For QPSK, this is approximately given by
+    		The expected bit error rate (BER) for a single OFDM subcarrier is identical to the BER of a single carrier system, when the SNR of the given subcarrier is considered. For QPSK, this is approximately given in \cite{goldsmith_2013_wireless} as
 		
 		\begin{equation}
 			P_b(\rho_b) \approx Q(\sqrt{2\rho_b})
@@ -505,7 +505,7 @@ In this section, we evaluate the performance of an FMCW radar written in MATLAB 
     		\label{fig::ofdm_rayleigh_fading}
   	  \end{figure}
     
-    		We can compare the received constellation to the one shown in Figure \ref{fig::rx_constellation_diagram}. Doing so, we observe that the clusters are not easily separable like they were previously, indicating a much higher BER. The average BER in the presence of fading can be computed as follows:
+    		We can compare the received constellation to the one shown in Figure \ref{fig::rx_constellation_diagram}. Doing so, we observe that the clusters are not easily separable like they were previously, indicating a much higher BER. The average BER in the presence of fading is given in \cite{djordjevic-2017} as
     		
     		\begin{equation}
     			\bar{P}_b = \int_{0}^{\infty}{P_b(\rho)f(\rho)d\rho}
@@ -528,7 +528,7 @@ In this section, we evaluate the performance of an FMCW radar written in MATLAB 
   	  
   	  	Referring to the figure, the measured BER rate is consistent with the expected BER.
     	    	  
-    	  Next, we can analyze the channel capacity of the system. The channel capacity of an individual OFDM subcarrier is given by:
+    	  Finally, we can analyze the channel capacity of the system. The channel capacity of an individual OFDM subcarrier is given by:
     	  
     	  \begin{equation}
 			C_{k} = B_{k}\text{log}_2\left(1 +\frac{ \text P_{k}\cdot|H_{k}|^2}{N_{k}}\right)
