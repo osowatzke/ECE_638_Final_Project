@@ -673,24 +673,12 @@ In this section, we evaluate the performance of an FMCW radar written in MATLAB 
   	  	\end{equation}
   	  	
   	  	Here $f_s$ defines the sample rate, $N$ defines the number of subcarriers, and $L$ defines the cyclic prefix length.
-  	  	
-% See if this can be incorporated in introduction	
-\iffalse 
- The convergence of radar and communication systems, often referred to as joint radar-communication (JRC), has emerged due to several technological and practical motivations. Some of the primary reasons why radar and communication systems are being integrated listed below :
- 
- \begin{itemize}
- \item Spectrum Sharing and Efficiency (coexisting within the same frequency band)
-\item Shared Hardware
-\item Autonomous Vehicles
-\item Energy Efficiency		 
-\end{itemize}		 
-		 
-The orthogonality or low correlation of the frequency domain allows the two subsystems not to interfere with each other. The disadvantage is that the spectrum utilization of the system is low and energy sharing is difficult to achieve. Other crucial disadvantage we need to overcome is OFDM signals are sensitive to the Doppler shift and multipath effects, which leads to a loss of subcarrier orthogonality and intersymbol interference (ISI) \cite{9992221}.
-\fi
 
 \subsection {Simulation and Performance}
       
-There are many variables and parameters that can influence the performance of a JRC system. To investigate the performance, we have simulated and compared the results for many scenarios. The first simulation we performed used an OFDM 802.11p transmitter with an OFDM radar receiver. The transmitter includes a null subcarrier at DC which limits the PSLR as shown in Figure \ref{fig::pslr_802_11p_ofdm_radar}.
+In this section, we analyze the radar and communication performance of the proposed JRC system. We start by investigating the radar performance of an unmodified OFDM 802.11p transmitter. For each shortcoming in performance, we modify the design to better meet the radar objectives. Then, we evaluate the change in OFDM performance.
+
+We start this process by comparing the PSLR of the JRC system to the FMCW radar. The OFDM 802.11p transmitter includes a null subcarrier at DC which limits the PSLR as shown in Figure \ref{fig::pslr_802_11p_ofdm_radar}.
 
 \begin{figure}[H]
 \centering
@@ -708,17 +696,9 @@ There we measure a PSLR of 26.30 dB - even when using a 80 dB Chebyshev window. 
 \label{fig::pslr_802_11p_mod_ofdm_radar}
 \end{figure}
 
-The PSLR is now 79.92 dB, which is consistent with our 80 dB Chebyshev window. If the receiver can utilize the DC subcarrier, we expect no capacity degradation for the communication system. However, if the DC subcarrier is unused by the receiver, we will see a degradation in capacity.
+The PSLR is now 79.92 dB, which is consistent with our 80 dB Chebyshev window. As mentioned above, the performance of the OFDM receiver will only degrade if it cannot take advantage of the added DC subcarrier. In this case, the capacity will degrade because less power will be allocated to the remaining subcarriers.
 
-\iffalse
-The capacity of an OFDM system is given by:
-
-\begin{equation}
-	C = \text{max}{\sum_{P_j: \sum_j{P_j \leq P}}{W\text{log}_2\left\right)}
-\end{equation}
-\fi
-
-We can also examine the doppler tolerance of the system by measuring the PLSR while varying the amount of uncompensated doppler shift. The doppler tolerance of the system is shown in Figure \ref{fig::ofdm_radar_doppler_tolerance}.
+With the added DC subcarrier, we can now examine the doppler tolerance of the system. This is done by measuring the PLSR while varying the amount of uncompensated doppler. The doppler tolerance of the system is shown in Figure \ref{fig::ofdm_radar_doppler_tolerance}.
 
 \begin{figure}[H]
 \centering
@@ -727,7 +707,7 @@ We can also examine the doppler tolerance of the system by measuring the PLSR wh
 \label{fig::ofdm_radar_doppler_tolerance}
 \end{figure}
 
-Note unlike the FMCW radar, the PSLR varies with uncompensated doppler. When an 80 dB Chebyshev window is applied, we see a PSLR degradation of ~25 dB for objects with a relative velocity of 100 m/s. The PSLR degrades with velocity, because uncompensated doppler creates a mismatch between the FFT of the matched filter $H[k]$ and the FFT of the data $X[k]$.
+Note unlike the FMCW radar, the PSLR varies with uncompensated doppler. With an 80 dB Chebyshev window applied, we see a PSLR degradation of about 25 dB for objects with a relative velocity of 100 m/s. The PSLR degrades with velocity, because uncompensated doppler creates a mismatch between the FFT of the matched filter, $H[k]$, and the FFT of the data, $X[k]$.
 
 The JRC system is also only designed to detect returns with delays equal to or smaller than the length of a cyclic prefix. For the 802.11p standard, this range is defined as follows:
 
@@ -744,7 +724,7 @@ In Figure \ref{fig::ofdm_radar_pslr_vs_range}, we examine the PSLR against range
 \label{fig::ofdm_radar_pslr_vs_range}
 \end{figure}
 
-As expected, we see that the PSLR steeply degrades when the range exceeds $R_{max}$.
+As expected, we see that the PSLR steeply degrades when the range exceeds $R_{max}$. For comparison, we note that this range degradation does not occur in an FCMW radar.
 
 For an OFDM radar, we have already stated the unambiguous range and velocity. However, due to the demonstrated performance degradations at large ranges and velocities, it is not meaningful to evaluate performance outside of the first range and velocity ambiguity. Even though it is limited to the first ambiguities, an automotive 802.11p radar will still be able to measure an acceptable range of ranges and velocities.
 
