@@ -435,7 +435,7 @@ In this section, we evaluate the performance of an FMCW radar written in MATLAB 
 			T_4 = T_{FFT} + T_G/2 + T_{win}
 		\end{equation}
 		
-		At the receiver, the window and or cyclic prefix are removed before the signal is demodulated with an FFT. Because of the cyclic prefix, each of the received multi-path components are a circularly-shifted copies of the transmitted signal. After the FFT, the multi-path components result in a complex weight for each of the FFT bins. We can remove this complex weighting by equalizing the received symbol. To perform equalization, we can estimate estimate the channel at each of the pilot carriers:
+		At the receiver, the window and or cyclic prefix are removed before the signal is demodulated with an FFT. Because of the cyclic prefix, each of the received multi-path components are a circularly-shifted copies of the transmitted signal. After the FFT, the multi-path components result in a complex weight for each of the FFT bins. We can remove this complex weighting by equalizing the received symbol. To perform equalization, we can estimate the channel at each of the pilot carriers:
 		
 		\begin{equation}
 			\hat{H}_{p_k} = \frac{Y_{p_k}}{X_{p_k}}
@@ -679,13 +679,13 @@ In this section, we evaluate the performance of an FMCW radar written in MATLAB 
  The convergence of radar and communication systems, often referred to as joint radar-communication (JRC), has emerged due to several technological and practical motivations. Some of the primary reasons why radar and communication systems are being integrated listed below :
  
  \begin{itemize}
- \item Spectrum Sharing adn Efficiency (coexisting within the same frequency band)
+ \item Spectrum Sharing and Efficiency (coexisting within the same frequency band)
 \item Shared Hardware
 \item Autonomous Vehicles
 \item Energy Efficiency		 
 \end{itemize}		 
 		 
-The orthogonality or low correlation of the frequency domain allows the two subsystems not to interfere with each other. The disadvantage is that the spectrumutilization of the system is low and energy sharing is difficult to achieve. Other crutial disadvantage we need to overcome is OFDM signals are sensitive to the Doppler shift and multipath effects, which leads to a loss of subcarrier orthogonality and intersymbol interference (ISI) \cite{9992221}.
+The orthogonality or low correlation of the frequency domain allows the two subsystems not to interfere with each other. The disadvantage is that the spectrum utilization of the system is low and energy sharing is difficult to achieve. Other crucial disadvantage we need to overcome is OFDM signals are sensitive to the Doppler shift and multipath effects, which leads to a loss of subcarrier orthogonality and intersymbol interference (ISI) \cite{9992221}.
 \fi
 
 \subsection {Simulation and Performance}
@@ -699,7 +699,7 @@ There are many variables and parameters that can influence the performance of a 
 \label{fig::pslr_802_11p_ofdm_radar}
 \end{figure}
 
-There we measure a PSLR of 26.30 dB - even when using a 80 dB Chebyshev window. If we add a DC subcarrier to the OFDM transmission as previously suggest, we can achieve a much better PSLR as shown in Figure \ref{fig::pslr_802_11p_mod_ofdm_radar}.
+There we measure a PSLR of 26.30 dB - even when using a 80 dB Chebyshev window. If we add a DC subcarrier to the OFDM transmission as previously suggested, we can achieve a much better PSLR as shown in Figure \ref{fig::pslr_802_11p_mod_ofdm_radar}.
 
 \begin{figure}[H]
 \centering
@@ -727,7 +727,7 @@ We can also examine the doppler tolerance of the system by measuring the PLSR wh
 \label{fig::ofdm_radar_doppler_tolerance}
 \end{figure}
 
-Note unlike the FMCW radar, the PSLR varies with uncompensated doppler. When an 80 dB Chebyshev window is applied, we see a PSLR degradation of ~25 dB for objects with a relative velocity 100 m/s. The PSLR degrades with velocity, because uncompensated doppler creates a mismatch between the FFT of the matched filter $H[k]$ and the FFT of the data $X[k]$.
+Note unlike the FMCW radar, the PSLR varies with uncompensated doppler. When an 80 dB Chebyshev window is applied, we see a PSLR degradation of ~25 dB for objects with a relative velocity of 100 m/s. The PSLR degrades with velocity, because uncompensated doppler creates a mismatch between the FFT of the matched filter $H[k]$ and the FFT of the data $X[k]$.
 
 The JRC system is also only designed to detect returns with delays equal to or smaller than the length of a cyclic prefix. For the 802.11p standard, this range is defined as follows:
 
